@@ -8,14 +8,17 @@ PROG_NAME = main
 CC = g++
 FLAGS = -pedantic-errors -std=c++11
 
-$(BIN_DIR)/$(PROG_NAME): $(OBJ)
-	$(CC) $(FLAGS) -o $@ $^ -lncurses
+$(BIN_DIR)/$(PROG_NAME): init $(OBJ)
+	$(CC) $(FLAGS) -o $@ $(OBJ) -lncurses
 
 $(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CC) $(FLAGS) -c -o $@ $<
+
+init:
+	mkdir -p $(BIN_DIR)
 
 clean:
 	rm -f $(BIN_DIR)/*.o
 	rm -f $(BIN_DIR)/$(PROG_NAME)
 
-.PHONY: clean
+.PHONY: init, clean
