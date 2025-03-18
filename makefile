@@ -1,23 +1,28 @@
 SRC_DIR = src
 BIN_DIR = bin
-SRC = $(wildcard $(SRC_DIR)/*.cpp)
-OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(BIN_DIR)/%.o, $(SRC))
 
-PROG_NAME = main
+CXX = gcc
+CXXFLAGS = -std=c++11 -pedantic-errors -Wall
+LDFLAGS = -lstdc++ -lncurses
+PROG = main
 
-CC = g++
-FLAGS = -pedantic-errors -std=c++11
+$(BIN_DIR)/$(PROG): $(BIN_DIR)/main.o $(BIN_DIR)/render.o
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(BIN_DIR)/$(PROG_NAME): $(OBJ)
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(FLAGS) -o $@ $(OBJ) -lncurses
+$(BIN_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/render.h
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@mkdir -p $(BIN_DIR)
-	$(CC) $(FLAGS) -c -o $@ $<
+$(BIN_DIR)/render.o: $(SRC_DIR)/render.cpp $(SRC_DIR)/render.h
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+run: $(BIN_DIR)/$(PROG)
+	./$(BIN_DIR)/$(PROG)
 
 clean:
 	rm -f $(BIN_DIR)/*.o
-	rm -f $(BIN_DIR)/$(PROG_NAME)
+	rm -f $(PROG)
 
-.PHONY: init, clean
+.PHONY: clean, run
