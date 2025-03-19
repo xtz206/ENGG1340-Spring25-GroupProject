@@ -1,18 +1,31 @@
 #include <ncurses.h>
-#include <string>
+#include <iostream>
 
 #include "render.h"
 
 int main(void)
 {
-    initscr();
+    try
+    {
+        // ncurses initialization
+        setlocale(LC_CTYPE, "");
+        initscr();
+        curs_set(0);
 
-    Renderer renderer;
-    renderer.render();
+        Renderer renderer;
+        renderer.draw_map();
+        renderer.render();
 
-    refresh();
-    getch();
+        refresh();
+        getch();
 
-    endwin();
+        endwin();
+    }
+    catch (const std::exception &e)
+    {
+        endwin();
+        std::cerr << e.what() << '\n';
+    }
+
     return 0;
 }
