@@ -1,5 +1,6 @@
 #include "render.h"
 #include <fstream>
+#include <string>
 #include <ncurses.h>
 
 #define TOTAL_LINES 30
@@ -83,4 +84,9 @@ void Renderer::draw_radar(int count)
         mvwaddch(radar_window, curr, col, '*');
         wattroff(radar_window, A_DIM);
     }
+}
+
+void Renderer::draw_debug(const std::string &str)
+{
+    mvwprintw(operation_window, 8, 1, "%s", str.c_str());
 }

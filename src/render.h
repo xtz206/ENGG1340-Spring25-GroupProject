@@ -2,9 +2,12 @@
 #define RENDER_H
 
 #include <ncurses.h>
+#include <string>
 
 class Renderer
 {
+    friend class Controller;
+
 private:
     WINDOW *map_window;
     WINDOW *radar_window;
@@ -19,6 +22,8 @@ public:
     void draw_map(void);
     void draw_radar(int count);
     void draw_operation(void);
+
+    void draw_debug(const std::string &str);
 };
 
 #endif
