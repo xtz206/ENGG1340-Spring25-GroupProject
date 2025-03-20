@@ -49,7 +49,7 @@ void Renderer::render(void)
 
 void Renderer::draw_map(void)
 {
-    std::ifstream file("background.txt");
+    std::ifstream file("background2.txt");
     std::string line;
     int y = 1;
     while (std::getline(file, line))
