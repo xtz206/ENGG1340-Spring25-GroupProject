@@ -2,18 +2,18 @@
 #include <fstream>
 #include <ncurses.h>
 
-#define TOTAL_LINES 40
-#define TOTAL_COLS 150
-#define MAP_LINES 30
-#define MAP_COLS 123
-#define RADAR_LINES 15
-#define RADAR_COLS 27
-#define NODE_LINES 15
-#define NODE_COLS 27
+#define TOTAL_LINES 30
+#define TOTAL_COLS 140
+#define MAP_LINES 20
+#define MAP_COLS 100
+#define RADAR_LINES 10
+#define RADAR_COLS 40
+#define NODE_LINES 10
+#define NODE_COLS 40
 #define INFO_LINES 10
-#define INFO_COLS 27
+#define INFO_COLS 40
 #define OPERATION_LINES 10
-#define OPERATION_COLS 122
+#define OPERATION_COLS 100
 
 Renderer::Renderer(void)
 {
@@ -49,7 +49,7 @@ void Renderer::render(void)
 
 void Renderer::draw_map(void)
 {
-    std::ifstream file("background2.txt");
+    std::ifstream file("background.txt");
     std::string line;
     int y = 1;
     while (std::getline(file, line))
