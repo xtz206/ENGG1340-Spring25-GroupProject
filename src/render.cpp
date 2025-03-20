@@ -3,17 +3,17 @@
 #include <ncurses.h>
 
 #define TOTAL_LINES 40
-#define TOTAL_COLS 120
-#define MAP_LINES 28
-#define MAP_COLS 90
-#define RADAR_LINES 14
-#define RADAR_COLS 30
-#define NODE_LINES 14
-#define NODE_COLS 30
-#define INFO_LINES 12
-#define INFO_COLS 30
-#define OPERATION_LINES 12
-#define OPERATION_COLS 90
+#define TOTAL_COLS 150
+#define MAP_LINES 30
+#define MAP_COLS 123
+#define RADAR_LINES 15
+#define RADAR_COLS 27
+#define NODE_LINES 15
+#define NODE_COLS 27
+#define INFO_LINES 10
+#define INFO_COLS 27
+#define OPERATION_LINES 10
+#define OPERATION_COLS 122
 
 Renderer::Renderer(void)
 {
