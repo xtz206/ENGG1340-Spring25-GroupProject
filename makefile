@@ -35,10 +35,7 @@ dist: $(BIN_DIR)/$(PROG) assets/*
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
 	cp $(ASSETS_DIR)/* $(DIST_DIR)/
 
-run: $(BIN_DIR)/$(PROG) assets/*
-	@mkdir -p $(DIST_DIR)
-	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
-	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+run: dist
 	cd $(DIST_DIR) && ./$(PROG)
 
 clean:
