@@ -36,7 +36,6 @@ Renderer::Renderer(void)
     mvwprintw(operation_window, 0, 2, "Operation");
 
     start_color();
-    init_pair(1, COLOR_GREEN, COLOR_GREEN);
 }
 
 void Renderer::render(void)
@@ -57,4 +56,4 @@ void Renderer::draw_map(void)
     {
         mvwprintw(map_window, y++, 1, "%s", line.c_str());
     }
-}
+    file.close();
