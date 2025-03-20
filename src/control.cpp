@@ -6,11 +6,22 @@
 #include "render.h"
 #include "control.h"
 
-Controller::Controller(Renderer *r)
+Button::Button(WINDOW *win, int l, int c, int h, int w, const std::string &label_)
+    : window(win), line(l), col(c), height(h), width(w), label(label_) {};
+
+void Button::set_label(const std::string &label_)
 {
-    this->renderer = r;
-    this->map_window = r->map_window;
-    this->operation_window = r->operation_window;
+    this->label = label_;
+}
+
+bool Button::in_button(int y, int x)
+{
+    return y >= line && y < line + height && x >= col && x < col + width;
+}
+
+Controller::Controller(Renderer &r, std::vector<Button> &vb)
+    : renderer(r), map_window(r.map_window), operation_window(r.operation_window), buttons(vb)
+{
 }
 
 void Controller::handle_key(short key)
@@ -23,47 +34,29 @@ void Controller::handle_key(short key)
 
             if (event.bstate & BUTTON1_CLICKED)
             {
-                if (wmouse_trafo(map_window, &event.y, &event.x, false))
+                std::ostringstream oss;
+                std::stringstream msg;
+
+                for (auto button : buttons)
                 {
-                    std::stringstream ss;
-                    ss << std::setw(50) << "LClick at (" << std::setw(3) << event.y << ", " << std::setw(3) << event.x << ") in map window";
-                    renderer->draw_debug(ss.str()); // 11 + 3 + 2 + 3 + 15 = 34
-                }
-                else if (wmouse_trafo(operation_window, &event.y, &event.x, false))
-                {
-                    std::stringstream ss;
-                    if (event.y == 1)
+                    int win_y = event.y;
+                    int win_x = event.x;
+                    if (wmouse_trafo(button.window, &win_y, &win_x, false) && button.in_button(win_y, win_x))
                     {
-                        ss << std::setw(50) << "LClick at Build Cruise";
+                        msg << "LClick button " << button.label << " at (" << std::setw(3) << win_y << ", " << std::setw(3) << win_x << ")";
+                        oss.setf(std::ios::left);
+                        oss << std::setw(50) << msg.str();
+                        oss.unsetf(std::ios::left);
+                        renderer.draw_debug(oss.str());
+                        return;
                     }
-                    else if (event.y == 2)
-                    {
-                        ss << std::setw(50) << "LClick at Build IRBM";
-                    }
-                    else if (event.y == 3)
-                    {
-                        ss << std::setw(50) << "LClick at Launch Cruise";
-                    }
-                    else if (event.y == 4)
-                    {
-                        ss << std::setw(50) << "LClick at Launch IRBM";
-                    }
-                    else if (event.y == 5)
-                    {
-                        ss << std::setw(50) << "LClick at Launch Fix";
-                    }
-                    else
-                    {
-                        ss << std::setw(50) << "LClick at (" << std::setw(3) << event.y << ", " << std::setw(3) << event.x << ") in operation window";
-                    }
-                    renderer->draw_debug(ss.str());
                 }
             }
         }
-        break;
+        return;
 
     case 'q':
         throw std::runtime_error("Exit");
-        break;
+        return;
     }
 }

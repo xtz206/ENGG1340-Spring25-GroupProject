@@ -1,4 +1,5 @@
 #include "render.h"
+#include "control.h"
 #include <fstream>
 #include <string>
 #include <ncurses.h>
@@ -60,16 +61,12 @@ void Renderer::draw_map(void)
     file.close();
 }
 
-void Renderer::draw_operation(void)
+void Renderer::draw_operation(std::vector<Button> &buttons)
 {
-    std::ifstream file("operation.txt");
-    std::string line;
-    int y = 1;
-    while (std::getline(file, line))
+    for (auto button : buttons)
     {
-        mvwprintw(operation_window, y++, 1, "%s", line.c_str());
+        draw_button(button);
     }
-    file.close();
 }
 
 void Renderer::draw_radar(int count)
@@ -89,4 +86,9 @@ void Renderer::draw_radar(int count)
 void Renderer::draw_debug(const std::string &str)
 {
     mvwprintw(operation_window, 8, 1, "%s", str.c_str());
+}
+
+void Renderer::draw_button(const Button &button)
+{
+    mvwprintw(button.window, button.line, button.col, "%s", button.label.c_str());
 }
