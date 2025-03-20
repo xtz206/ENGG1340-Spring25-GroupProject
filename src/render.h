@@ -17,6 +17,8 @@ public:
     ~Renderer(void) {};
     void render(void);
     void draw_map(void);
+    void draw_radar(int count);
+    void draw_operation(void);
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <iostream>
+#include <unistd.h>
 
 #include "render.h"
 
@@ -10,14 +11,29 @@ int main(void)
         // ncurses initialization
         setlocale(LC_CTYPE, "");
         initscr();
+        noecho();
+        nodelay(stdscr, true);
         curs_set(0);
 
         Renderer renderer;
-        renderer.draw_map();
-        renderer.render();
+        char ch;
 
-        refresh();
-        getch();
+        int count = 1;
+        while (true)
+        {
+            renderer.draw_map();
+            renderer.draw_operation();
+            renderer.draw_radar(count);
+            renderer.render();
+            refresh();
+            char ch = getch();
+            if (ch == 'q')
+            {
+                break;
+            }
+            usleep(100000);
+            count++;
+        }
 
         endwin();
     }

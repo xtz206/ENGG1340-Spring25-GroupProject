@@ -57,3 +57,30 @@ void Renderer::draw_map(void)
         mvwprintw(map_window, y++, 1, "%s", line.c_str());
     }
     file.close();
+}
+
+void Renderer::draw_operation(void)
+{
+    std::ifstream file("operation.txt");
+    std::string line;
+    int y = 1;
+    while (std::getline(file, line))
+    {
+        mvwprintw(operation_window, y++, 1, "%s", line.c_str());
+    }
+    file.close();
+}
+
+void Renderer::draw_radar(int count)
+{
+    int prev = 1 + (count - 1) % (RADAR_LINES - 2);
+    int curr = 1 + (count) % (RADAR_LINES - 2);
+
+    for (int col = 1; col < RADAR_COLS - 1; col++)
+    {
+        mvwaddch(radar_window, prev, col, ' ');
+        wattron(radar_window, A_BLINK);
+        mvwaddch(radar_window, curr, col, '*');
+        wattroff(radar_window, A_BLINK);
+    }
+}
