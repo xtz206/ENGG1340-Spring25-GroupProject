@@ -79,8 +79,8 @@ void Renderer::draw_radar(int count)
     for (int col = 1; col < RADAR_COLS - 1; col++)
     {
         mvwaddch(radar_window, prev, col, ' ');
-        wattron(radar_window, A_BLINK);
+        wattron(radar_window, A_DIM);
         mvwaddch(radar_window, curr, col, '*');
-        wattroff(radar_window, A_BLINK);
+        wattroff(radar_window, A_DIM);
     }
 }
