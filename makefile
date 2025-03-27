@@ -41,5 +41,6 @@ run: dist
 clean:
 	rm -f $(BIN_DIR)/*.o
 	rm -f $(PROG)
+	rm -f $(DIST_DIR)/*
 
-.PHONY: disr, run, clean
+.PHONY: dist, run, clean
