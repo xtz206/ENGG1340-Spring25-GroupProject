@@ -3,6 +3,7 @@
 #include <string>
 #include <unistd.h>
 
+#include "game.h"
 #include "render.h"
 #include "control.h"
 
@@ -10,20 +11,20 @@ int main(void)
 {
     try
     {
-
-        Renderer renderer = Renderer();
-        Controller controller = Controller();
+        Game game;
+        Renderer renderer = Renderer(game);
+        Controller controller = Controller(game);
 
         renderer.draw_window();
-        renderer.draw_map();
         while (true)
         {
 
             short key = getch();
             controller.handle_key(key);
 
+            renderer.draw_game();
             renderer.render();
-            usleep(100000);
+            usleep(10000);
         }
 
         endwin();

@@ -5,14 +5,12 @@
 #include <string>
 #include <vector>
 
-class Controller;
-class Button;
+class Game;
 
 class Renderer
 {
-    friend class Controller;
-
 private:
+    Game &game;
     WINDOW *map_window;
     WINDOW *radar_window;
     WINDOW *node_window;
@@ -20,12 +18,12 @@ private:
     WINDOW *operation_window;
 
 public:
-    Renderer(void);
+    Renderer(Game &game);
     ~Renderer(void) {};
 
     void render(void);
     void draw_window(void);
-    void draw_map(void);
+    void draw_game(void);
     void draw_debug(const std::string &str);
 };
 

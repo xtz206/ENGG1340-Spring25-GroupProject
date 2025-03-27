@@ -4,11 +4,15 @@
 #include <ncurses.h>
 #include <vector>
 
+class Game;
+
 class Controller
 {
+private:
+    Game &game;
 
 public:
-    Controller(void);
+    Controller(Game &g);
     void handle_key(short key);
 };
 

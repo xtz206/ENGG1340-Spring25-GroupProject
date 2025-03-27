@@ -1,8 +1,10 @@
-#include "render.h"
-#include "control.h"
 #include <fstream>
 #include <string>
 #include <ncurses.h>
+
+#include "game.h"
+#include "render.h"
+#include "control.h"
 
 #define TOTAL_LINES 30
 #define TOTAL_COLS 140
@@ -17,7 +19,7 @@
 #define OPERATION_LINES 10
 #define OPERATION_COLS 100
 
-Renderer::Renderer(void)
+Renderer::Renderer(Game &g) : game(g)
 {
     setlocale(LC_CTYPE, "");
     initscr();
@@ -58,16 +60,30 @@ void Renderer::draw_window(void)
     mvwprintw(operation_window, 0, 2, "Operation");
 }
 
-void Renderer::draw_map(void)
+void Renderer::draw_game(void)
 {
-    std::ifstream file("background.txt");
-    std::string line;
-    int y = 1;
-    while (std::getline(file, line))
+    for (size_t line = 1; line < NODE_LINES - 1; line++)
     {
-        mvwprintw(map_window, y++, 1, "%s", line.c_str());
+        mvwprintw(node_window, line, 1, "%s", std::string(NODE_COLS - 2, ' ').c_str());
     }
-    file.close();
+
+    if (game.select_city() != nullptr)
+    {
+        mvwprintw(node_window, 1, 1, "City: %s", game.select_city()->name.c_str());
+        mvwprintw(node_window, 2, 1, "Hitpoint: %d", game.select_city()->hitpoint);
+    }
+    else
+    {
+        mvwprintw(node_window, 1, 1, "City: Unselected");
+        mvwprintw(node_window, 2, 1, "Hitpoint: ");
+    }
+
+    for (size_t line = 0; line < game.get_map().size(); line++)
+    {
+        mvwprintw(map_window, line + 1, 1, "%s", game.get_map().at(line).c_str());
+    }
+
+    mvwprintw(map_window, game.get_cursor().first + 1, game.get_cursor().second + 1, "X");
 }
 
 void Renderer::draw_debug(const std::string &str)
