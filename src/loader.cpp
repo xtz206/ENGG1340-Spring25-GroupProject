@@ -66,7 +66,8 @@ std::vector<City> Loader::load_cities(void) const
 std::vector<std::string> Loader::load_background(void) const
 {
     std::vector<std::string> background;
-    for (size_t index = 4 + std::stoi(content[2].substr(content[2].find(":") + 1)); index < content.size(); index++)
+    int offset = 4 + std::stoi(content[2].substr(content[2].find(":") + 1));
+    for (size_t index = offset; index < offset + load_size().first; index++)
     {
         background.push_back(content[index]);
     }
