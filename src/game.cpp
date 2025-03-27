@@ -131,6 +131,7 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
 {
     cursor = cities[0].position;
     turn = 0;
+    // DEBUG: just for testing, remove later
     missiles = {Missile({-10, -10}, cities[0].position, 200)};
 }
 
