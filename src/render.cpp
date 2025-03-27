@@ -101,7 +101,7 @@ void Renderer::draw_game(void)
         mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
     }
 
-    for (auto &missile : game.get_missiles())
+    for (auto &missile : game.missiles)
     {
         if (!game.is_in_map(missile->get_position()))
         {

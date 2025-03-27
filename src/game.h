@@ -70,6 +70,8 @@ public:
     void collide(void);
 };
 
+typedef std::shared_ptr<Missile> MissilePtr;
+
 class AttackMissile : public Missile
 {
     friend class Game;
@@ -90,10 +92,10 @@ class CruiseMissile : public Missile
     friend class Renderer;
 
 private:
-    std::shared_ptr<Missile> missile;
+    MissilePtr missile;
 
 public:
-    CruiseMissile(Coordinate p, std::shared_ptr<Missile> m, int d, int v);
+    CruiseMissile(Coordinate p, MissilePtr m, int d, int v);
     virtual Coordinate get_target(void) override { return missile->get_position(); };
     virtual void move_step(void) override;
 };
@@ -108,15 +110,15 @@ private:
     int turn;
     std::vector<City> cities;
     std::vector<std::string> background;
-    std::vector<std::shared_ptr<Missile>> friendly_missiles;
-    std::vector<std::shared_ptr<Missile>> enemy_missiles;
+    std::vector<MissilePtr> missiles;
+    std::vector<MissilePtr> friendly_missiles;
+    std::vector<MissilePtr> enemy_missiles;
 
 public:
     Game(Loader &ldr);
 
     const Coordinate &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
-    std::vector<std::shared_ptr<Missile>> get_missiles(void) const;
     int get_turn(void) const { return turn; };
 
     void move_cursor(int dline, int dcol);

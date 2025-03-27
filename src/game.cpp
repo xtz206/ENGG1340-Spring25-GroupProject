@@ -148,7 +148,7 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(Coordinate p, std::shared_ptr<Missile> m, int d, int v)
+CruiseMissile::CruiseMissile(Coordinate p, MissilePtr m, int d, int v)
     : Missile(p, m->get_position(), d, v), missile(m)
 {
 }
@@ -173,14 +173,9 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    enemy_missiles = {std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1))};
-}
-
-std::vector<std::shared_ptr<Missile>> Game::get_missiles(void) const
-{
-    std::vector<std::shared_ptr<Missile>> missiles = friendly_missiles;
-    missiles.insert(missiles.end(), enemy_missiles.begin(), enemy_missiles.end());
-    return missiles;
+    MissilePtr enemy_missile = std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1));
+    missiles.push_back(enemy_missile);
+    enemy_missiles.push_back(enemy_missile);
 }
 
 void Game::move_cursor(int dline, int dcol)
@@ -199,7 +194,16 @@ void Game::move_cursor(int dline, int dcol)
 
 void Game::pass_turn(void)
 {
-    for (auto &missile : get_missiles())
+    for (auto &missile : enemy_missiles)
+    {
+        missile->move();
+        if (missile->get_direction() == MissileDirection::A && missile->get_progress() == MissileProgress::HIT)
+        {
+            hit_city(select_city(missile->get_target()), missile->damage);
+        }
+    }
+
+    for (auto &missile : friendly_missiles)
     {
         missile->move();
         if (missile->get_direction() == MissileDirection::A && missile->get_progress() == MissileProgress::HIT)
@@ -268,5 +272,7 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    friendly_missiles.push_back(std::make_shared<CruiseMissile>(CruiseMissile(city->position, enemy_missiles[0], 100, 2)));
+    MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, enemy_missiles[0], 100, 2));
+    missiles.push_back(friendly_missile);
+    friendly_missiles.push_back(friendly_missile);
 }
