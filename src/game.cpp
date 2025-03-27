@@ -11,6 +11,7 @@ Game::Game(Loader &ldr)
     size = {ldr.load_size().first, ldr.load_size().second};
     cities = ldr.load_cities();
     background = ldr.load_background();
+    cursor = cities[0].position;
 }
 
 void Game::move_cursor(int dline, int dcol)
