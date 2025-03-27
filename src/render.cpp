@@ -101,18 +101,18 @@ void Renderer::draw_game(void)
         mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
     }
 
-    for (auto &missile : game.missiles)
+    for (auto &missile : game.get_missiles())
     {
-        if (!game.is_in_map(missile.get_position()))
+        if (!game.is_in_map(missile->get_position()))
         {
             continue;
         }
-        if (missile.get_progress() == MissileProgress::EXPLODED)
+        if (missile->get_progress() == MissileProgress::EXPLODED)
         {
             continue;
         }
         std::string direction = "";
-        switch (missile.get_direction())
+        switch (missile->get_direction())
         {
         case MissileDirection::A:
             direction = "O";
@@ -147,7 +147,7 @@ void Renderer::draw_game(void)
         default:
             break;
         }
-        mvwprintw(map_window, missile.get_position().first + 1, missile.get_position().second + 1, "%s", direction.c_str());
+        mvwprintw(map_window, missile->get_position().first + 1, missile->get_position().second + 1, "%s", direction.c_str());
     }
 
     mvwprintw(map_window, game.get_cursor().first + 1, game.get_cursor().second + 1, "X");

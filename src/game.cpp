@@ -1,4 +1,5 @@
 #include <fstream>
+#include <memory>
 #include "game.h"
 #include "loader.h"
 
@@ -58,6 +59,7 @@ MissileDirection Missile::get_direction(void)
     }
     return MissileDirection::U;
 }
+
 void Missile::move(void)
 {
     for (int step = 0; step < speed; step++)
@@ -140,7 +142,12 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    missiles = {Missile({-10, -10}, cities[0].position, 200, 1)};
+    missiles = {std::make_shared<Missile>(Missile({-10, -10}, cities[0].position, 200, 1))};
+}
+
+std::vector<std::shared_ptr<Missile>> Game::get_missiles(void) const
+{
+    return missiles;
 }
 
 void Game::move_cursor(int dline, int dcol)
@@ -159,12 +166,12 @@ void Game::move_cursor(int dline, int dcol)
 
 void Game::pass_turn(void)
 {
-    for (auto &missile : missiles)
+    for (auto &missile : get_missiles())
     {
-        missile.move();
-        if (missile.get_direction() == MissileDirection::A && missile.get_progress() == MissileProgress::HIT)
+        missile->move();
+        if (missile->get_direction() == MissileDirection::A && missile->get_progress() == MissileProgress::HIT)
         {
-            hit_city(select_city(missile.get_target()), missile.damage);
+            hit_city(select_city(missile->get_target()), missile->damage);
         }
     }
 
