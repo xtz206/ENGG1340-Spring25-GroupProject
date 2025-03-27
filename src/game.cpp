@@ -3,7 +3,7 @@
 #include "game.h"
 #include "loader.h"
 
-Missile::Missile(Coordinate p, Coordinate t, int d, int v)
+Missile::Missile(Position p, Position t, int d, int v)
     : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v)
 {
 }
@@ -138,7 +138,7 @@ void Missile::collide(void)
     progress = MissileProgress::EXPLODED;
 }
 
-AttackMissile::AttackMissile(Coordinate p, City &c, int d, int v)
+AttackMissile::AttackMissile(Position p, City &c, int d, int v)
     : Missile(p, c.get_position(), d, v), city(c)
 {
 }
@@ -148,7 +148,7 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(Coordinate p, MissilePtr m, int d, int v)
+CruiseMissile::CruiseMissile(Position p, MissilePtr m, int d, int v)
     : Missile(p, m->get_position(), d, v), missile(m)
 {
 }
@@ -164,7 +164,7 @@ void CruiseMissile::move_step(void)
     }
 }
 
-City::City(Coordinate p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
+City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
 }
 
@@ -178,7 +178,7 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     enemy_missiles.push_back(enemy_missile);
 }
 
-void Game::move_cursor(Coordinate dcursor)
+void Game::move_cursor(Position dcursor)
 {
     if (cursor.y + dcursor.y < 0 || cursor.y + dcursor.y >= size.h)
     {
@@ -227,11 +227,11 @@ City *Game::select_city(void)
     return nullptr;
 }
 
-City *Game::select_city(Coordinate c)
+City *Game::select_city(Position p)
 {
     for (auto &city : cities)
     {
-        if (c.y == city.position.y && c.x == city.position.x)
+        if (p.y == city.position.y && p.x == city.position.x)
         {
             return &city;
         }

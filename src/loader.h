@@ -13,7 +13,7 @@ private:
 
 public:
     Loader(const std::string &filename);
-    Coordinate load_size(void) const;
+    Position load_size(void) const;
     std::vector<City> load_cities(void) const;
     std::vector<std::string> load_background(void) const;
 };

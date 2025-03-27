@@ -5,10 +5,10 @@
 #include <string>
 #include <memory>
 
-class Coordinate
+class Position
 {
-    // NOTE: This Coordinate is (y, x) instead of (x, y)
-    //       This is to match the (line, col) coordinate system
+    // NOTE: The Position is (y, x) instead of (x, y)
+    //       This is to match the (line, col) system used by ncurses
 public:
     union
     {
@@ -24,10 +24,10 @@ public:
     };
 
 public:
-    Coordinate() : y(0), x(0) {}
-    Coordinate(int ny, int nx) : y(ny), x(nx) {}
+    Position() : y(0), x(0) {}
+    Position(int ny, int nx) : y(ny), x(nx) {}
 };
-typedef Coordinate Size;
+typedef Position Size;
 
 class Loader;
 
@@ -37,13 +37,13 @@ class City
     friend class Renderer;
 
 private:
-    Coordinate position;
+    Position position;
     std::string name;
     int hitpoint;
 
 public:
-    City(Coordinate c, std::string n, int hp);
-    Coordinate get_position(void) const { return position; };
+    City(Position p, std::string n, int hp);
+    Position get_position(void) const { return position; };
 };
 
 enum class MissileProgress
@@ -76,16 +76,16 @@ class Missile
     friend class Renderer;
 
 protected:
-    Coordinate position;
-    Coordinate target;
+    Position position;
+    Position target;
     MissileProgress progress;
     int damage;
     int speed;
 
 public:
-    Missile(Coordinate p, Coordinate t, int d, int v);
-    Coordinate get_position(void) const { return position; };
-    virtual Coordinate get_target(void) = 0;
+    Missile(Position p, Position t, int d, int v);
+    Position get_position(void) const { return position; };
+    virtual Position get_target(void) = 0;
     MissileDirection get_direction(void);
     MissileProgress get_progress(void) const { return progress; };
     void move(void);
@@ -104,8 +104,8 @@ private:
     City &city;
 
 public:
-    AttackMissile(Coordinate p, City &c, int d, int v);
-    virtual Coordinate get_target(void) override { return city.get_position(); };
+    AttackMissile(Position p, City &c, int d, int v);
+    virtual Position get_target(void) override { return city.get_position(); };
     virtual void move_step(void) override;
 };
 
@@ -118,8 +118,8 @@ private:
     MissilePtr missile;
 
 public:
-    CruiseMissile(Coordinate p, MissilePtr m, int d, int v);
-    virtual Coordinate get_target(void) override { return missile->get_position(); };
+    CruiseMissile(Position p, MissilePtr m, int d, int v);
+    virtual Position get_target(void) override { return missile->get_position(); };
     virtual void move_step(void) override;
 };
 
@@ -129,7 +129,7 @@ class Game
 
 private:
     Size size;
-    Coordinate cursor;
+    Position cursor;
     int turn;
     std::vector<City> cities;
     std::vector<std::string> background;
@@ -140,15 +140,15 @@ private:
 public:
     Game(Loader &ldr);
 
-    const Coordinate &get_cursor(void) const { return cursor; };
+    const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
     int get_turn(void) const { return turn; };
 
-    void move_cursor(Coordinate dcursor);
+    void move_cursor(Position dcursor);
     void pass_turn(void);
-    bool is_in_map(Coordinate c) const { return c.y >= 0 && c.y < size.h && c.x >= 0 && c.x < size.w; };
+    bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     City *select_city(void);
-    City *select_city(Coordinate c);
+    City *select_city(Position p);
 
     void hit_city(City *city, int damage);
     void fix_city(void);

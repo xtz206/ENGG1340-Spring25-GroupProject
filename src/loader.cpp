@@ -21,9 +21,9 @@ Loader::Loader(const std::string &filename)
     file.close();
 }
 
-Coordinate Loader::load_size(void) const
+Position Loader::load_size(void) const
 {
-    Coordinate size = {0, 0};
+    Position size = {0, 0};
     size.h = std::stoi(content[0].substr(content[0].find(":") + 1));
     size.w = std::stoi(content[1].substr(content[1].find(":") + 1));
     return size;
@@ -36,7 +36,7 @@ std::vector<City> Loader::load_cities(void) const
     for (size_t index = 3; index < 3 + count; index++)
     {
 
-        Coordinate position;
+        Position position;
         std::string name;
         int hitpoint;
 
