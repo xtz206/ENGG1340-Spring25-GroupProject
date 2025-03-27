@@ -58,10 +58,19 @@ void Renderer::draw_window(void)
     mvwprintw(node_window, 0, 2, "Node");
     mvwprintw(info_window, 0, 2, "Info");
     mvwprintw(operation_window, 0, 2, "Operation");
+
+    mvwprintw(operation_window, 1, 1, "w: Cursor Up");
+    mvwprintw(operation_window, 2, 1, "s: Cursor Down");
+    mvwprintw(operation_window, 3, 1, "a: Cursor Left");
+    mvwprintw(operation_window, 4, 1, "d: Cursor Right");
+    mvwprintw(operation_window, 5, 1, "c: Pass Turn");
+    mvwprintw(operation_window, 6, 1, "f: Fix City");
+    mvwprintw(operation_window, 7, 1, "q: Quit");
 }
 
 void Renderer::draw_game(void)
 {
+    // NODE WINDOW
     for (size_t line = 1; line < NODE_LINES - 1; line++)
     {
         mvwprintw(node_window, line, 1, "%s", std::string(NODE_COLS - 2, ' ').c_str());
@@ -78,9 +87,67 @@ void Renderer::draw_game(void)
         mvwprintw(node_window, 2, 1, "Hitpoint: ");
     }
 
+    // INFO WINDOW
+    for (size_t line = 1; line < INFO_LINES - 1; line++)
+    {
+        mvwprintw(info_window, line, 1, "%s", std::string(INFO_COLS - 2, ' ').c_str());
+    }
+
+    mvwprintw(info_window, 1, 1, "Turn: %d", game.get_turn());
+
+    // MAP WINDOW
     for (size_t line = 0; line < game.get_background().size(); line++)
     {
         mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
+    }
+
+    for (auto &missile : game.missiles)
+    {
+        if (!game.is_in_map(missile.get_position()))
+        {
+            continue;
+        }
+        if (missile.get_progress() == MissileProgress::EXPLODED)
+        {
+            continue;
+        }
+        std::string direction = "";
+        switch (missile.get_direction())
+        {
+        case MissileDirection::A:
+            direction = "O";
+            break;
+        case MissileDirection::N:
+            direction = "↑";
+            break;
+        case MissileDirection::NE:
+            direction = "↗";
+            break;
+        case MissileDirection::E:
+            direction = "→";
+            break;
+        case MissileDirection::SE:
+            direction = "↘";
+            break;
+        case MissileDirection::S:
+            direction = "↓";
+            break;
+        case MissileDirection::SW:
+            direction = "↙";
+            break;
+        case MissileDirection::W:
+            direction = "←";
+            break;
+        case MissileDirection::NW:
+            direction = "↖";
+            break;
+        case MissileDirection::U:
+            direction = "x";
+            break;
+        default:
+            break;
+        }
+        mvwprintw(map_window, missile.get_position().first + 1, missile.get_position().second + 1, "%s", direction.c_str());
     }
 
     mvwprintw(map_window, game.get_cursor().first + 1, game.get_cursor().second + 1, "X");

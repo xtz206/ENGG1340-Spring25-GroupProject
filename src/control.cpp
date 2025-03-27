@@ -15,16 +15,24 @@ void Controller::handle_key(short key)
     {
     case 'w':
         game.move_cursor(-1, 0);
-        break;
+        return;
     case 's':
         game.move_cursor(1, 0);
-        break;
+        return;
     case 'a':
         game.move_cursor(0, -1);
-        break;
+        return;
     case 'd':
         game.move_cursor(0, 1);
-        break;
+        return;
+
+    case 'c':
+        game.pass_turn();
+        return;
+
+    case 'f':
+        game.fix_city();
+        return;
 
     case 'q':
         endwin();
