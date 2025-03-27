@@ -41,14 +41,16 @@ private:
     Coordinate target;
     MissileProgress progress;
     int damage;
+    int speed;
 
 public:
-    Missile(Coordinate p, Coordinate t, int d);
+    Missile(Coordinate p, Coordinate t, int d, int v);
     Coordinate get_position(void) const { return position; };
     Coordinate get_target(void) const { return target; };
     MissileDirection get_direction(void);
     MissileProgress get_progress(void) const { return progress; };
     void move(void);
+    void move_step(void);
 };
 
 class City

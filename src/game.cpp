@@ -2,7 +2,8 @@
 #include "game.h"
 #include "loader.h"
 
-Missile::Missile(Coordinate p, Coordinate t, int d) : position(p), target(t), progress(MissileProgress::FLYING), damage(d)
+Missile::Missile(Coordinate p, Coordinate t, int d, int v)
+    : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v)
 {
 }
 
@@ -57,8 +58,15 @@ MissileDirection Missile::get_direction(void)
     }
     return MissileDirection::U;
 }
-
 void Missile::move(void)
+{
+    for (int step = 0; step < speed; step++)
+    {
+        move_step();
+    }
+}
+
+void Missile::move_step(void)
 {
     switch (get_direction())
     {
@@ -132,7 +140,7 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    missiles = {Missile({-10, -10}, cities[0].position, 200)};
+    missiles = {Missile({-10, -10}, cities[0].position, 200, 1)};
 }
 
 void Game::move_cursor(int dline, int dcol)
