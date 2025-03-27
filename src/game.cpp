@@ -133,6 +133,37 @@ void Missile::move_step(void)
     }
 }
 
+void Missile::collide(void)
+{
+    progress = MissileProgress::EXPLODED;
+}
+
+AttackMissile::AttackMissile(Coordinate p, City &c, int d, int v)
+    : Missile(p, c.get_position(), d, v), city(c)
+{
+}
+
+void AttackMissile::move_step(void)
+{
+    Missile::move_step();
+}
+
+CruiseMissile::CruiseMissile(Coordinate p, std::shared_ptr<Missile> m, int d, int v)
+    : Missile(p, m->get_position(), d, v), missile(m)
+{
+}
+
+void CruiseMissile::move_step(void)
+{
+    target = missile->get_position();
+    Missile::move_step();
+    if (get_direction() == MissileDirection::A)
+    {
+        missile->collide();
+        this->collide();
+    }
+}
+
 City::City(Coordinate p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
 }
@@ -142,11 +173,13 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    missiles = {std::make_shared<Missile>(Missile({-10, -10}, cities[0].position, 200, 1))};
+    enemy_missiles = {std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1))};
 }
 
 std::vector<std::shared_ptr<Missile>> Game::get_missiles(void) const
 {
+    std::vector<std::shared_ptr<Missile>> missiles = friendly_missiles;
+    missiles.insert(missiles.end(), enemy_missiles.begin(), enemy_missiles.end());
     return missiles;
 }
 
@@ -226,4 +259,14 @@ void Game::fix_city(void)
         return;
     }
     city->hitpoint += 100;
+}
+
+void Game::launch_cruise(void)
+{
+    City *city = select_city();
+    if (city == nullptr)
+    {
+        return;
+    }
+    friendly_missiles.push_back(std::make_shared<CruiseMissile>(CruiseMissile(city->position, enemy_missiles[0], 100, 2)));
 }

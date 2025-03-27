@@ -34,6 +34,10 @@ void Controller::handle_key(short key)
         game.fix_city();
         return;
 
+    case 'l':
+        game.launch_cruise();
+        return;
+
     case 'q':
         endwin();
         exit(0);

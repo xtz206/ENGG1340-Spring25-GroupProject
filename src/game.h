@@ -8,6 +8,21 @@
 typedef std::pair<int, int> Coordinate; // NOTE: Coordinate is (y, x) / (line, col) in this game
 class Loader;
 
+class City
+{
+    friend class Game;
+    friend class Renderer;
+
+private:
+    Coordinate position;
+    std::string name;
+    int hitpoint;
+
+public:
+    City(Coordinate c, std::string n, int hp);
+    Coordinate get_position(void) const { return position; };
+};
+
 enum class MissileProgress
 {
     EXPLODED,   // Exploded
@@ -37,7 +52,7 @@ class Missile
     friend class Game;
     friend class Renderer;
 
-private:
+protected:
     Coordinate position;
     Coordinate target;
     MissileProgress progress;
@@ -47,25 +62,40 @@ private:
 public:
     Missile(Coordinate p, Coordinate t, int d, int v);
     Coordinate get_position(void) const { return position; };
-    Coordinate get_target(void) const { return target; };
+    virtual Coordinate get_target(void) = 0;
     MissileDirection get_direction(void);
     MissileProgress get_progress(void) const { return progress; };
     void move(void);
-    void move_step(void);
+    virtual void move_step(void);
+    void collide(void);
 };
 
-class City
+class AttackMissile : public Missile
 {
     friend class Game;
     friend class Renderer;
 
 private:
-    Coordinate position;
-    std::string name;
-    int hitpoint;
+    City &city;
 
 public:
-    City(Coordinate c, std::string n, int hp);
+    AttackMissile(Coordinate p, City &c, int d, int v);
+    virtual Coordinate get_target(void) override { return city.get_position(); };
+    virtual void move_step(void) override;
+};
+
+class CruiseMissile : public Missile
+{
+    friend class Game;
+    friend class Renderer;
+
+private:
+    std::shared_ptr<Missile> missile;
+
+public:
+    CruiseMissile(Coordinate p, std::shared_ptr<Missile> m, int d, int v);
+    virtual Coordinate get_target(void) override { return missile->get_position(); };
+    virtual void move_step(void) override;
 };
 
 class Game
@@ -78,7 +108,8 @@ private:
     int turn;
     std::vector<City> cities;
     std::vector<std::string> background;
-    std::vector<std::shared_ptr<Missile>> missiles;
+    std::vector<std::shared_ptr<Missile>> friendly_missiles;
+    std::vector<std::shared_ptr<Missile>> enemy_missiles;
 
 public:
     Game(Loader &ldr);
@@ -96,6 +127,7 @@ public:
 
     void hit_city(City *city, int damage);
     void fix_city(void);
+    void launch_cruise(void);
 };
 
 #endif
