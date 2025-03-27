@@ -4,6 +4,8 @@
 
 Controller::Controller()
 {
+    nodelay(stdscr, true);
+    keypad(stdscr, true);
 }
 
 void Controller::handle_key(short key)

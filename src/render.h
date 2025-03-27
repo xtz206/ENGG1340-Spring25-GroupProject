@@ -24,6 +24,7 @@ public:
     ~Renderer(void) {};
 
     void render(void);
+    void draw_window(void);
     void draw_map(void);
     void draw_debug(const std::string &str);
 };
