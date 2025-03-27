@@ -47,6 +47,7 @@ void Renderer::render(void)
     wrefresh(node_window);
     wrefresh(info_window);
     wrefresh(operation_window);
+    refresh();
 }
 
 void Renderer::draw_map(void)
@@ -61,34 +62,7 @@ void Renderer::draw_map(void)
     file.close();
 }
 
-void Renderer::draw_operation(std::vector<Button> &buttons)
-{
-    for (auto button : buttons)
-    {
-        draw_button(button);
-    }
-}
-
-void Renderer::draw_radar(int count)
-{
-    int prev = 1 + (count - 1) % (RADAR_LINES - 2);
-    int curr = 1 + (count) % (RADAR_LINES - 2);
-
-    for (int col = 1; col < RADAR_COLS - 1; col++)
-    {
-        mvwaddch(radar_window, prev, col, ' ');
-        wattron(radar_window, A_DIM);
-        mvwaddch(radar_window, curr, col, '*');
-        wattroff(radar_window, A_DIM);
-    }
-}
-
 void Renderer::draw_debug(const std::string &str)
 {
     mvwprintw(operation_window, 8, 1, "%s", str.c_str());
-}
-
-void Renderer::draw_button(const Button &button)
-{
-    mvwprintw(button.window, button.line, button.col, "%s", button.label.c_str());
 }
