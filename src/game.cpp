@@ -1,29 +1,16 @@
 #include <fstream>
 #include "game.h"
+#include "loader.h"
 
 City::City(Coordinate p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
 }
 
-Game::Game(void) : size({18, 98}), cursor({0, 0})
+Game::Game(Loader &ldr)
 {
-    size = {18, 98};
-    cursor = {0, 0};
-    cities = {
-        City({9, 61}, "Shanghai", 100),
-        City({8, 52}, "Suzhou", 100),
-        City({15, 47}, "Hangzhou", 100),
-        City({3, 32}, "Nanjing", 100),
-        City({5, 14}, "Hefei", 100),
-    };
-    // Read Map from background.txt
-    std::ifstream file("background.txt");
-    std::string line;
-    while (std::getline(file, line))
-    {
-        map.push_back(line);
-    }
-    file.close();
+    size = {ldr.load_size().first, ldr.load_size().second};
+    cities = ldr.load_cities();
+    background = ldr.load_background();
 }
 
 void Game::move_cursor(int dline, int dcol)

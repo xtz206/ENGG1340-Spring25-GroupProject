@@ -5,6 +5,7 @@
 #include <string>
 
 typedef std::pair<int, int> Coordinate; // NOTE: Coordinate is (y, x) / (line, col) in this game
+class Loader;
 
 class City
 {
@@ -26,13 +27,13 @@ private:
     Coordinate size;
     Coordinate cursor;
     std::vector<City> cities;
-    std::vector<std::string> map;
+    std::vector<std::string> background;
 
 public:
-    Game(void);
+    Game(Loader &ldr);
 
     const Coordinate &get_cursor(void) const { return cursor; };
-    const std::vector<std::string> &get_map(void) const { return map; };
+    const std::vector<std::string> &get_background(void) const { return background; };
 
     void move_cursor(int dline, int dcol);
     bool is_in_map(Coordinate c) const { return c.first >= 0 && c.first < size.first && c.second >= 0 && c.second < size.second; };

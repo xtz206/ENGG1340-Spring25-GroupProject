@@ -6,12 +6,14 @@
 #include "game.h"
 #include "render.h"
 #include "control.h"
+#include "loader.h"
 
 int main(void)
 {
     try
     {
-        Game game;
+        Loader loader = Loader("map.txt");
+        Game game = Game(loader);
         Renderer renderer = Renderer(game);
         Controller controller = Controller(game);
 

@@ -78,9 +78,9 @@ void Renderer::draw_game(void)
         mvwprintw(node_window, 2, 1, "Hitpoint: ");
     }
 
-    for (size_t line = 0; line < game.get_map().size(); line++)
+    for (size_t line = 0; line < game.get_background().size(); line++)
     {
-        mvwprintw(map_window, line + 1, 1, "%s", game.get_map().at(line).c_str());
+        mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
     }
 
     mvwprintw(map_window, game.get_cursor().first + 1, game.get_cursor().second + 1, "X");
