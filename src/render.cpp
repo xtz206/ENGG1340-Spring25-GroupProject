@@ -147,10 +147,10 @@ void Renderer::draw_game(void)
         default:
             break;
         }
-        mvwprintw(map_window, missile->get_position().first + 1, missile->get_position().second + 1, "%s", direction.c_str());
+        mvwprintw(map_window, missile->get_position().y + 1, missile->get_position().x + 1, "%s", direction.c_str());
     }
 
-    mvwprintw(map_window, game.get_cursor().first + 1, game.get_cursor().second + 1, "X");
+    mvwprintw(map_window, game.get_cursor().y + 1, game.get_cursor().x + 1, "X");
 }
 
 void Renderer::draw_debug(const std::string &str)

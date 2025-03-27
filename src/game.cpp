@@ -10,49 +10,49 @@ Missile::Missile(Coordinate p, Coordinate t, int d, int v)
 
 MissileDirection Missile::get_direction(void)
 {
-    if (target.first == position.first)
+    if (target.y == position.y)
     {
-        if (position.second < target.second)
+        if (position.x < target.x)
         {
             return MissileDirection::E;
         }
-        if (position.second > target.second)
+        if (position.x > target.x)
         {
             return MissileDirection::W;
         }
         return MissileDirection::A;
     }
 
-    if (target.second == position.second)
+    if (target.x == position.x)
     {
-        if (position.first < target.first)
+        if (position.y < target.y)
         {
             return MissileDirection::S;
         }
-        if (position.first > target.first)
+        if (position.y > target.y)
         {
             return MissileDirection::N;
         }
     }
 
-    if (position.first < target.first)
+    if (position.y < target.y)
     {
-        if (position.second < target.second)
+        if (position.x < target.x)
         {
             return MissileDirection::SE;
         }
-        if (position.second > target.second)
+        if (position.x > target.x)
         {
             return MissileDirection::SW;
         }
     }
-    if (position.first > target.first)
+    if (position.y > target.y)
     {
-        if (position.second < target.second)
+        if (position.x < target.x)
         {
             return MissileDirection::NE;
         }
-        if (position.second > target.second)
+        if (position.x > target.x)
         {
             return MissileDirection::NW;
         }
@@ -73,32 +73,32 @@ void Missile::move_step(void)
     switch (get_direction())
     {
     case MissileDirection::N:
-        position.first--;
+        position.y--;
         return;
     case MissileDirection::NE:
-        position.first--;
-        position.second++;
+        position.y--;
+        position.x++;
         return;
     case MissileDirection::E:
-        position.second++;
+        position.x++;
         return;
     case MissileDirection::SE:
-        position.first++;
-        position.second++;
+        position.y++;
+        position.x++;
         return;
     case MissileDirection::S:
-        position.first++;
+        position.y++;
         return;
     case MissileDirection::SW:
-        position.first++;
-        position.second--;
+        position.y++;
+        position.x--;
         return;
     case MissileDirection::W:
-        position.second--;
+        position.x--;
         return;
     case MissileDirection::NW:
-        position.first--;
-        position.second--;
+        position.y--;
+        position.x--;
         return;
 
     case MissileDirection::A:
@@ -178,18 +178,18 @@ Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), back
     enemy_missiles.push_back(enemy_missile);
 }
 
-void Game::move_cursor(int dline, int dcol)
+void Game::move_cursor(Coordinate dcursor)
 {
-    if (cursor.first + dline < 0 || cursor.first + dline >= size.first)
+    if (cursor.y + dcursor.y < 0 || cursor.y + dcursor.y >= size.h)
     {
         return;
     }
-    if (cursor.second + dcol < 0 || cursor.second + dcol >= size.second)
+    if (cursor.x + dcursor.x < 0 || cursor.x + dcursor.x >= size.w)
     {
         return;
     }
-    cursor.first += dline;
-    cursor.second += dcol;
+    cursor.y += dcursor.y;
+    cursor.x += dcursor.x;
 }
 
 void Game::pass_turn(void)
@@ -219,7 +219,7 @@ City *Game::select_city(void)
 {
     for (auto &city : cities)
     {
-        if (cursor.first == city.position.first && cursor.second == city.position.second)
+        if (cursor.y == city.position.y && cursor.x == city.position.x)
         {
             return &city;
         }
@@ -231,7 +231,7 @@ City *Game::select_city(Coordinate c)
 {
     for (auto &city : cities)
     {
-        if (c.first == city.position.first && c.second == city.position.second)
+        if (c.y == city.position.y && c.x == city.position.x)
         {
             return &city;
         }

@@ -5,7 +5,30 @@
 #include <string>
 #include <memory>
 
-typedef std::pair<int, int> Coordinate; // NOTE: Coordinate is (y, x) / (line, col) in this game
+class Coordinate
+{
+    // NOTE: This Coordinate is (y, x) instead of (x, y)
+    //       This is to match the (line, col) coordinate system
+public:
+    union
+    {
+        int y;
+        int l; // line
+        int h; // height
+    };
+    union
+    {
+        int x;
+        int c; // col
+        int w; // width
+    };
+
+public:
+    Coordinate() : y(0), x(0) {}
+    Coordinate(int ny, int nx) : y(ny), x(nx) {}
+};
+typedef Coordinate Size;
+
 class Loader;
 
 class City
@@ -105,7 +128,7 @@ class Game
     friend class Renderer;
 
 private:
-    Coordinate size;
+    Size size;
     Coordinate cursor;
     int turn;
     std::vector<City> cities;
@@ -121,9 +144,9 @@ public:
     const std::vector<std::string> &get_background(void) const { return background; };
     int get_turn(void) const { return turn; };
 
-    void move_cursor(int dline, int dcol);
+    void move_cursor(Coordinate dcursor);
     void pass_turn(void);
-    bool is_in_map(Coordinate c) const { return c.first >= 0 && c.first < size.first && c.second >= 0 && c.second < size.second; };
+    bool is_in_map(Coordinate c) const { return c.y >= 0 && c.y < size.h && c.x >= 0 && c.x < size.w; };
     City *select_city(void);
     City *select_city(Coordinate c);
 

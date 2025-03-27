@@ -24,8 +24,8 @@ Loader::Loader(const std::string &filename)
 Coordinate Loader::load_size(void) const
 {
     Coordinate size = {0, 0};
-    size.first = std::stoi(content[0].substr(content[0].find(":") + 1));
-    size.second = std::stoi(content[1].substr(content[1].find(":") + 1));
+    size.h = std::stoi(content[0].substr(content[0].find(":") + 1));
+    size.w = std::stoi(content[1].substr(content[1].find(":") + 1));
     return size;
 }
 
@@ -48,11 +48,11 @@ std::vector<City> Loader::load_cities(void) const
         line = line.substr(pos + 2);
 
         pos = line.find(", ");
-        position.first = std::stoi(line.substr(0, pos));
+        position.y = std::stoi(line.substr(0, pos));
         line = line.substr(pos + 2);
 
         pos = line.find(", ");
-        position.second = std::stoi(line.substr(0, pos));
+        position.x = std::stoi(line.substr(0, pos));
         line = line.substr(pos + 2);
 
         pos = line.find(", ");
@@ -67,7 +67,7 @@ std::vector<std::string> Loader::load_background(void) const
 {
     std::vector<std::string> background;
     int offset = 4 + std::stoi(content[2].substr(content[2].find(":") + 1));
-    for (size_t index = offset; index < offset + load_size().first; index++)
+    for (size_t index = offset; index < offset + load_size().h; index++)
     {
         background.push_back(content[index]);
     }
