@@ -35,11 +35,14 @@ class City
 {
     friend class Game;
     friend class Renderer;
+    friend class Economy;
 
 private:
     Position position;
     std::string name;
     int hitpoint;
+    int deposit;
+    int productivity;
 
 public:
     City(Position p, std::string n, int hp);

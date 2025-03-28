@@ -80,11 +80,15 @@ void Renderer::draw_game(void)
     {
         mvwprintw(node_window, 1, 1, "City: %s", game.select_city()->name.c_str());
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", game.select_city()->hitpoint);
+        mvwprintw(node_window, 3, 1, "Deposit: %d", game.select_city()->deposit);
+        mvwprintw(node_window, 4, 1, "Productivity: %d", game.select_city()->productivity);
     }
     else
     {
         mvwprintw(node_window, 1, 1, "City: Unselected");
         mvwprintw(node_window, 2, 1, "Hitpoint: ");
+        mvwprintw(node_window, 3, 1, "Deposit: ");
+        mvwprintw(node_window, 4, 1, "Productivity: ");
     }
 
     // INFO WINDOW

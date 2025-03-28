@@ -166,6 +166,8 @@ void CruiseMissile::move_step(void)
 
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
+    deposit=200;
+    productivity=100;
 }
 
 Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background())
@@ -275,4 +277,5 @@ void Game::launch_cruise(void)
     MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, enemy_missiles[0], 100, 2));
     missiles.push_back(friendly_missile);
     friendly_missiles.push_back(friendly_missile);
+    city->deposit-=200;
 }
