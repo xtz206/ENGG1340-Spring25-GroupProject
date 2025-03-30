@@ -32,17 +32,33 @@ $(BIN_DIR)/loader.o: $(SRC_DIR)/loader.cpp $(SRC_DIR)/loader.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-dist: $(BIN_DIR)/$(PROG) assets/*
+assets: $(ASSETS_DIR)/*
+	@mkdir -p $(DIST_DIR)
+	cp $(ASSETS_DIR)/* $(BIN_DIR)/
+
+release: CXXFLAGS += -O2
+release: $(BIN_DIR)/$(PROG) assets
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
 	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	@echo "release build complete"
 
-run: dist
-	cd $(DIST_DIR) && ./$(PROG)
+debug: CXXFLAGS += -g
+debug: $(BIN_DIR)/$(PROG) assets
+	@mkdir -p $(DIST_DIR)
+	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
+	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	@echo "debug build complete"
+
+all: clean $(BIN_DIR)/$(PROG) assets
+	@mkdir -p $(DIST_DIR)
+	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
+	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	@echo "all build complete"
 
 clean:
 	rm -f $(BIN_DIR)/*.o
 	rm -f $(PROG)
 	rm -f $(DIST_DIR)/*
 
-.PHONY: dist, run, clean
+.PHONY: assets, release, debug, all, clean
