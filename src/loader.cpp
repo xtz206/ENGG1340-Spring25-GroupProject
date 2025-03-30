@@ -1,75 +1,83 @@
 #include <fstream>
+#include <sstream>
 
 #include "loader.h"
 
-Loader::Loader(const std::string &filename)
-{
-    std::ifstream file;
-    std::string line;
-
-    file.open(filename);
-    if (!file.is_open())
-    {
-        throw std::runtime_error("Cannot open " + filename);
-    }
-
-    while (std::getline(file, line))
-    {
-        content.push_back(line);
-    }
-
-    file.close();
-}
-
 Position Loader::load_size(void) const
 {
-    Position size = {0, 0};
-    size.h = std::stoi(content[0].substr(content[0].find(":") + 1));
-    size.w = std::stoi(content[1].substr(content[1].find(":") + 1));
-    return size;
+    std::ifstream file("general.txt");
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Cannot open general.txt");
+    }
+    std::string line;
+    try
+    {
+        std::getline(file, line);
+        int height = std::stoi(line.substr(line.find(':') + 1));
+        std::getline(file, line);
+        int width = std::stoi(line.substr(line.find(':') + 1));
+        return Position(height, width);
+    }
+
+    catch (const std::exception &e)
+    {
+        file.close();
+        throw std::runtime_error("Invalid format in general.txt");
+    }
 }
 
 std::vector<City> Loader::load_cities(void) const
 {
-    std::vector<City> cities;
-    int count = std::stoi(content[2].substr(content[2].find(":") + 1));
-    for (size_t index = 3; index < 3 + count; index++)
+    std::ifstream file("cities.txt");
+    if (!file.is_open())
     {
+        throw std::runtime_error("Cannot open cities.txt");
+    }
 
-        Position position;
-        std::string name;
-        int hitpoint;
+    std::vector<City> cities;
+    std::string line;
+    std::vector<std::string> words;
+    std::string word;
+    std::istringstream iss;
+    std::getline(file, line);
+    while (getline(file, line))
+    {
+        words.clear();
+        iss.clear();
+        iss.str(line);
 
-        std::string line = content[index];
-        size_t pos;
+        while (getline(iss, word, ','))
+        {
+            words.push_back(word);
+        }
 
-        pos = line.find(", ");
-        name = line.substr(0, pos);
-        line = line.substr(pos + 2);
-
-        pos = line.find(", ");
-        position.y = std::stoi(line.substr(0, pos));
-        line = line.substr(pos + 2);
-
-        pos = line.find(", ");
-        position.x = std::stoi(line.substr(0, pos));
-        line = line.substr(pos + 2);
-
-        pos = line.find(", ");
-        hitpoint = std::stoi(line.substr(0, pos));
-
+        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
+        std::string name = words[0];
+        int hitpoint = std::stoi(words[3]);
         cities.push_back(City(position, name, hitpoint));
     }
+    file.close();
     return cities;
 }
 
 std::vector<std::string> Loader::load_background(void) const
 {
-    std::vector<std::string> background;
-    int offset = 4 + std::stoi(content[2].substr(content[2].find(":") + 1));
-    for (size_t index = offset; index < offset + load_size().h; index++)
+    Size size = load_size();
+    std::ifstream file("background.txt");
+    if (!file.is_open())
     {
-        background.push_back(content[index]);
+        throw std::runtime_error("Cannot open background.txt");
     }
+    std::string line;
+    std::vector<std::string> background;
+    for (size_t y; y < size.h; y++)
+    {
+        {
+            std::getline(file, line);
+            background.push_back(line);
+        }
+    }
+    file.close();
     return background;
 }
