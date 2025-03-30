@@ -168,21 +168,22 @@ void CruiseMissile::move_step(void)
 
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
-    deposit=200;
-    productivity=50+hitpoint/10;
+    deposit = 200;
+    productivity = 50 + hitpoint / 10;
 }
 
-bool City::is_in_range(Missile &missle) const{
-    if (missle.get_progress() != MissileProgress::FLYING)
+bool City::is_in_range(Missile &missile) const
+{
+    if (missile.get_progress() != MissileProgress::FLYING)
         return false;
-    return (abs(missle.get_position().y - position.y)<=DEFEND_RADIUS && abs(missle.get_position().x - position.x)<=DEFEND_RADIUS);
+    return (abs(missile.get_position().y - position.y) <= DEFEND_RADIUS && abs(missile.get_position().x - position.x) <= DEFEND_RADIUS);
 }
 
 Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background())
 {
     cursor = cities[0].position;
     turn = 0;
-    //DEBUG: just for testing, remove later
+    // DEBUG: just for testing, remove later
     MissilePtr enemy_missile = std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1));
     missiles.push_back(enemy_missile);
     enemy_missiles.push_back(enemy_missile);
@@ -211,7 +212,6 @@ int Game::get_total_productivity(void) const
     }
     return total;
 }
-
 
 void Game::move_cursor(Position dcursor)
 {
@@ -320,14 +320,14 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    for (auto missle : enemy_missiles)
+    for (auto missile : enemy_missiles)
     {
-        if (city->is_in_range(*missle))
+        if (city->is_in_range(*missile))
         {
-            MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, missle, 100, 2));
+            MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, missile, 100, 2));
             missiles.push_back(friendly_missile);
             friendly_missiles.push_back(friendly_missile);
-            city->deposit-=200;
+            city->deposit -= 200;
             return;
         }
     }
