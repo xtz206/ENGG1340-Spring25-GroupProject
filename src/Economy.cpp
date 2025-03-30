@@ -20,7 +20,7 @@ int Economy::calTotalProductivity() {
     totalProductivity = 0;
     for (auto &city : cities) {
         if (city.hitpoint > 0) {
-           totalDeposit += city.productivity;
+           totalProductivity += city.productivity;
         }
     }
     return totalProductivity;
