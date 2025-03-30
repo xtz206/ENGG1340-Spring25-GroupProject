@@ -6,10 +6,12 @@
 #include <vector>
 
 class Game;
+class Economy;
 
 class Renderer
 {
 private:
+    Economy &economy;
     Game &game;
     WINDOW *map_window;
     WINDOW *radar_window;
@@ -18,7 +20,7 @@ private:
     WINDOW *operation_window;
 
 public:
-    Renderer(Game &game);
+    Renderer(Game &game, Economy &economy);
     ~Renderer(void) {};
 
     void render(void);

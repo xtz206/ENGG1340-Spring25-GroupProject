@@ -1,25 +1,34 @@
 #include "Economy.h"
-#include "game.h"
 #include "loader.h"
+#define BASE_PRODUCTIVITY 50
 
-Economy::Economy(Loader &ldr): cities(ldr.load_cities())
-{
-    income = cal_income();
-    total = income;
+Economy::Economy(Loader &ldr): cities(ldr.load_cities()) {
+    totalProductivity = calTotalProductivity();
+    totalDeposit = 0;
+    totalDeposit = calTotalDeposit();
+}
+void Economy::setCityProductivity (City &city) {
+    int hp = city.hitpoint;
+    if (hp > 0) {
+        city.productivity = BASE_PRODUCTIVITY + (hp / 10);
+    } else {
+        city.productivity = 0;
+    }
 }
 
-int Economy::get_total(void) const
-{
-    return total;
+int Economy::calTotalProductivity() {
+    totalProductivity = 0;
+    for (auto &city : cities) {
+        if (city.hitpoint > 0) {
+           totalDeposit += city.productivity;
+        }
+    }
+    return totalProductivity;
 }
 
-int Economy::get_status(City* city) const
-{
-    return 1;
-}
-
-int Economy::cal_total(void)
-{
-    total = cal_income();
-    return total;
+int Economy::calTotalDeposit() {
+    for (auto &city : cities) {
+        totalDeposit += city.deposit;
+    }
+    return totalDeposit;
 }

@@ -2,8 +2,10 @@
 #include <memory>
 #include "game.h"
 #include "loader.h"
+#include "Economy.h"
 
 #define DEFEND_RADIUS 5
+
 Missile::Missile(Position p, Position t, int d, int v)
     : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v)
 {
@@ -168,7 +170,7 @@ void CruiseMissile::move_step(void)
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
     deposit=200;
-    productivity=100;
+    productivity=50+hitpoint/10;
 }
 
 bool City::is_in_range(Missile &missle) const{
@@ -177,7 +179,7 @@ bool City::is_in_range(Missile &missle) const{
     return (abs(missle.get_position().y - position.y)<=DEFEND_RADIUS && abs(missle.get_position().x - position.x)<=DEFEND_RADIUS);
 }
 
-Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background())
+Game::Game(Loader &ldr, Economy* eco) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background()), economy(eco)
 {
     cursor = cities[0].position;
     turn = 0;
@@ -220,6 +222,14 @@ void Game::pass_turn(void)
             hit_city(select_city(missile->get_target()), missile->damage);
         }
     }
+
+    for (auto &city : cities)
+    {
+        economy->setCityProductivity(city);
+    }
+
+    economy->totalProductivity=economy->calTotalProductivity();
+    economy->totalDeposit=economy->calTotalDeposit();
 
     turn++;
 }
@@ -293,6 +303,7 @@ void Game::launch_cruise(void)
             missiles.push_back(friendly_missile);
             friendly_missiles.push_back(friendly_missile);
             city->deposit-=200;
+            economy->totalDeposit-=200;
             return;
         }
     }

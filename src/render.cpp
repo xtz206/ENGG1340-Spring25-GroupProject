@@ -5,6 +5,7 @@
 #include "game.h"
 #include "render.h"
 #include "control.h"
+#include "Economy.h"
 
 #define TOTAL_LINES 30
 #define TOTAL_COLS 140
@@ -19,7 +20,7 @@
 #define OPERATION_LINES 10
 #define OPERATION_COLS 100
 
-Renderer::Renderer(Game &g) : game(g)
+Renderer::Renderer(Game &g, Economy &e) : game(g),economy(e)
 {
     setlocale(LC_CTYPE, "");
     initscr();
@@ -98,6 +99,8 @@ void Renderer::draw_game(void)
     }
 
     mvwprintw(info_window, 1, 1, "Turn: %d", game.get_turn());
+    mvwprintw(info_window, 2, 1, "Total Deposit: %d", economy.totalDeposit);
+    mvwprintw(info_window, 3, 1, "Total Productivity: %d", economy.totalProductivity);
 
     // MAP WINDOW
     for (size_t line = 0; line < game.get_background().size(); line++)

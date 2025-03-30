@@ -7,14 +7,16 @@
 #include "render.h"
 #include "control.h"
 #include "loader.h"
+#include "Economy.h"
 
 int main(void)
 {
     try
     {
         Loader loader = Loader("map.txt");
-        Game game = Game(loader);
-        Renderer renderer = Renderer(game);
+        Economy economy = Economy(loader);
+        Game game = Game(loader, &economy);
+        Renderer renderer = Renderer(game, economy);
         Controller controller = Controller(game);
 
         renderer.draw_window();
