@@ -1,7 +1,6 @@
 #include <fstream>
 #include <memory>
 #include "game.h"
-#include "loader.h"
 
 #define DEFEND_RADIUS 5
 
@@ -172,7 +171,7 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
-Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background())
+Game::Game(Size s, std::vector<City> c, std::vector<std::string> bg) : size(s), cities(c), background(bg)
 {
     cursor = cities[0].position;
     turn = 0;

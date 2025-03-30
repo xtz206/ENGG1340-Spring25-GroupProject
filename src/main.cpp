@@ -13,7 +13,7 @@ int main(void)
     try
     {
         Loader loader = Loader("map.txt");
-        Game game = Game(loader);
+        Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         Renderer renderer = Renderer(game);
         Controller controller = Controller(game);
 

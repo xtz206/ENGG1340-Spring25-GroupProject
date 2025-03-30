@@ -29,8 +29,6 @@ public:
 };
 typedef Position Size;
 
-class Loader;
-
 class City
 {
     friend class Game;
@@ -140,7 +138,7 @@ private:
     std::vector<MissilePtr> enemy_missiles;
 
 public:
-    Game(Loader &ldr);
+    Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
