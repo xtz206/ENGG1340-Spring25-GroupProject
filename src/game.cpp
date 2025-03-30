@@ -3,6 +3,7 @@
 #include "game.h"
 #include "loader.h"
 
+#define DEFEND_RADIUS 5
 Missile::Missile(Position p, Position t, int d, int v)
     : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v)
 {
@@ -170,11 +171,17 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity=100;
 }
 
+bool City::is_in_range(Missile &missle) const{
+    if (missle.get_progress() != MissileProgress::FLYING)
+        return false;
+    return (abs(missle.get_position().y - position.y)<=DEFEND_RADIUS && abs(missle.get_position().x - position.x)<=DEFEND_RADIUS);
+}
+
 Game::Game(Loader &ldr) : size(ldr.load_size()), cities(ldr.load_cities()), background(ldr.load_background())
 {
     cursor = cities[0].position;
     turn = 0;
-    // DEBUG: just for testing, remove later
+    //DEBUG: just for testing, remove later
     MissilePtr enemy_missile = std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1));
     missiles.push_back(enemy_missile);
     enemy_missiles.push_back(enemy_missile);
@@ -274,8 +281,20 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, enemy_missiles[0], 100, 2));
-    missiles.push_back(friendly_missile);
-    friendly_missiles.push_back(friendly_missile);
-    city->deposit-=200;
+    if (city->deposit < 200)
+    {
+        return;
+    }
+    for (auto missle : enemy_missiles)
+    {
+        if (city->is_in_range(*missle))
+        {
+            MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, missle, 100, 2));
+            missiles.push_back(friendly_missile);
+            friendly_missiles.push_back(friendly_missile);
+            city->deposit-=200;
+            return;
+        }
+    }
+    return;
 }

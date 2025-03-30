@@ -30,6 +30,7 @@ public:
 typedef Position Size;
 
 class Loader;
+class Missile;
 
 class City
 {
@@ -47,6 +48,7 @@ private:
 public:
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
+    bool is_in_range(Missile &missile) const;
 };
 
 enum class MissileProgress
