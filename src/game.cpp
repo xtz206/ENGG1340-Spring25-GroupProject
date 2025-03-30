@@ -225,7 +225,8 @@ void Game::pass_turn(void)
 
     for (auto &city : cities)
     {
-        economy->setCityProductivity(city);
+       economy->setCityProductivity(city);
+       city.deposit += city.productivity;
     }
 
     economy->totalProductivity=economy->calTotalProductivity();

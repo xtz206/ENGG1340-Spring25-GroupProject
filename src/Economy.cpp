@@ -27,6 +27,7 @@ int Economy::calTotalProductivity() {
 }
 
 int Economy::calTotalDeposit() {
+    totalDeposit = 0;
     for (auto &city : cities) {
         totalDeposit += city.deposit;
     }
