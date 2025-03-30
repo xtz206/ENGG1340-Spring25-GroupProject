@@ -71,12 +71,10 @@ std::vector<std::string> Loader::load_background(void) const
     }
     std::string line;
     std::vector<std::string> background;
-    for (size_t y; y < size.h; y++)
+    for (size_t y = 0; y < size.h; y++)
     {
-        {
-            std::getline(file, line);
-            background.push_back(line);
-        }
+        std::getline(file, line);
+        background.push_back(line);
     }
     file.close();
     return background;
