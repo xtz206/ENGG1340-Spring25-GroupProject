@@ -31,13 +31,11 @@ typedef Position Size;
 
 class Loader;
 class Missile;
-class Economy;
 
 class City
 {
     friend class Game;
     friend class Renderer;
-    friend class Economy;
 
 private:
     Position position;
@@ -132,7 +130,7 @@ public:
 class Game
 {
     friend class Renderer;
-    friend class Economy;
+
 private:
     Size size;
     Position cursor;
@@ -143,14 +141,15 @@ private:
     std::vector<MissilePtr> friendly_missiles;
     std::vector<MissilePtr> enemy_missiles;
 
-    Economy *economy;
-
 public:
-    Game(Loader &ldr, Economy *eco);
+    Game(Loader &ldr);
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
     int get_turn(void) const { return turn; };
+
+    int get_total_deposit(void) const;
+    int get_total_productivity(void) const;
 
     void move_cursor(Position dcursor);
     void pass_turn(void);
