@@ -37,14 +37,14 @@ assets: $(ASSETS_DIR)/*
 	cp $(ASSETS_DIR)/* $(BIN_DIR)/
 
 release: CXXFLAGS += -O2
-release: $(BIN_DIR)/$(PROG) assets
+release: clean $(BIN_DIR)/$(PROG) assets
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
 	cp $(ASSETS_DIR)/* $(DIST_DIR)/
 	@echo "release build complete"
 
 debug: CXXFLAGS += -g
-debug: $(BIN_DIR)/$(PROG) assets
+debug: clean $(BIN_DIR)/$(PROG) assets
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
 	cp $(ASSETS_DIR)/* $(DIST_DIR)/
