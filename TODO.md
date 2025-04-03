@@ -17,7 +17,7 @@
 - [ ] More fierce attack (i.e. Increment Missile Num and Speed over time)
 - [ ] CounterAttack (i.e. Own HP, can be deduced by player through some method, effect on its atk performance)
 ### Economy
-- [ ] Fine-tune parametres (i.e. control income & cost for ops)
+- [ ] Fine-tune parameters (i.e. control income & cost for ops)
 - [ ] More Usages (e.g. attack enemy / research)
 ### Research
 - [ ] **Try** add research tree
@@ -39,4 +39,4 @@
 ## Statistics
 - [ ] Counting Turns; Missile launched; Missile defended;
 - [ ] Generate and store score
-- [ ] Datas make game more realistic (e.g. casualty)
+- [ ] Data make game more realistic (e.g. casualty)
