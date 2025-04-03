@@ -12,7 +12,7 @@
 ### Missile
 - [ ] DiverseAttribute (i.e. Levels of speed, damage, showcased by renderer)
 ### Enemy
-- [ ] RandomMissileFactory (i.e. Generate missiles with random targets)
+- [ ] RandomMissileFactory/RandomMissileBuilder (i.e. Generate missiles with random targets)
 - [ ] AttackWaves (i.e. Dynamically manage multi atkMissiles at a time)
 - [ ] More fierce attack (i.e. Increment Missile Num and Speed over time)
 - [ ] CounterAttack (i.e. Own HP, can be deduced by player through some method, effect on its atk performance)
