@@ -132,12 +132,18 @@ public:
 
 class MissileManager
 {
+    friend class Game;
+    friend class Renderer;
 private:
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
+    std::vector<int> speed_list;
+    std::vector<int> damage_list;
+    std::vector<int> num_list;
+    int hitpoint;
 
 public:
-    MissileManager(std::vector<City> &cts) : cities(cts) {};
+    MissileManager(std::vector<City> &cts);
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
@@ -145,6 +151,10 @@ public:
     bool create_cruise_missile(City &c, int d, int v);
     void update_missiles(void);
     void remove_missiles(void);
+
+    int generate_random(int turn);
+    int get_process_level(int turn);
+    void create_attack_wave(int turn);
 };
 
 class Game

@@ -1,6 +1,7 @@
 #include <fstream>
 #include <memory>
 #include <algorithm>
+#include <random>
 #include "game.h"
 
 #define INF 0x3f3f3f3f
@@ -166,6 +167,7 @@ void CruiseMissile::move_step(void)
         collide();
     }
 }
+MissileManager::MissileManager(std::vector<City> &cts): cities(cts){}
 
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
@@ -268,6 +270,80 @@ void MissileManager::remove_missiles(void)
         }
     }
 }
+#define HP_PHASE 200
+#define TURN_PHASE 100
+int MissileManager::get_process_level(int turn) {
+    int HP_factor = hitpoint / HP_PHASE;
+    int turn_factor = turn / TURN_PHASE;
+    if (turn_factor > 4) {
+        turn_factor = 4;
+    }
+    if (HP_factor > 4) {
+        HP_factor = 4;
+    }
+    return (HP_factor + turn_factor)/2;
+}
+
+int MissileManager::generate_random(int turn)
+{
+    int randFactor = get_process_level(turn);
+    std::vector<double> weights = {1.0, 1.0, 1.0, 1.0, 1.0};
+    weights[0] += (randFactor == 0) ? 1.0 : 0.0;
+    weights[1] += (randFactor == 1) ? 1.0 : 0.0;
+    weights[2] += (randFactor == 2) ? 1.0 : 0.0;
+    weights[3] += (randFactor == 3) ? 1.0 : 0.0;
+    weights[4] += (randFactor == 4) ? 1.0 : 0.0;
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::discrete_distribution<> dist(weights.begin(), weights.end());
+    return dist(mt);
+}
+
+void MissileManager::create_attack_wave(int turn)
+{
+    std::random_device rng;
+    int num = num_list[generate_random(turn)];
+    for (int i = 0; i<num; i++) {
+        //randomly generate speed and damage
+        int speed = speed_list[generate_random(turn)];
+        int damage = damage_list[generate_random(turn)];
+        
+        //randomly select a city
+        std::uniform_int_distribution<> targetDist(0, cities.size() - 1);
+        int target_index = targetDist(rng);
+
+        // randomly generate a pos with in {(0,0),(20,100)}
+        std::uniform_int_distribution<> xDist(0, 99);
+        std::uniform_int_distribution<> yDist(0, 19);
+        std::uniform_int_distribution<> edgeDist(0, 3);
+        
+        int edge = edgeDist(rng);
+        Position start;
+        switch (edge)
+        {
+        case 0:
+            start = Position(yDist(rng), 0);
+            break;
+        case 1:
+            start = Position(yDist(rng), 99);
+            break;
+        case 2:
+            start = Position(0, xDist(rng));
+            break;
+        case 3:
+            start = Position(19, xDist(rng));
+            break;
+        default:
+            start = Position(0, 0);
+            break;
+        } 
+        //This if is for debugging purpose, remove later
+        if (target_index>=0 && target_index<cities.size()) {
+            create_attack_missile(start,cities[target_index],damage,speed);
+        }
+
+    }
+}
 
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
@@ -280,7 +356,13 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s)
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    missile_manager.create_attack_missile({-10, -10}, cities[0], 200, 1);
+    std::vector<int> sl = {1,2,3,4,5};
+    std::vector<int> dmg = {100,150,200,250,300};
+    std::vector<int> num = {5,8,10,15,20};
+    missile_manager.speed_list = sl;
+    missile_manager.damage_list = dmg;
+    missile_manager.num_list = num;
+    missile_manager.hitpoint = 1000;
 }
 
 int Game::get_total_deposit(void) const
@@ -325,14 +407,19 @@ void Game::pass_turn(void)
 {
 
     // DEBUG: don't forget to readd city hitting function
-
+    // DONE!
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 
     for (auto &missile : missile_manager.get_attack_missiles()) {
-        if (missile->get_progress() == MissileProgress::EXPLODED)
+        if (missile->get_progress() == MissileProgress::HIT && missile->get_direction() == MissileDirection::A)
         {
-            hit_city(select_city(missile->get_position()), missile->damage);
+            City *city = select_city(missile->get_position());
+            if (city == nullptr)
+            {
+                continue;
+            }
+            hit_city(city, missile->damage);
         }
     }
     for (auto &city : cities)
@@ -343,7 +430,8 @@ void Game::pass_turn(void)
         }
         city.deposit += city.productivity;
     }
-
+    if(turn % 20 == 0)
+        missile_manager.create_attack_wave(turn);
     turn++;
 }
 
