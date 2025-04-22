@@ -3,7 +3,7 @@ BIN_DIR = bin
 DIST_DIR = dist
 ASSETS_DIR = assets
 
-CXX = gcc
+CXX = g++
 CXXFLAGS = -std=c++11 -pedantic-errors
 LDFLAGS = -lstdc++ -lncursesw
 PROG = main
