@@ -4,8 +4,8 @@
 
 #define DEFEND_RADIUS 5
 
-Missile::Missile(Position p, Position t, int d, int v)
-    : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v)
+Missile::Missile(Position p, Position t, int d, int v, MissileType tp)
+    : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
 {
 }
 
@@ -140,7 +140,7 @@ void Missile::collide(void)
 }
 
 AttackMissile::AttackMissile(Position p, City &c, int d, int v)
-    : Missile(p, c.get_position(), d, v), city(c)
+    : Missile(p, c.get_position(), d, v, MissileType::ATTACK), city(c)
 {
 }
 
@@ -150,7 +150,7 @@ void AttackMissile::move_step(void)
 }
 
 CruiseMissile::CruiseMissile(Position p, Missile &m, int d, int v)
-    : Missile(p, m.get_position(), d, v), missile(m)
+    : Missile(p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
 }
 
@@ -171,7 +171,7 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
-Game::Game(Size s, std::vector<City> c, std::vector<std::string> bg) : size(s), cities(c), background(bg)
+Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg)
 {
     cursor = cities[0].position;
     turn = 0;
@@ -223,6 +223,7 @@ void Game::move_cursor(Position dcursor)
 
 void Game::pass_turn(void)
 {
+
     /*
     for (auto &missile : enemy_missiles)
     {

@@ -46,6 +46,13 @@ public:
     Position get_position(void) const { return position; };
 };
 
+enum class MissileType
+{
+    ATTACK,
+    CRUISE,
+    UNKNOWN
+};
+
 enum class MissileProgress
 {
     EXPLODED,   // Exploded
@@ -79,11 +86,12 @@ protected:
     Position position;
     Position target;
     MissileProgress progress;
+    MissileType type;
     int damage;
     int speed;
 
 public:
-    Missile(Position p, Position t, int d, int v);
+    Missile(Position p, Position t, int d, int v, MissileType tp);
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
     MissileDirection get_direction(void);
