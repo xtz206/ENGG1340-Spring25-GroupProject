@@ -134,6 +134,7 @@ class MissileManager
 {
     friend class Game;
     friend class Renderer;
+
 private:
     std::vector<City> &cities;
     std::vector<Missile *> missiles;

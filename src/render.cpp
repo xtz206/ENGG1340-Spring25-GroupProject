@@ -78,7 +78,6 @@ void Renderer::draw_game(void)
 
     mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
 
-
     // NODE WINDOW
     for (size_t line = 1; line < NODE_LINES - 1; line++)
     {
