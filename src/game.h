@@ -81,6 +81,7 @@ class Missile
 {
     friend class Game;
     friend class Renderer;
+    friend class MissileManager;
 
 protected:
     Position position;
@@ -129,6 +130,23 @@ public:
     virtual void move_step(void) override;
 };
 
+class MissileManager
+{
+private:
+    std::vector<City> &cities;
+    std::vector<Missile *> missiles;
+
+public:
+    MissileManager(std::vector<City> &cts) : cities(cts) {};
+    std::vector<Missile *> get_missiles(void);
+    std::vector<Missile *> get_attack_missiles(void);
+    std::vector<Missile *> get_cruise_missiles(void);
+    void create_attack_missile(Position p, City &c, int d, int v);
+    bool create_cruise_missile(City &c, int d, int v);
+    void update_missiles(void);
+    void remove_missiles(void);
+};
+
 class Game
 {
     friend class Renderer;
@@ -139,11 +157,7 @@ private:
     int turn;
     std::vector<City> cities;
     std::vector<std::string> background;
-    /*
-    std::vector<MissilePtr> missiles;
-    std::vector<MissilePtr> friendly_missiles;
-    std::vector<MissilePtr> enemy_missiles;
-    */
+    MissileManager missile_manager;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
@@ -151,7 +165,7 @@ public:
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
     int get_turn(void) const { return turn; };
-    std::vector<Missile *> get_missiles(void) { return std::vector<Missile *>(); };
+    std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
 
     int get_total_deposit(void) const;
     int get_total_productivity(void) const;

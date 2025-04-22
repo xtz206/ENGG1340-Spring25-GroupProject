@@ -1,7 +1,9 @@
 #include <fstream>
 #include <memory>
+#include <algorithm>
 #include "game.h"
 
+#define INF 0x3f3f3f3f
 #define DEFEND_RADIUS 5
 
 Missile::Missile(Position p, Position t, int d, int v, MissileType tp)
@@ -165,22 +167,120 @@ void CruiseMissile::move_step(void)
     }
 }
 
+std::vector<Missile *> MissileManager::get_missiles(void)
+{
+    return missiles;
+}
+
+std::vector<Missile *> MissileManager::get_attack_missiles(void)
+{
+    std::vector<Missile *> attack_missiles;
+    for (auto missile : missiles)
+    {
+        if (missile->type == MissileType::ATTACK)
+        {
+            attack_missiles.push_back(missile);
+        }
+    }
+    return attack_missiles;
+}
+
+std::vector<Missile *> MissileManager::get_cruise_missiles(void)
+{
+    std::vector<Missile *> cruise_missiles;
+    for (auto missile : missiles)
+    {
+        if (missile->type == MissileType::CRUISE)
+        {
+            cruise_missiles.push_back(missile);
+        }
+    }
+    return cruise_missiles;
+}
+
+void MissileManager::create_attack_missile(Position p, City &c, int d, int v)
+{
+    Missile *missile = new AttackMissile(p, c, d, v);
+    missiles.push_back(missile);
+}
+
+bool MissileManager::create_cruise_missile(City &c, int d, int v)
+{
+
+    int target_distance = INF;
+    Missile *target_missile = nullptr;
+    for (auto attack_missile : get_attack_missiles())
+    {
+        int distance = abs(attack_missile->get_position().y - c.get_position().y) + abs(attack_missile->get_position().x - c.get_position().x);
+        if (distance < target_distance)
+        {
+            target_distance = distance;
+            target_missile = attack_missile;
+        }
+    }
+    if (target_missile == nullptr || target_distance > DEFEND_RADIUS)
+    {
+        return false;
+    }
+    Missile *missile = new CruiseMissile(c.get_position(), *target_missile, d, v);
+    missiles.push_back(missile);
+    return true;
+}
+
+void MissileManager::update_missiles(void)
+{
+    for (auto attack_missile : get_attack_missiles())
+    {
+        attack_missile->move();
+    }
+
+    for (auto cruise_missile : get_cruise_missiles())
+    {
+        cruise_missile->move();
+    }
+}
+
+void MissileManager::remove_missiles(void)
+{
+    for (auto cruise_missile : get_cruise_missiles())
+    {
+        if (cruise_missile->get_progress() == MissileProgress::EXPLODED)
+        {
+            auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
+            if (iter != missiles.end())
+            {
+                missiles.erase(iter);
+            }
+            delete cruise_missile;
+        }
+    }
+
+    for (auto &attack_missile : get_attack_missiles())
+    {
+        if (attack_missile->get_progress() == MissileProgress::EXPLODED)
+        {
+            auto iter = std::find(missiles.begin(), missiles.end(), attack_missile);
+            if (iter != missiles.end())
+            {
+                missiles.erase(iter);
+            }
+            delete attack_missile;
+        }
+    }
+}
+
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
 {
     deposit = 200;
     productivity = 50 + hitpoint / 10;
 }
 
-Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg)
+Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg), missile_manager(cts)
 {
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
-    /*
-    MissilePtr enemy_missile = std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1));
-    missiles.push_back(enemy_missile);
-    enemy_missiles.push_back(enemy_missile);
-    */
+    missile_manager.create_attack_missile({-10, -10}, cities[0], 200, 1);
 }
 
 int Game::get_total_deposit(void) const
@@ -224,25 +324,10 @@ void Game::move_cursor(Position dcursor)
 void Game::pass_turn(void)
 {
 
-    /*
-    for (auto &missile : enemy_missiles)
-    {
-        missile->move();
-        if (missile->get_direction() == MissileDirection::A && missile->get_progress() == MissileProgress::HIT)
-        {
-            hit_city(select_city(missile->get_target()), missile->damage);
-        }
-    }
+    // DEBUG: don't forget to readd city hitting function
 
-    for (auto &missile : friendly_missiles)
-    {
-        missile->move();
-        if (missile->get_direction() == MissileDirection::A && missile->get_progress() == MissileProgress::HIT)
-        {
-            hit_city(select_city(missile->get_target()), missile->damage);
-        }
-    }
-    */
+    missile_manager.update_missiles();
+    missile_manager.remove_missiles();
 
     for (auto &city : cities)
     {
@@ -321,7 +406,6 @@ void Game::fix_city(void)
 
 void Game::launch_cruise(void)
 {
-    /*
     City *city = select_city();
     if (city == nullptr)
     {
@@ -331,17 +415,9 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    for (auto missile : enemy_missiles)
+    if (missile_manager.create_cruise_missile(*city, 100, 2))
     {
-        if (is_in_range(missile->get_position(), city->get_position(), DEFEND_RADIUS))
-        {
-            MissilePtr friendly_missile = std::make_shared<CruiseMissile>(CruiseMissile(city->position, missile, 100, 2));
-            missiles.push_back(friendly_missile);
-            friendly_missiles.push_back(friendly_missile);
-            city->deposit -= 200;
-            return;
-        }
+        city->deposit -= 200;
     }
     return;
-    */
 }
