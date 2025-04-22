@@ -149,19 +149,19 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(Position p, MissilePtr m, int d, int v)
-    : Missile(p, m->get_position(), d, v), missile(m)
+CruiseMissile::CruiseMissile(Position p, Missile &m, int d, int v)
+    : Missile(p, m.get_position(), d, v), missile(m)
 {
 }
 
 void CruiseMissile::move_step(void)
 {
-    target = missile->get_position();
+    target = missile.get_position();
     Missile::move_step();
     if (get_direction() == MissileDirection::A)
     {
-        missile->collide();
-        this->collide();
+        missile.collide();
+        collide();
     }
 }
 
@@ -176,9 +176,11 @@ Game::Game(Size s, std::vector<City> c, std::vector<std::string> bg) : size(s), 
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
+    /*
     MissilePtr enemy_missile = std::make_shared<AttackMissile>(AttackMissile({-10, -10}, cities[0], 200, 1));
     missiles.push_back(enemy_missile);
     enemy_missiles.push_back(enemy_missile);
+    */
 }
 
 int Game::get_total_deposit(void) const
@@ -221,6 +223,7 @@ void Game::move_cursor(Position dcursor)
 
 void Game::pass_turn(void)
 {
+    /*
     for (auto &missile : enemy_missiles)
     {
         missile->move();
@@ -238,6 +241,7 @@ void Game::pass_turn(void)
             hit_city(select_city(missile->get_target()), missile->damage);
         }
     }
+    */
 
     for (auto &city : cities)
     {
@@ -316,6 +320,7 @@ void Game::fix_city(void)
 
 void Game::launch_cruise(void)
 {
+    /*
     City *city = select_city();
     if (city == nullptr)
     {
@@ -337,4 +342,5 @@ void Game::launch_cruise(void)
         }
     }
     return;
+    */
 }
