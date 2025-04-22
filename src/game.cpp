@@ -329,6 +329,12 @@ void Game::pass_turn(void)
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 
+    for (auto &missile : missile_manager.get_attack_missiles()) {
+        if (missile->get_progress() == MissileProgress::EXPLODED)
+        {
+            hit_city(select_city(missile->get_position()), missile->damage);
+        }
+    }
     for (auto &city : cities)
     {
         if (city.hitpoint <= 0)
