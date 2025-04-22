@@ -70,6 +70,15 @@ void Renderer::draw_window(void)
 
 void Renderer::draw_game(void)
 {
+    // RADAR WINDOW
+    for (size_t line = 1; line < RADAR_LINES - 1; line++)
+    {
+        mvwprintw(radar_window, line, 1, "%s", std::string(RADAR_COLS - 2, ' ').c_str());
+    }
+
+    mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
+
+
     // NODE WINDOW
     for (size_t line = 1; line < NODE_LINES - 1; line++)
     {
