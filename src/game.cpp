@@ -351,7 +351,7 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
-Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg), missile_manager(cts)
+Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg), missile_manager(cities)
 {
     cursor = cities[0].position;
     turn = 0;
