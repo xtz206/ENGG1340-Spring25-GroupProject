@@ -140,7 +140,7 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> num_list;
+    std::vector<int> inc_turn; //This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
     int hitpoint;
 
 public:
