@@ -459,6 +459,22 @@ bool Game::is_in_range(Position p1, Position p2, int range) const
     return true;
 }
 
+bool Game::is_game_over(void) const
+{
+    if (missile_manager.hitpoint <= 0)
+    {
+        return true;
+    }
+    for (const auto &city : cities)
+    {
+        if (city.hitpoint > 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 City *Game::select_city(void)
 {
     for (auto &city : cities)

@@ -19,7 +19,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, Menu &start_menu, Menu &pause_menu)
+void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &end_menu)
 {
     if (start_menu.is_activated())
     {
@@ -85,6 +85,19 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu)
             return;
         }
     }
+    else if (end_menu.is_activated())
+    {
+        switch (key)
+        {
+        case '\n':
+            end_menu.deactivate();
+            game.activate();
+            return;
+        case 'q':
+            end_menu.deactivate();
+            return;
+        }
+    }
 }
 
 int main(void)
@@ -97,10 +110,12 @@ int main(void)
         Loader loader = Loader();
         Menu start_menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
         Menu pause_menu = Menu("PAUSED", {"ESC: RESUME", "Q: QUIT"}, 2);
+        Menu end_menu = Menu("GAME OVER", {"ENTER: RESTART", "Q: QUIT"}, 2);
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
         MenuRenderer start_menu_renderer = MenuRenderer(start_menu);
         MenuRenderer pause_menu_renderer = MenuRenderer(pause_menu);
+        MenuRenderer end_menu_renderer = MenuRenderer(end_menu);
         GameRenderer game_renderer = GameRenderer(game);
 
         // TODO: add FRAME_INTERVAL macro instead of magic number
@@ -110,7 +125,7 @@ int main(void)
         while (start_menu.is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu);
+            control(key, game, start_menu, pause_menu, end_menu);
 
             if (!game.is_activated())
             {
@@ -124,7 +139,14 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu);
+                control(key, game, start_menu, pause_menu, end_menu);
+                if (game.is_game_over())
+                {
+                    game.deactivate();
+                    end_menu.activate();
+                    break;
+                }
+
                 if (!pause_menu.is_activated())
                 {
                     game_renderer.draw();
@@ -137,12 +159,22 @@ int main(void)
                 while (pause_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu);
+                    control(key, game, start_menu, pause_menu, end_menu);
                     pause_menu_renderer.draw();
                     pause_menu_renderer.render();
                     usleep(10000);
                 }
                 game_renderer.init();
+            }
+
+            end_menu_renderer.init();
+            while (end_menu.is_activated())
+            {
+                key = getch();
+                control(key, game, start_menu, pause_menu, end_menu);
+                end_menu_renderer.draw();
+                end_menu_renderer.render();
+                usleep(10000);
             }
         }
 
