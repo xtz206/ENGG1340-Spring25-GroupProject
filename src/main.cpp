@@ -8,22 +8,37 @@
 #include "control.h"
 #include "loader.h"
 
+void init(void)
+{
+    setlocale(LC_CTYPE, "");
+    initscr();
+    noecho();
+    curs_set(0);
+    start_color();
+    nodelay(stdscr, true);
+    keypad(stdscr, true);
+}
+
 int main(void)
 {
     try
     {
+        init();
+
         Loader loader = Loader();
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        Renderer renderer = Renderer(game);
-        Controller controller = Controller(game);
+
+        GameRenderer gr = GameRenderer(game);
+        GameController gc = GameController(game);
+
+        Renderer &renderer = gr;
+        Controller &controller = gc;
 
         renderer.init();
         while (true)
         {
-
             short key = getch();
             controller.handle(key);
-
             renderer.draw();
             renderer.render();
             usleep(10000);

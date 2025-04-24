@@ -8,12 +8,18 @@ class Game;
 
 class Controller
 {
+public:
+    virtual void handle(short key) = 0;
+};
+
+class GameController : public Controller
+{
 private:
     Game &game;
 
 public:
-    Controller(Game &g);
-    void handle(short key);
+    GameController(Game &g) : game(g) {};
+    void handle(short key) override;
 };
 
 #endif

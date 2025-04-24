@@ -19,23 +19,12 @@
 #define OPERATION_LINES 10
 #define OPERATION_COLS 100
 
-Renderer::Renderer(Game &g) : game(g)
+void Renderer::debug(const std::string &str)
 {
-    setlocale(LC_CTYPE, "");
-    initscr();
-    noecho();
-    curs_set(0);
-
-    map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
-    radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    node_window = subwin(stdscr, NODE_LINES, NODE_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
-
-    start_color();
+    mvwprintw(stdscr, 0, 1, "%s", str.c_str());
 }
 
-void Renderer::render(void)
+void GameRenderer::render(void)
 {
     wrefresh(map_window);
     wrefresh(radar_window);
@@ -45,8 +34,14 @@ void Renderer::render(void)
     refresh();
 }
 
-void Renderer::init(void)
+void GameRenderer::init(void)
 {
+    map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
+    radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
+    node_window = subwin(stdscr, NODE_LINES, NODE_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
+    info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
+    operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
+
     box(map_window, 0, 0);
     box(radar_window, 0, 0);
     box(node_window, 0, 0);
@@ -68,7 +63,7 @@ void Renderer::init(void)
     mvwprintw(operation_window, 7, 1, "q: Quit");
 }
 
-void Renderer::draw(void)
+void GameRenderer::draw(void)
 {
     // RADAR WINDOW
     for (size_t line = 1; line < RADAR_LINES - 1; line++)
@@ -165,9 +160,4 @@ void Renderer::draw(void)
     }
 
     mvwprintw(map_window, game.get_cursor().y + 1, game.get_cursor().x + 1, "X");
-}
-
-void Renderer::debug(const std::string &str)
-{
-    mvwprintw(operation_window, 8, 1, "%s", str.c_str());
 }

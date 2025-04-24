@@ -3,13 +3,7 @@
 #include "game.h"
 #include "control.h"
 
-Controller::Controller(Game &g) : game(g)
-{
-    nodelay(stdscr, true);
-    keypad(stdscr, true);
-}
-
-void Controller::handle(short key)
+void GameController::handle(short key)
 {
     switch (key)
     {

@@ -9,6 +9,14 @@ class Game;
 
 class Renderer
 {
+public:
+    virtual void render(void) = 0;
+    virtual void init(void) = 0;
+    virtual void draw(void) = 0;
+    void debug(const std::string &str);
+};
+class GameRenderer : public Renderer
+{
 private:
     Game &game;
     WINDOW *map_window;
@@ -18,13 +26,11 @@ private:
     WINDOW *operation_window;
 
 public:
-    Renderer(Game &game);
-    ~Renderer(void) {};
+    GameRenderer(Game &g) : game(g) {};
 
     void render(void);
     void init(void);
     void draw(void);
-    void debug(const std::string &str);
 };
 
 #endif

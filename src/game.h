@@ -32,7 +32,7 @@ typedef Position Size;
 class City
 {
     friend class Game;
-    friend class Renderer;
+    friend class GameRenderer;
 
 private:
     Position position;
@@ -80,7 +80,7 @@ enum class MissileDirection
 class Missile
 {
     friend class Game;
-    friend class Renderer;
+    friend class GameRenderer;
     friend class MissileManager;
 
 protected:
@@ -105,7 +105,7 @@ public:
 class AttackMissile : public Missile
 {
     friend class Game;
-    friend class Renderer;
+    friend class GameRenderer;
 
 private:
     City &city;
@@ -119,7 +119,7 @@ public:
 class CruiseMissile : public Missile
 {
     friend class Game;
-    friend class Renderer;
+    friend class GameRenderer;
 
 private:
     Missile &missile;
@@ -133,7 +133,7 @@ public:
 class MissileManager
 {
     friend class Game;
-    friend class Renderer;
+    friend class GameRenderer;
 
 private:
     std::vector<City> &cities;
@@ -160,7 +160,7 @@ public:
 
 class Game
 {
-    friend class Renderer;
+    friend class GameRenderer;
 
 private:
     Size size;
