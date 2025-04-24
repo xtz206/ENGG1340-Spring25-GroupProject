@@ -35,10 +35,6 @@ void MenuRenderer::init(void)
     box(menu_window, 0, 0);
 
     mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
-    for (size_t line = 1; line < MENU_LINES - 1 && line < menu.get_buttons().size() + 1; line++)
-    {
-        mvwprintw(menu_window, line, 1, "%s", menu.get_buttons().at(line - 1).c_str());
-    }
 }
 
 void MenuRenderer::render(void)
@@ -48,6 +44,28 @@ void MenuRenderer::render(void)
 
 void MenuRenderer::draw(void)
 {
+    for (size_t line = 1; line < MENU_LINES - 1; line++)
+    {
+        mvwprintw(menu_window, line, 1, "%s", std::string(MENU_COLS - 2, ' ').c_str());
+    }
+
+    for (size_t index = 0; index < menu.get_buttons().size(); index++)
+    {
+        if (index == menu.get_cursor())
+        {
+            wattron(menu_window, A_REVERSE);
+            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
+            wattroff(menu_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
+        }
+        if (index == menu.get_buttons().size() - 1)
+        {
+            break;
+        }
+    }
 }
 
 void GameRenderer::init(void)

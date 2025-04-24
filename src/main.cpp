@@ -25,10 +25,26 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
     {
         switch (key)
         {
-        case '\n':
-            start_menu.deactivate();
-            game.activate();
+        case 'w':
+            start_menu.move_cursor(-1);
             return;
+
+        case 's':
+            start_menu.move_cursor(1);
+            return;
+
+        case '\n':
+            if (start_menu.get_cursor() == 0)
+            {
+                start_menu.deactivate();
+                game.activate();
+            }
+            else if (start_menu.get_cursor() == 1)
+            {
+                start_menu.deactivate();
+            }
+            return;
+
         case 'q':
             start_menu.deactivate();
             return;
@@ -76,15 +92,36 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
     {
         switch (key)
         {
+        case 'w':
+            pause_menu.move_cursor(-1);
+            return;
+        case 's':
+            pause_menu.move_cursor(1);
+            return;
+
+        case '\n':
+            if (pause_menu.get_cursor() == 0)
+            {
+                pause_menu.deactivate();
+                game.activate();
+            }
+            else if (pause_menu.get_cursor() == 1)
+            {
+                pause_menu.deactivate();
+                game.deactivate();
+                start_menu.activate();
+            }
+            else if (pause_menu.get_cursor() == 2)
+            {
+                pause_menu.deactivate();
+            }
+            return;
+
         case '\033':
             pause_menu.deactivate();
             game.activate();
             return;
-        case 'm':
-            pause_menu.deactivate();
-            game.deactivate();
-            start_menu.activate();
-            return;
+
         case 'q':
             pause_menu.deactivate();
             return;
@@ -94,10 +131,25 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
     {
         switch (key)
         {
-        case '\n':
-            end_menu.deactivate();
-            game.activate();
+        case 'w':
+            end_menu.move_cursor(-1);
             return;
+        case 's':
+            end_menu.move_cursor(1);
+            return;
+
+        case '\n':
+            if (end_menu.get_cursor() == 1)
+            {
+                end_menu.deactivate();
+                start_menu.activate();
+            }
+            else if (end_menu.get_cursor() == 2)
+            {
+                end_menu.deactivate();
+            }
+            return;
+
         case 'q':
             end_menu.deactivate();
             return;
@@ -114,9 +166,9 @@ int main(void)
         short key;
         Loader loader = Loader();
         // TODO: store menu title and buttons in separate file instead of hardcoding
-        Menu start_menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
-        Menu pause_menu = Menu("PAUSED", {"ESC: RESUME", "M: RETURN TO START", "Q: QUIT"}, 3);
-        Menu end_menu = Menu("GAME OVER", {"ENTER: RESTART", "Q: QUIT"}, 2);
+        Menu start_menu = Menu("MISSILE COMMANDER", {"START THE GAME", "QUIT"});
+        Menu pause_menu = Menu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
+        Menu end_menu = Menu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
         MenuRenderer start_menu_renderer = MenuRenderer(start_menu);
