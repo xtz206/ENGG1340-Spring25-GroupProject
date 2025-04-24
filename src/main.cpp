@@ -75,6 +75,7 @@ int main(void)
                 pause_menu_renderer.render();
                 usleep(10000);
             }
+            game_renderer.init();
         }
 
         endwin();
