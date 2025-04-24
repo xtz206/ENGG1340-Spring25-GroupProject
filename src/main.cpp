@@ -26,25 +26,30 @@ int main(void)
     {
         init();
 
+        short key;
         Loader loader = Loader();
-        Menu menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
+        Menu start_menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
+        Menu pause_menu = Menu("PAUSED", {"ESC: RESUME", "Q: QUIT"}, 2);
+        // Menu end_menu = Menu("GAME OVER", {"ENTER: RESTART", "Q: QUIT"}, 2);
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
-        MenuRenderer menu_renderer = MenuRenderer(menu);
-        MenuController menu_controller = MenuController(menu);
+        MenuRenderer start_menu_renderer = MenuRenderer(start_menu);
+        MenuRenderer pause_menu_renderer = MenuRenderer(pause_menu);
+        StartMenuController start_menu_controller = StartMenuController(start_menu);
+        PauseMenuController pause_menu_controller = PauseMenuController(pause_menu);
         GameRenderer game_renderer = GameRenderer(game);
-        GameController game_controller = GameController(game);
+        GameController game_controller = GameController(game, pause_menu);
 
         // TODO: add FRAME_INTERVAL macro instead of magic number
 
-        menu.activate();
-        menu_renderer.init();
-        while (menu.is_activated())
+        start_menu.activate();
+        start_menu_renderer.init();
+        while (start_menu.is_activated())
         {
-            short key = getch();
-            menu_controller.handle(key);
-            menu_renderer.draw();
-            menu_renderer.render();
+            key = getch();
+            start_menu_controller.handle(key);
+            start_menu_renderer.draw();
+            start_menu_renderer.render();
             usleep(10000);
         }
 
@@ -52,11 +57,24 @@ int main(void)
         game_renderer.init();
         while (game.is_activated())
         {
-            short key = getch();
+            key = getch();
             game_controller.handle(key);
-            game_renderer.draw();
-            game_renderer.render();
-            usleep(10000);
+            if (!pause_menu.is_activated())
+            {
+                game_renderer.draw();
+                game_renderer.render();
+                usleep(10000);
+                continue;
+            }
+            pause_menu_renderer.init();
+            while (pause_menu.is_activated())
+            {
+                key = getch();
+                pause_menu_controller.handle(key);
+                pause_menu_renderer.draw();
+                pause_menu_renderer.render();
+                usleep(10000);
+            }
         }
 
         endwin();

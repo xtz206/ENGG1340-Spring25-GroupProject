@@ -15,22 +15,36 @@ public:
 
 class MenuController : public Controller
 {
-private:
+protected:
     Menu &menu;
 
 public:
     MenuController(Menu &m) : menu(m) {};
-    void handle(short key) override;
+};
+
+class StartMenuController : public MenuController
+{
+public:
+    StartMenuController(Menu &m) : MenuController(m) {};
+    virtual void handle(short key) override;
+};
+
+class PauseMenuController : public MenuController
+{
+public:
+    PauseMenuController(Menu &m) : MenuController(m) {};
+    virtual void handle(short key) override;
 };
 
 class GameController : public Controller
 {
 private:
     Game &game;
+    Menu &menu;
 
 public:
-    GameController(Game &g) : game(g) {};
-    void handle(short key) override;
+    GameController(Game &g, Menu &m) : game(g), menu(m) {};
+    virtual void handle(short key) override;
 };
 
 #endif

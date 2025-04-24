@@ -4,11 +4,25 @@
 #include "menu.h"
 #include "control.h"
 
-void MenuController::handle(short key)
+void StartMenuController::handle(short key)
 {
     switch (key)
     {
     case '\n':
+        menu.deactivate();
+        return;
+
+    case 'q':
+        endwin();
+        exit(0);
+    }
+}
+
+void PauseMenuController::handle(short key)
+{
+    switch (key)
+    {
+    case '\033':
         menu.deactivate();
         return;
 
@@ -37,6 +51,10 @@ void GameController::handle(short key)
 
     case '\n':
         game.pass_turn();
+        return;
+
+    case '\033':
+        menu.activate();
         return;
 
     case 'f':
