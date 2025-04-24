@@ -74,14 +74,12 @@ void GameRenderer::init(void)
     mvwprintw(operation_window, 0, 2, "Operation");
 
     // TODO: store button text in separate file instead of hardcoding
-    mvwprintw(operation_window, 1, 1, "W: Cursor Up");
-    mvwprintw(operation_window, 2, 1, "S: Cursor Down");
-    mvwprintw(operation_window, 3, 1, "A: Cursor Left");
-    mvwprintw(operation_window, 4, 1, "D: Cursor Right");
-    mvwprintw(operation_window, 5, 1, "ENTER: Pass Turn");
-    mvwprintw(operation_window, 6, 1, "F: Fix City");
-    mvwprintw(operation_window, 7, 1, "L: Launch Missile");
-    mvwprintw(operation_window, 8, 1, "Q: Quit");
+    mvwprintw(operation_window, 1, 1, "W/A/S/D: CURSOR MOVING");
+    mvwprintw(operation_window, 2, 1, "ENTER: PASS TURN");
+    mvwprintw(operation_window, 3, 1, "ESC: PAUSE");
+    mvwprintw(operation_window, 4, 1, "F: FIX");
+    mvwprintw(operation_window, 5, 1, "L: LAUNCH");
+    mvwprintw(operation_window, 6, 1, "Q: QUIT");
 }
 
 void GameRenderer::render(void)

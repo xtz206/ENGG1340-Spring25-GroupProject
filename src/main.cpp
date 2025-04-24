@@ -80,6 +80,11 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
             pause_menu.deactivate();
             game.activate();
             return;
+        case 'm':
+            pause_menu.deactivate();
+            game.deactivate();
+            start_menu.activate();
+            return;
         case 'q':
             pause_menu.deactivate();
             return;
@@ -108,8 +113,9 @@ int main(void)
 
         short key;
         Loader loader = Loader();
+        // TODO: store menu title and buttons in separate file instead of hardcoding
         Menu start_menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
-        Menu pause_menu = Menu("PAUSED", {"ESC: RESUME", "Q: QUIT"}, 2);
+        Menu pause_menu = Menu("PAUSED", {"ESC: RESUME", "M: RETURN TO START", "Q: QUIT"}, 3);
         Menu end_menu = Menu("GAME OVER", {"ENTER: RESTART", "Q: QUIT"}, 2);
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
@@ -164,7 +170,14 @@ int main(void)
                     pause_menu_renderer.render();
                     usleep(10000);
                 }
-                game_renderer.init();
+                if (game.is_activated())
+                    game_renderer.init();
+            }
+
+            if (!end_menu.is_activated())
+            {
+                start_menu_renderer.init();
+                continue;
             }
 
             end_menu_renderer.init();
