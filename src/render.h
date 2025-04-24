@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+class Menu;
 class Game;
 
 class Renderer
@@ -15,6 +16,21 @@ public:
     virtual void draw(void) = 0;
     void debug(const std::string &str);
 };
+
+class MenuRenderer : public Renderer
+{
+private:
+    Menu &menu;
+    WINDOW *menu_window;
+
+public:
+    MenuRenderer(Menu &m) : menu(m) {};
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
 class GameRenderer : public Renderer
 {
 private:
@@ -28,8 +44,8 @@ private:
 public:
     GameRenderer(Game &g) : game(g) {};
 
-    void render(void);
     void init(void);
+    void render(void);
     void draw(void);
 };
 

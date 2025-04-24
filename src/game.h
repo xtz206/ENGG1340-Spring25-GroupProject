@@ -140,7 +140,7 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> inc_turn; //This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
+    std::vector<int> inc_turn; // This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
     int hitpoint;
 
 public:
@@ -163,6 +163,7 @@ class Game
     friend class GameRenderer;
 
 private:
+    bool activated;
     Size size;
     Position cursor;
     int turn;
@@ -172,6 +173,9 @@ private:
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
+    bool is_activated(void) { return activated; };
+    void activate(void) { activated = true; };
+    void deactivate(void) { activated = false; };
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };

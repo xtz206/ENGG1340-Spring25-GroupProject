@@ -24,18 +24,34 @@ void Renderer::debug(const std::string &str)
     mvwprintw(stdscr, 0, 1, "%s", str.c_str());
 }
 
-void GameRenderer::render(void)
+void MenuRenderer::init(void)
 {
-    wrefresh(map_window);
-    wrefresh(radar_window);
-    wrefresh(node_window);
-    wrefresh(info_window);
-    wrefresh(operation_window);
+    clear();
     refresh();
+
+    menu_window = subwin(stdscr, TOTAL_LINES, TOTAL_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
+    box(menu_window, 0, 0);
+
+    mvwprintw(menu_window, 1, 1, "Welcome to MISSILE COMMANDER");
+    mvwprintw(menu_window, 2, 1, "Press any key to start the game");
+    mvwprintw(menu_window, 3, 1, "Press q to quit the game");
+}
+
+void MenuRenderer::render(void)
+{
+    wrefresh(menu_window);
+    refresh();
+}
+
+void MenuRenderer::draw(void)
+{
 }
 
 void GameRenderer::init(void)
 {
+    clear();
+    refresh();
+
     map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
     radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
     node_window = subwin(stdscr, NODE_LINES, NODE_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
@@ -61,6 +77,16 @@ void GameRenderer::init(void)
     mvwprintw(operation_window, 5, 1, "c: Pass Turn");
     mvwprintw(operation_window, 6, 1, "f: Fix City");
     mvwprintw(operation_window, 7, 1, "q: Quit");
+}
+
+void GameRenderer::render(void)
+{
+    wrefresh(map_window);
+    wrefresh(radar_window);
+    wrefresh(node_window);
+    wrefresh(info_window);
+    wrefresh(operation_window);
+    refresh();
 }
 
 void GameRenderer::draw(void)

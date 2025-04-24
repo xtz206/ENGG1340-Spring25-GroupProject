@@ -5,11 +5,22 @@
 #include <vector>
 
 class Game;
+class Menu;
 
 class Controller
 {
 public:
     virtual void handle(short key) = 0;
+};
+
+class MenuController : public Controller
+{
+private:
+    Menu &menu;
+
+public:
+    MenuController(Menu &m) : menu(m) {};
+    void handle(short key) override;
 };
 
 class GameController : public Controller

@@ -1,7 +1,26 @@
 #include <cstdlib>
 #include <ncurses.h>
 #include "game.h"
+#include "menu.h"
 #include "control.h"
+
+void MenuController::handle(short key)
+{
+    switch (key)
+    {
+    case 'c':
+        menu.deactivate();
+        return;
+
+    case '\n':
+        menu.deactivate();
+        return;
+
+    case 'q':
+        endwin();
+        exit(0);
+    }
+}
 
 void GameController::handle(short key)
 {
@@ -21,6 +40,7 @@ void GameController::handle(short key)
         return;
 
     case 'c':
+    case '\n':
         game.pass_turn();
         return;
 
@@ -33,7 +53,6 @@ void GameController::handle(short key)
         return;
 
     case 'q':
-        endwin();
-        exit(0);
+        game.deactivate();
     }
 }

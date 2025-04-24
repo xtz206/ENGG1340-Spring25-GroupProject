@@ -305,7 +305,7 @@ int MissileManager::generate_random(int turn)
 void MissileManager::create_attack_wave(int turn)
 {
     std::random_device rng;
-    int num = turn/inc_turn[0]+5;
+    int num = turn / inc_turn[0] + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
@@ -355,14 +355,15 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
-Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg) : size(s), cities(cts), background(bg), missile_manager(cities)
+Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
+    : activated(false), size(s), cities(cts), background(bg), missile_manager(cities)
 {
     cursor = cities[0].position;
     turn = 0;
     // DEBUG: just for testing, remove later
     std::vector<int> sl = {1, 2, 3, 4, 5};
     std::vector<int> dmg = {100, 150, 200, 250, 300};
-    std::vector<int> inc_turn = {50,30,10};
+    std::vector<int> inc_turn = {50, 30, 10};
     missile_manager.speed_list = sl;
     missile_manager.damage_list = dmg;
     missile_manager.inc_turn = inc_turn;
