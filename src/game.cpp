@@ -413,6 +413,7 @@ void Game::pass_turn(void)
 
     // DEBUG: don't forget to readd city hitting function
     // DONE!
+    // TODO: decouple select_city
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 

@@ -3,6 +3,7 @@
 #include <ncurses.h>
 
 #include "game.h"
+#include "menu.h"
 #include "render.h"
 #include "control.h"
 
@@ -18,6 +19,8 @@
 #define INFO_COLS 40
 #define OPERATION_LINES 10
 #define OPERATION_COLS 100
+#define MENU_LINES 10
+#define MENU_COLS 40
 
 void Renderer::debug(const std::string &str)
 {
@@ -27,20 +30,20 @@ void Renderer::debug(const std::string &str)
 void MenuRenderer::init(void)
 {
     clear();
-    refresh();
 
-    menu_window = subwin(stdscr, TOTAL_LINES, TOTAL_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
+    menu_window = subwin(stdscr, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
     box(menu_window, 0, 0);
 
-    mvwprintw(menu_window, 1, 1, "Welcome to MISSILE COMMANDER");
-    mvwprintw(menu_window, 2, 1, "Press any key to start the game");
-    mvwprintw(menu_window, 3, 1, "Press q to quit the game");
+    mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
+    for (size_t line = 1; line < MENU_LINES - 1 && line < menu.get_buttons().size() + 1; line++)
+    {
+        mvwprintw(menu_window, line, 1, "%s", menu.get_buttons().at(line - 1).c_str());
+    }
 }
 
 void MenuRenderer::render(void)
 {
     wrefresh(menu_window);
-    refresh();
 }
 
 void MenuRenderer::draw(void)
@@ -50,7 +53,6 @@ void MenuRenderer::draw(void)
 void GameRenderer::init(void)
 {
     clear();
-    refresh();
 
     map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
     radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
@@ -58,6 +60,7 @@ void GameRenderer::init(void)
     info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
     operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
 
+    // TODO: clear windows and draw boxes & labels in draw instead of here
     box(map_window, 0, 0);
     box(radar_window, 0, 0);
     box(node_window, 0, 0);
@@ -70,13 +73,15 @@ void GameRenderer::init(void)
     mvwprintw(info_window, 0, 2, "Info");
     mvwprintw(operation_window, 0, 2, "Operation");
 
-    mvwprintw(operation_window, 1, 1, "w: Cursor Up");
-    mvwprintw(operation_window, 2, 1, "s: Cursor Down");
-    mvwprintw(operation_window, 3, 1, "a: Cursor Left");
-    mvwprintw(operation_window, 4, 1, "d: Cursor Right");
-    mvwprintw(operation_window, 5, 1, "c: Pass Turn");
-    mvwprintw(operation_window, 6, 1, "f: Fix City");
-    mvwprintw(operation_window, 7, 1, "q: Quit");
+    // TODO: store button text in separate file instead of hardcoding
+    mvwprintw(operation_window, 1, 1, "W: Cursor Up");
+    mvwprintw(operation_window, 2, 1, "S: Cursor Down");
+    mvwprintw(operation_window, 3, 1, "A: Cursor Left");
+    mvwprintw(operation_window, 4, 1, "D: Cursor Right");
+    mvwprintw(operation_window, 5, 1, "ENTER: Pass Turn");
+    mvwprintw(operation_window, 6, 1, "F: Fix City");
+    mvwprintw(operation_window, 7, 1, "L: Launch Missile");
+    mvwprintw(operation_window, 8, 1, "Q: Quit");
 }
 
 void GameRenderer::render(void)
@@ -86,11 +91,11 @@ void GameRenderer::render(void)
     wrefresh(node_window);
     wrefresh(info_window);
     wrefresh(operation_window);
-    refresh();
 }
 
 void GameRenderer::draw(void)
 {
+    // TODO: clear windows and draw boxes & labels here instead of init
     // RADAR WINDOW
     for (size_t line = 1; line < RADAR_LINES - 1; line++)
     {

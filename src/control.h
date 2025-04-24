@@ -4,8 +4,8 @@
 #include <ncurses.h>
 #include <vector>
 
-class Game;
 class Menu;
+class Game;
 
 class Controller
 {

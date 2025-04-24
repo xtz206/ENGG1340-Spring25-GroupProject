@@ -27,7 +27,7 @@ int main(void)
         init();
 
         Loader loader = Loader();
-        Menu menu = Menu();
+        Menu menu = Menu("MISSILE COMMANDER", {"ENTER: START", "Q: QUIT"}, 2);
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
         MenuRenderer menu_renderer = MenuRenderer(menu);
@@ -35,6 +35,7 @@ int main(void)
         GameRenderer game_renderer = GameRenderer(game);
         GameController game_controller = GameController(game);
 
+        // TODO: add FRAME_INTERVAL macro instead of magic number
 
         menu.activate();
         menu_renderer.init();

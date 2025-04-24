@@ -8,10 +8,6 @@ void MenuController::handle(short key)
 {
     switch (key)
     {
-    case 'c':
-        menu.deactivate();
-        return;
-
     case '\n':
         menu.deactivate();
         return;
@@ -39,7 +35,6 @@ void GameController::handle(short key)
         game.move_cursor(Position(0, 1));
         return;
 
-    case 'c':
     case '\n':
         game.pass_turn();
         return;
