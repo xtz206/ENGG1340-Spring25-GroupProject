@@ -1,7 +1,9 @@
-#include <fstream>
-#include <memory>
+#include <string>
+#include <vector>
 #include <algorithm>
 #include <random>
+#include <fstream>
+
 #include "game.h"
 
 #define INF 0x3f3f3f3f
@@ -413,7 +415,9 @@ void Game::pass_turn(void)
 
     // DEBUG: don't forget to readd city hitting function
     // DONE!
-    // TODO: decouple select_city
+    // TODO: remove cursor
+    //       cursor is not a good way to select city
+    //       considering use shortcut key to replace cursor in selecting city
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 

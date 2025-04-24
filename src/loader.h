@@ -1,8 +1,8 @@
 #ifndef LOADER_H
 #define LOADER_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "game.h"
 

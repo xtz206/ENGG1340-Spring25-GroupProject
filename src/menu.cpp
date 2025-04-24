@@ -1,6 +1,7 @@
-#include "menu.h"
 #include <string>
 #include <vector>
+
+#include "menu.h"
 
 Menu::Menu(const std::string &t, const std::vector<std::string> &b, int lim)
     : activated(false), title(t), buttons(b), cursor(0), limit(lim)

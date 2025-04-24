@@ -1,6 +1,6 @@
-#include <ncurses.h>
 #include <iostream>
 #include <string>
+#include <ncurses.h>
 #include <unistd.h>
 
 #include "game.h"

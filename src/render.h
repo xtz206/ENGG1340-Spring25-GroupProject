@@ -1,9 +1,9 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <ncurses.h>
 #include <string>
 #include <vector>
+#include <ncurses.h>
 
 class Menu;
 class Game;

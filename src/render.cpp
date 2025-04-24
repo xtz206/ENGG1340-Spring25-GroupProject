@@ -1,11 +1,11 @@
-#include <fstream>
 #include <string>
+#include <vector>
+#include <fstream>
 #include <ncurses.h>
 
 #include "game.h"
 #include "menu.h"
 #include "render.h"
-#include "control.h"
 
 #define TOTAL_LINES 30
 #define TOTAL_COLS 140
@@ -60,13 +60,13 @@ void GameRenderer::init(void)
     info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
     operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
 
-    // TODO: clear windows and draw boxes & labels in draw instead of here
     box(map_window, 0, 0);
     box(radar_window, 0, 0);
     box(node_window, 0, 0);
     box(info_window, 0, 0);
     box(operation_window, 0, 0);
 
+    // TODO: store title in separate file instead of hardcoding
     mvwprintw(map_window, 0, 2, "Map");
     mvwprintw(radar_window, 0, 2, "Radar");
     mvwprintw(node_window, 0, 2, "Node");
@@ -95,7 +95,6 @@ void GameRenderer::render(void)
 
 void GameRenderer::draw(void)
 {
-    // TODO: clear windows and draw boxes & labels here instead of init
     // RADAR WINDOW
     for (size_t line = 1; line < RADAR_LINES - 1; line++)
     {
