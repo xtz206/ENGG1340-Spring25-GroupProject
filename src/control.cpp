@@ -9,7 +9,7 @@ Controller::Controller(Game &g) : game(g)
     keypad(stdscr, true);
 }
 
-void Controller::handle_key(short key)
+void Controller::handle(short key)
 {
     switch (key)
     {

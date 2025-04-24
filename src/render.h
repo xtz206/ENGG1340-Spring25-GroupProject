@@ -22,9 +22,9 @@ public:
     ~Renderer(void) {};
 
     void render(void);
-    void draw_window(void);
-    void draw_game(void);
-    void draw_debug(const std::string &str);
+    void init(void);
+    void draw(void);
+    void debug(const std::string &str);
 };
 
 #endif

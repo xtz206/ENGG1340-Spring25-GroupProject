@@ -13,7 +13,7 @@ private:
 
 public:
     Controller(Game &g);
-    void handle_key(short key);
+    void handle(short key);
 };
 
 #endif

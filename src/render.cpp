@@ -45,7 +45,7 @@ void Renderer::render(void)
     refresh();
 }
 
-void Renderer::draw_window(void)
+void Renderer::init(void)
 {
     box(map_window, 0, 0);
     box(radar_window, 0, 0);
@@ -68,7 +68,7 @@ void Renderer::draw_window(void)
     mvwprintw(operation_window, 7, 1, "q: Quit");
 }
 
-void Renderer::draw_game(void)
+void Renderer::draw(void)
 {
     // RADAR WINDOW
     for (size_t line = 1; line < RADAR_LINES - 1; line++)
@@ -167,7 +167,7 @@ void Renderer::draw_game(void)
     mvwprintw(map_window, game.get_cursor().y + 1, game.get_cursor().x + 1, "X");
 }
 
-void Renderer::draw_debug(const std::string &str)
+void Renderer::debug(const std::string &str)
 {
     mvwprintw(operation_window, 8, 1, "%s", str.c_str());
 }

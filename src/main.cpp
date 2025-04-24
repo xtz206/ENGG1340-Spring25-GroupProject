@@ -17,14 +17,14 @@ int main(void)
         Renderer renderer = Renderer(game);
         Controller controller = Controller(game);
 
-        renderer.draw_window();
+        renderer.init();
         while (true)
         {
 
             short key = getch();
-            controller.handle_key(key);
+            controller.handle(key);
 
-            renderer.draw_game();
+            renderer.draw();
             renderer.render();
             usleep(10000);
         }
