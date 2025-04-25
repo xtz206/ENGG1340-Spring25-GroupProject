@@ -8,6 +8,7 @@
 #include "menu.h"
 #include "render.h"
 #include "loader.h"
+#include "saver.h"
 
 void init(void)
 {
@@ -20,7 +21,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, std::map<std::string, Menu> &menus)
+void control(short key, Game &game, std::map<std::string, Menu> &menus, Saver &saver)
 {
     if (menus.at("start").is_activated())
     {
@@ -90,6 +91,10 @@ void control(short key, Game &game, std::map<std::string, Menu> &menus)
 
         case 'q':
             game.deactivate();
+         //DEBUG: remove this later
+        case 'p':
+         saver.save_game();
+         return;
         }
     }
     else if (menus.at("pause").is_activated())
@@ -183,6 +188,8 @@ int main(void)
         MenuRenderer end_menu_renderer = MenuRenderer(menus.at("end"));
         GameRenderer game_renderer = GameRenderer(game);
 
+        Saver saver = Saver(&game);
+
         // TODO: add FRAME_INTERVAL macro instead of magic number
 
         menus.at("start").activate();
@@ -190,7 +197,7 @@ int main(void)
         while (menus.at("start").is_activated())
         {
             key = getch();
-            control(key, game, menus);
+            control(key, game, menus,saver);
 
             if (!game.is_activated())
             {
@@ -204,7 +211,7 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, menus);
+                control(key, game, menus,saver);
                 if (game.is_game_over())
                 {
                     game.deactivate();
@@ -224,7 +231,7 @@ int main(void)
                 while (menus.at("pause").is_activated())
                 {
                     key = getch();
-                    control(key, game, menus);
+                    control(key, game, menus,saver);
                     pause_menu_renderer.draw();
                     pause_menu_renderer.render();
                     usleep(10000);
@@ -243,7 +250,7 @@ int main(void)
             while (menus.at("end").is_activated())
             {
                 key = getch();
-                control(key, game, menus);
+                control(key, game, menus,saver);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);

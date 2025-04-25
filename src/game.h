@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <saver.h>
+#include "saver.h"
 
 #define inf 0x3f3f3f3f
 
@@ -120,6 +120,7 @@ class AttackMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class MissileManager;
     friend class Saver;
 
 private:
@@ -130,7 +131,6 @@ public:
     AttackMissile(int i, Position p, City &c, int d, int v);
     virtual Position get_target(void) override { return city.get_position(); };
     virtual void move_step(void) override;
-    bool is_aimed (void) { return is_aimed; };
 };
 
 class CruiseMissile : public Missile

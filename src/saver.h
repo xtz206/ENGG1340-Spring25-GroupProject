@@ -1,6 +1,8 @@
+#ifndef SAVER_H
+#define SAVER_H
 #include <string>
 #include <vector>
-#include <game.h>
+class Game;
 
 class Saver
 {
@@ -16,3 +18,4 @@ public:
     void save_city(std::string filepath);
     void save_tech_tree(std::string filepath);
 };
+#endif

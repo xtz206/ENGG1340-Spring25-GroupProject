@@ -4,7 +4,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <saver.h>
+#include "saver.h"
+#include "game.h"
 
 void Saver::save_game_general(std::string filepath)
 {
@@ -50,11 +51,14 @@ void Saver::save_cruise(std::string filepath)
     std::ofstream cruise_log(filename);
     if (cruise_log.is_open())
     {
-        CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(game -> missile_manager.get_cruise_missiles()[0]);
-        cruise_log << "id, y, x, target_id, damage, speed\n";
-        for (auto &missile : game -> missile_manager.get_cruise_missiles())
+        for (auto &cruise : game -> missile_manager.get_cruise_missiles())
         {
-            cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
+                CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(cruise);
+            cruise_log << "id, y, x, target_id, damage, speed\n";
+            for (auto &missile : game -> missile_manager.get_cruise_missiles())
+            {
+                cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
+        }
         }
     }
     cruise_log.close();
@@ -71,7 +75,7 @@ void Saver::save_city(std::string filepath)
         {
             city_log << city.name << ", " << city.position.y << ", " << city.position.x << ", " 
             << city.hitpoint << ", " << city.base_productivity << ", " 
-            <<city.productivity<<city.cruise_num << city.cruise_build_time << "\n";
+            <<city.productivity<<", "<<city.cruise_num << ", "<<city.cruise_build_time << "\n";
         }
     }
     city_log.close();

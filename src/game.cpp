@@ -214,13 +214,14 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     int target_distance = inf;
     Missile *target_missile = nullptr;
     for (auto attack_missile : get_attack_missiles())
-    {
+    {   
+        AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(attack_missile);
         int distance = abs(attack_missile->get_position().y - c.get_position().y) + abs(attack_missile->get_position().x - c.get_position().x);
-        if (distance < target_distance && attack_missile.is_aimed == false)
+        if (distance < target_distance && attack_missile_ptr->is_aimed == false)
         {
             target_distance = distance;
             target_missile = attack_missile;
-            attack_missile->is_aimed = true;
+            attack_missile_ptr->is_aimed = true;
         }
     }
     if (target_missile == nullptr || target_distance > DEFEND_RADIUS)
@@ -396,7 +397,7 @@ void MissileManager::create_attack_wave(int turn)
     }
 }
 
-City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), countdown(0)
+City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), base_productivity(100),countdown(0), cruise_num(0)
 {
     productivity = 50 + hitpoint / 10;
 }
