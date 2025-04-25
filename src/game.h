@@ -47,7 +47,7 @@ private:
     int countdown;
     int base_productivity;
     int cruise_num;
-    int cruise_build_time = 5;
+    const int cruise_build_time = 5;
 
 public:
     City(Position p, std::string n, int hp);
@@ -201,6 +201,7 @@ private:
     std::vector<TechNode *> researched;
     std::vector<TechNode *> available;
     TechNode *researching;
+    TechNode *prev_researching;
     int remaining_time;
 
 public:
@@ -211,6 +212,7 @@ public:
 
     void start_research(TechNode *node);
     void proceed_research(void);
+    bool check_research(void);
     bool is_researched(TechNode *node) const { return std::find(researched.begin(), researched.end(), node) != researched.end(); };
     bool is_available(TechNode *node) const { return std::find(available.begin(), available.end(), node) != available.end(); };
     void update_available(int deposit);
@@ -270,7 +272,7 @@ public:
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
 
-    int get_deposit(void) const;
+    int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
 
     void move_cursor(Position dcursor);
@@ -284,8 +286,9 @@ public:
     City &select_city(void);
 
     // NOTE: technology and reseach related functions
-    void start_research(void);
-    void finish_research(City &city, TechNode &node);
+    void start_research(TechNode *node);
+    void check_research(void);
+    void finish_research(TechNode *node);
     void hit_city(City &city, int damage);
     void fix_city(void);
     void build_cruise(void);

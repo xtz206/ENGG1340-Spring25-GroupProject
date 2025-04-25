@@ -147,9 +147,11 @@ void GameRenderer::init(void)
     mvwprintw(operation_window, 1, 1, "W/A/S/D: CURSOR MOVING");
     mvwprintw(operation_window, 2, 1, "ENTER: PASS TURN");
     mvwprintw(operation_window, 3, 1, "ESC: PAUSE");
-    mvwprintw(operation_window, 4, 1, "F: FIX");
-    mvwprintw(operation_window, 5, 1, "L: LAUNCH");
-    mvwprintw(operation_window, 6, 1, "Q: QUIT");
+    mvwprintw(operation_window, 4, 1, "R: RESEARCH");
+    mvwprintw(operation_window, 5, 1, "F: FIX");
+    mvwprintw(operation_window, 6, 1, "B: BUILD");
+    mvwprintw(operation_window, 7, 1, "L: LAUNCH");
+    mvwprintw(operation_window, 8, 1, "Q: QUIT");
 }
 
 void GameRenderer::render(void)

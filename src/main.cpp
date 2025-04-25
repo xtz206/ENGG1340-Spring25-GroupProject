@@ -143,7 +143,8 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
             return;
 
         case '\n':
-            // TODO: START RESEARCH HERE
+            game.start_research(tech_menu.get_tech_node());
+            game.check_research();
             return;
 
         case 'r':
