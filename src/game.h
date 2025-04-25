@@ -29,6 +29,7 @@ public:
     Position() : y(0), x(0) {}
     Position(int ny, int nx) : y(ny), x(nx) {}
     bool is_valid(void) const { return y < inf || x < inf; };
+    bool operator==(const Position &p) const { return y == p.y && x == p.x; };
 };
 typedef Position Size;
 
@@ -48,8 +49,6 @@ private:
     int cruise_build_time = 5;
 
 public:
-    static const City null_city;
-    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0),base_productivity(50),cruise_num(0) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -205,7 +204,7 @@ public:
     void start_research(TechNode *node);
     void proceed_research(void);
     void update_available(int deposit);
-    bool is_available(TechNode *node,int deposit) const;
+    bool is_available(TechNode *node, int deposit) const;
 };
 
 class Game
@@ -226,23 +225,23 @@ private:
     TechTree tech_tree;
 
     bool en_enhanced_radar_I = false;
-    bool en_enhanced_radar_II = false;
-    bool en_enhanced_radar_III = false;
+    bool en_enhanced_radar_II = false; 
+    bool en_enhanced_radar_III = false; // show attack missile details
 
-    bool en_enhanced_cruise_I = false;  //done
-    bool en_enhanced_cruise_II = false; //done
-    bool en_enhanced_cruise_III = false;//done
+    bool en_enhanced_cruise_I = false;   // done
+    bool en_enhanced_cruise_II = false;  // done
+    bool en_enhanced_cruise_III = false; // done
 
-    bool en_fortress_city = false;      //done
-    bool en_urgent_production = false;  //done
-    bool en_evacuated_industry = false; //done
+    bool en_fortress_city = false;      // done
+    bool en_urgent_production = false;  // done
+    bool en_evacuated_industry = false; // done
 
-    bool en_dirty_bomb = false;         //done
+    bool en_dirty_bomb = false; // done
     bool en_fast_nuke = false;
-    bool en_hydron_bomb = false;        //done
+    bool en_hydron_bomb = false; // done
 
     bool en_self_defense_sys = false;
-    bool en_iron_curtain = false;       //done
+    bool en_iron_curtain = false; // done
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 30;
 
@@ -265,8 +264,12 @@ public:
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
     bool is_game_over(void) const;
+    bool is_selected_missile(void);
+    bool is_selected_city(void);
+    Missile &select_missile(void);
     City &select_city(void);
 
+    // NOTE: technology and reseach related functions
     void start_research(void);
     void finish_research(City &city, TechNode &node);
     void hit_city(City &city, int damage);

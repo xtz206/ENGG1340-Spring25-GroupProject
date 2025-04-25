@@ -361,7 +361,7 @@ TechTree::TechTree(void)
     
     TechNode *enhanced_radar_I = new TechNode("Enhanced Radar I", "Enhanced Radar can detect number of currently attacking missiles",2000 , 10, {root_node});
     TechNode *enhanced_radar_II = new TechNode("Enhanced Radar II", "Enhanced Radar can detect number of currently attacking missiles of each city", 5000, 30, {enhanced_radar_I});
-    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", "Enhanced Radar can detect detail of an attackmissile (as you move cursor to it)", 10000, 50, {enhanced_radar_II});
+    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", "Enhanced Radar can detect detail of an attack missile (as you move cursor to it)", 10000, 50, {enhanced_radar_II});
     
     TechNode* enhanced_cruise_I = new TechNode("Enhanced Cruise I", "Reduce the cost of cruise by 50%", 2000, 10, {root_node});
     TechNode* enhanced_cruise_II = new TechNode("Enhanced Cruise II", "Increase the speed of cruise by 50%", 5000, 30, {enhanced_cruise_I});
@@ -633,8 +633,56 @@ bool Game::is_game_over(void) const
     }
     return true;
 }
+
+bool Game::is_selected_missile(void)
+{
+    for (auto &missile : missile_manager.get_attack_missiles())
+    {
+        if (is_in_range(cursor, missile->get_position(), 1))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool Game::is_selected_city(void)
+{
+    for (auto &city : cities)
+    {
+        if (is_in_range(cursor, city.position, 1))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+Missile &Game::select_missile(void)
+{
+    if (!is_selected_missile())
+    {
+        throw std::runtime_error("No missile selected");
+    }
+    for (auto &missile : missile_manager.get_attack_missiles())
+    {
+        if (is_in_range(cursor, missile->get_position(), 1))
+        {
+            return *missile;
+        }
+    }
+    throw std::runtime_error("No missile selected");
+}
+
+
 City &Game::select_city(void)
 {
+    if (!is_selected_city())
+    {
+        throw std::runtime_error("No city selected");
+    }
+    
     for (auto &city : cities)
     {
         if (is_in_range(cursor, city.position, 1))
@@ -642,8 +690,8 @@ City &Game::select_city(void)
             return city;
         }
     }
-    // if no city is selected, return the first city
-    return cities.at(0);
+
+    throw std::runtime_error("No city selected");
 }
 
 void Game::start_research(void)

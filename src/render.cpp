@@ -126,18 +126,38 @@ void GameRenderer::draw(void)
     {
         mvwprintw(node_window, line, 1, "%s", std::string(NODE_COLS - 2, ' ').c_str());
     }
-    
-    City &city = game.select_city();
-    if (city.is_valid())
+
+    if (game.is_selected_missile()) // DEBUG: en_enhanced_radar_III
     {
+        AttackMissile &missile = static_cast<AttackMissile &>(game.select_missile());
+        mvwprintw(node_window, 1, 1, "Target: %s", missile.city.name.c_str());
+        mvwprintw(node_window, 2, 1, "Speed: %d", missile.speed);
+        mvwprintw(node_window, 3, 1, "Damage: %d", missile.damage);
+    }
+    else if (game.is_selected_city())
+    {
+        City &city = game.select_city();
         mvwprintw(node_window, 1, 1, "Name: %s", city.name.c_str());
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
         mvwprintw(node_window, 3, 1, "Productivity: %d", city.productivity);
         mvwprintw(node_window, 4, 1, "Countdown: %d", city.countdown);
+        if (true) // DEBUG: game.en_enhanced_radar_II
+        {
+            int missile_count = 0;
+            for (auto missile : game.missile_manager.get_attack_missiles())
+            {
+                if (missile->get_target() == city.get_position())
+                {
+                    missile_count++;
+                }
+            }
+
+            mvwprintw(node_window, 5, 1, "Targeted by %d Missiles", missile_count);
+        }
     }
     else
     {
-        mvwprintw(node_window, 1, 1, "No City Selected");
+        mvwprintw(node_window, 1, 1, "Nothing Selected Now");
     }
 
     // INFO WINDOW
@@ -151,6 +171,10 @@ void GameRenderer::draw(void)
     mvwprintw(info_window, 3, 1, "Productivity: %d", game.get_productivity());
     mvwprintw(info_window, 4, 1, "Researching: %s", game.tech_tree.researching != nullptr ? game.tech_tree.researching->name.c_str() : "None");
     mvwprintw(info_window, 5, 1, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
+    if (true) // DEBUG: game.en_enhanced_radar_I
+    {
+        mvwprintw(info_window, 6, 1, "Approaching Missile Count: %zu", game.get_missiles().size());
+    }
 
     // MAP WINDOW
     for (size_t line = 0; line < game.get_background().size(); line++)
