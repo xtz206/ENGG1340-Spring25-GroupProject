@@ -402,7 +402,7 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
-TechTree::TechTree(void)
+TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), remaining_time(0)
 {
     TechNode *root_node = new TechNode("Root", "Root Node", 0, 0, {});
     
@@ -442,9 +442,6 @@ TechTree::TechTree(void)
     nodes.push_back(fast_nuke);
     nodes.push_back(hydron_bomb);
     nodes.push_back(iron_curtain);
-    researching = nullptr;
-    remaining_time = -1;
-
 }
 
 TechTree::~TechTree(void)
@@ -455,13 +452,23 @@ TechTree::~TechTree(void)
     }
 }
 
+std::vector<std::string> TechTree::get_tech_names(void) const
+{
+    std::vector<std::string> names;
+    for (auto node : nodes)
+    {
+        names.push_back(node->name);
+    }
+    return names;
+}
+
 void TechTree::start_research(TechNode *node)
 {
     if (researching != nullptr || node == nullptr)
     {
         return;
     }
-    if (std::find(available.begin(), available.end(), node) == available.end())
+    if (!is_available(node))
     {
         return;
     }
@@ -472,34 +479,30 @@ void TechTree::start_research(TechNode *node)
 
 void TechTree::proceed_research(void)
 {
-    if (researching == nullptr)
+    if (researching == nullptr || remaining_time <= 0)
     {
         return;
     }
     remaining_time--;
-    if (remaining_time <= 0)
-    {
-        researched.push_back(researching);
-        researching = nullptr;
-        for (auto node : nodes)
-        {
-            if (std::find(researched.begin(), researched.end(), node) != researched.end())
-            {
-                continue;
-            }
-            if (std::find(available.begin(), available.end(), node) != available.end())
-            {
-                continue;
-            }
-            if (std::find(node->prerequisites.begin(), node->prerequisites.end(), researching) != node->prerequisites.end())
-            {
-                available.push_back(node);
-            }
-        }
-    }
 }
 
-bool TechTree::is_available(TechNode *node,int deposit) const
+bool TechTree::check_research(void)
+{
+    if (researching == nullptr)
+    {
+        return false;
+    }
+    if (remaining_time > 0)
+    {
+        return false;
+    }
+    researched.push_back(researching);
+    prev_researching = researching;
+    researching = nullptr;
+    return true;
+}
+
+bool TechTree::check_available(TechNode *node, int deposit) const
 {
     if (node -> name == "Root")
     {
@@ -525,11 +528,12 @@ void TechTree::update_available(int deposit)
     {
         if (std::find(available.begin(), available.end(), node) != available.end())
         {
-            if (!is_available(node, deposit)) {
+            if (!check_available(node, deposit))
+            {
                 available.erase(std::find(available.begin(), available.end(), node));
             }
         } else {
-            if (is_available(node, deposit)) {
+            if (check_available(node, deposit)) {
                 available.push_back(node);
             }
         }
@@ -551,11 +555,6 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     missile_manager.inc_turn = inc_turn;
     missile_manager.hitpoint = 1000;
     deposit = 0;
-}
-
-int Game::get_deposit(void) const
-{
-    return deposit;
 }
 
 int Game::get_productivity(void) const
@@ -633,7 +632,7 @@ void Game::pass_turn(void)
     }
 
     tech_tree.proceed_research();
-    tech_tree.update_available(deposit);
+    check_research();
     update_cruise_num();
     update_counter_attack_num();
     
@@ -741,10 +740,17 @@ City &Game::select_city(void)
     throw std::runtime_error("No city selected");
 }
 
-void Game::start_research(void)
+void Game::start_research(TechNode *node)
 {
-    TechNode *node = tech_tree.nodes.at(1);
     if (deposit < node->cost)
+    {
+        return;
+    }
+    if (!tech_tree.is_available(node))
+    {
+        return;
+    }
+    if (tech_tree.researching != nullptr)
     {
         return;
     }
@@ -752,8 +758,23 @@ void Game::start_research(void)
     tech_tree.start_research(node);
 }
 
-void Game::finish_research(City &city, TechNode &node)
+void Game::check_research(void)
 {
+    if (tech_tree.check_research())
+    {
+        finish_research(tech_tree.prev_researching);
+    }
+    tech_tree.update_available(deposit);
+}
+
+void Game::finish_research(TechNode *node)
+{
+    if (node == nullptr)
+    {
+        return;
+    }
+    // TODO: impl enable tech var 
+
 }
 
 void Game::hit_city(City &city, int damage)
@@ -838,7 +859,7 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){}
+    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){} // TODO: impl here
 }
 
 void Game::build_counter_attack(void)
