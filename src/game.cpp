@@ -303,6 +303,50 @@ int MissileManager::generate_random(int turn)
     return dist(mt);
 }
 
+bool MissileManager::city_weight_check(City &c)
+{
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int rand_factor = rand();
+    if (c.hitpoint <= 0)
+    {
+        return false;
+    }
+    if (c.hitpoint > 1000) {
+        return true;
+    }
+    if (c.hitpoint > 700)
+    {
+        if (rand_factor % 8 == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    if (c.hitpoint > 400)
+    {
+        if (rand_factor % 4 == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    if (c.hitpoint > 200)
+    {
+        if (rand_factor % 3 == 0)
+        {
+            return false;
+        }
+        return true;
+    } else {
+        if (rand_factor % 2 == 0)
+        {
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+
 void MissileManager::create_attack_wave(int turn)
 {
     std::random_device rng;
@@ -316,7 +360,10 @@ void MissileManager::create_attack_wave(int turn)
         // randomly select a city
         std::uniform_int_distribution<> targetDist(0, cities.size() - 1);
         int target_index = targetDist(rng);
-
+        while (!city_weight_check(cities.at(target_index)))
+        {
+            target_index = targetDist(rng);
+        }
         // randomly generate a pos with in {(0,0),(20,100)}
         std::uniform_int_distribution<> xDist(0, 99);
         std::uniform_int_distribution<> yDist(0, 19);
@@ -342,11 +389,8 @@ void MissileManager::create_attack_wave(int turn)
             start = Position(0, 0);
             break;
         }
-        // DEBUG: This if is for debugging purpose, remove later
-        if (target_index >= 0 && target_index < cities.size())
-        {
-            create_attack_missile(start, cities.at(target_index), damage, speed);
-        }
+
+        create_attack_missile(start, cities.at(target_index), damage, speed);
     }
 }
 
