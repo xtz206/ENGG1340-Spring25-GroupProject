@@ -587,7 +587,9 @@ void Game::pass_turn(void)
 
     tech_tree.proceed_research();
     tech_tree.update_available(deposit);
-
+    update_cruise_num();
+    update_counter_attack_num();
+    
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
     turn++;
@@ -689,43 +691,81 @@ void Game::fix_city(void)
     city.hitpoint += 100;
 }
 
-void Game::launch_cruise(void)
+void Game::build_cruise(void)
 {
     City &city = select_city();
-    if (city.is_valid())
+    if (!city.is_valid())
     {
         return;
     }
-    int launch_time = en_enhanced_cruise_III ? 2 : 1;
-    while (launch_time > 0)
+    if (deposit < 200 && !en_enhanced_radar_I)
     {
-        if (deposit < 200 && !en_enhanced_radar_I)
-        {
-            return;
-        }
-        if (deposit < 100)
-        {
-            return;
-        }
-        if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
-        {
-            deposit -= en_enhanced_cruise_I ? 100 : 200;
-        }
-        launch_time--;
+        return;
     }
-    return;
+    if (deposit < 100)
+    {
+        return;
+    }
+    deposit -= en_enhanced_cruise_I ? 100 : 200;
+    city.countdown = city.cruise_build_time;
 }
-void Game::launch_counter_attack(void)
+
+void Game::update_cruise_num(void)
+{
+    for (auto &city : cities)
+    {
+        if (city.hitpoint <= 0)
+        {
+            city.cruise_num = 0;
+            city.countdown = 0;
+            continue;
+        }
+        if (city.countdown > 0)
+        {
+            city.countdown--;
+            if (city.countdown == 0)
+            {
+                city.cruise_num+=(en_enhanced_cruise_III ? 2 : 1);
+            }
+        }
+    }
+}
+
+
+void Game::launch_cruise(void)
+{
+    City &city = select_city();
+    if (!city.is_valid())
+    {
+        return;
+    }
+    if (city.cruise_num <= 0)
+    {
+        return;
+    }
+    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){}
+}
+
+void Game::build_counter_attack(void)
 {
     if (deposit <2000)
     {
         return;
     }
+    if (countdowns[0] > 0)
+    {
+        return;
+    }
     deposit -= 2000;
+    countdowns[0] = (en_fast_nuke?5:10);
+}
+
+void Game::launch_counter_attack(void)
+{
     missile_manager.hitpoint -= 50;
 }
 
-void Game::launch_dirty_bomb(void)
+void Game::build_dirty_bomb(void)
 {
     if (!en_dirty_bomb)
     {
@@ -735,7 +775,15 @@ void Game::launch_dirty_bomb(void)
     {
         return;
     }
+    if (countdowns[1] > 0)
+    {
+        return;
+    }
     deposit -= 1000;
+    countdowns[1] = 10;
+}
+void Game::launch_dirty_bomb(void)
+{
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand()%4;
     if (rand_factor == 0)
@@ -745,7 +793,7 @@ void Game::launch_dirty_bomb(void)
     missile_manager.hitpoint -= 50;
 }
 
-void Game::launch_hydron_bomb(void)
+void Game::build_hydron_bomb(void)
 {
     if (!en_hydron_bomb)
     {
@@ -755,7 +803,16 @@ void Game::launch_hydron_bomb(void)
     {
         return;
     }
+    if (countdowns[2] > 0)
+    {
+        return;
+    }
     deposit -= 5000;
+    countdowns[2] = 20;
+}
+
+void Game::launch_hydron_bomb(void)
+{
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand()%2;
     if (rand_factor == 0)
@@ -765,6 +822,21 @@ void Game::launch_hydron_bomb(void)
     missile_manager.hitpoint -= 500;
 }
 
+void Game::update_counter_attack_num(void)
+{  
+    for (int i = 0; i < 3; i++)
+    {
+        if (countdowns[i] > 0)
+        {
+            countdowns[i]--;
+            if (countdowns[i] == 0)
+            {
+                attack_missile_num[i]++;
+            }
+        }
+    }
+
+}
 void Game::activate_iron_curtain(void)
 {
     if (!en_iron_curtain)

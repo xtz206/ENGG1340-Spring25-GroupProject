@@ -44,10 +44,12 @@ private:
     int productivity;
     int countdown;
     int base_productivity;
+    int cruise_num;
+    int cruise_build_time = 5;
 
 public:
     static const City null_city;
-    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0),base_productivity(50) {};
+    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0),base_productivity(50),cruise_num(0) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -216,6 +218,8 @@ private:
     Position cursor;
     int turn;
     int deposit;
+    std::vector<int> countdowns = {0,0,0};// 0: counter, 1: dirty, 2: hydron
+    std::vector<int> attack_missile_num = {0,0,0};// 0: counter, 1: dirty, 2: hydron
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
@@ -267,10 +271,16 @@ public:
     void finish_research(City &city, TechNode &node);
     void hit_city(City &city, int damage);
     void fix_city(void);
+    void build_cruise(void);
+    void update_cruise_num(void);
     void launch_cruise(void);
+    void build_counter_attack(void);
     void launch_counter_attack(void);
+    void build_dirty_bomb(void);
+    void build_hydron_bomb(void);
     void launch_dirty_bomb(void);
     void launch_hydron_bomb(void);
+    void update_counter_attack_num(void);
     void activate_iron_curtain(void);
     void self_defense(void);
 };
