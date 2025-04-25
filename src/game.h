@@ -120,21 +120,24 @@ class AttackMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class Saver;
 
 private:
     City &city;
-    is_aimed = false;
+    bool is_aimed = false;
 
 public:
     AttackMissile(int i, Position p, City &c, int d, int v);
     virtual Position get_target(void) override { return city.get_position(); };
     virtual void move_step(void) override;
+    bool is_aimed (void) { return is_aimed; };
 };
 
 class CruiseMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class Saver;
 
 private:
     Missile &missile;

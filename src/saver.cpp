@@ -34,10 +34,11 @@ void Saver::save_attack_missile(std::string filepath)
     std::ofstream atkmissile_log(filename);
     if (atkmissile_log.is_open())
     {
-        atkmissile_log << "id, y, x, target_y, target_x, damage, speed\n";
+        atkmissile_log << "id, y, x, target_y, target_x, damage, speed, is_aimed\n";
         for (auto &missile : game -> missile_manager.get_attack_missiles())
         {
-            atkmissile_log <<missile->id<<", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile -> target.y << ", " << missile -> target.x << ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
+            AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
+            atkmissile_log <<missile->id<<", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile -> target.y << ", " << missile -> target.x << ", " << ", " << missile -> damage << ", " << missile -> speed <<", "<<attack_missile->is_aimed<<"\n";
         }
     }
     atkmissile_log.close();
@@ -49,10 +50,11 @@ void Saver::save_cruise(std::string filepath)
     std::ofstream cruise_log(filename);
     if (cruise_log.is_open())
     {
-        cruise_log << "y, x, target_id, damage, speed\n";
+        CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(game -> missile_manager.get_cruise_missiles()[0]);
+        cruise_log << "id, y, x, target_id, damage, speed\n";
         for (auto &missile : game -> missile_manager.get_cruise_missiles())
         {
-            cruise_log << missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile->target.id<< ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
+            cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
         }
     }
     cruise_log.close();
