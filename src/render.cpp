@@ -132,6 +132,7 @@ void GameRenderer::draw(void)
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
         mvwprintw(node_window, 3, 1, "Deposit: %d", city.deposit);
         mvwprintw(node_window, 4, 1, "Productivity: %d", city.productivity);
+        mvwprintw(node_window, 5, 1, "Countdown: %d", city.countdown);
     }
     else
     {

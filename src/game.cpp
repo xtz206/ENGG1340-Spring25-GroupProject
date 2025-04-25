@@ -349,7 +349,7 @@ void MissileManager::create_attack_wave(int turn)
     }
 }
 
-City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp)
+City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), countdown(0)
 {
     deposit = 200;
     productivity = 50 + hitpoint / 10;
@@ -440,7 +440,12 @@ void Game::pass_turn(void)
             continue;
         }
         city.deposit += city.productivity;
+        if (city.countdown > 0)
+        {
+            city.countdown--;
+        }
     }
+
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
     turn++;

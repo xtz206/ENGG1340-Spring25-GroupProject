@@ -42,10 +42,11 @@ private:
     int hitpoint;
     int deposit;
     int productivity;
+    int countdown;
 
 public:
     static const City null_city;
-    City() : position(inf, inf), name(""), hitpoint(0), deposit(0), productivity(0) {};
+    City() : position(inf, inf), name(""), hitpoint(0), deposit(0), productivity(0), countdown(0) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
