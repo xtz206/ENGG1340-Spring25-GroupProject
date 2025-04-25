@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <saver.h>
 
 #define inf 0x3f3f3f3f
 
@@ -37,6 +38,7 @@ class City
 {
     friend class Game;
     friend class GameRenderer;
+    friend class Saver;
 
 private:
     Position position;
@@ -91,6 +93,7 @@ class Missile
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
+    friend class Saver;
 
 protected:
     int id;
@@ -144,6 +147,7 @@ class MissileManager
 {
     friend class Game;
     friend class GameRenderer;
+    friend class Saver;
 
 private:
     int id;
@@ -210,6 +214,7 @@ public:
 class Game
 {
     friend class GameRenderer;
+    friend class Saver;
 
 private:
     bool activated;
