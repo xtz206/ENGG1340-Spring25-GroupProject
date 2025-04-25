@@ -6,7 +6,6 @@
 
 #include "game.h"
 
-#define INF 0x3f3f3f3f
 #define DEFEND_RADIUS 5
 
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
@@ -210,8 +209,7 @@ void MissileManager::create_attack_missile(Position p, City &c, int d, int v)
 
 bool MissileManager::create_cruise_missile(City &c, int d, int v)
 {
-
-    int target_distance = INF;
+    int target_distance = inf;
     Missile *target_missile = nullptr;
     for (auto attack_missile : get_attack_missiles())
     {
@@ -343,10 +341,10 @@ void MissileManager::create_attack_wave(int turn)
             start = Position(0, 0);
             break;
         }
-        // This if is for debugging purpose, remove later
+        // DEBUG: This if is for debugging purpose, remove later
         if (target_index >= 0 && target_index < cities.size())
         {
-            create_attack_missile(start, cities[target_index], damage, speed);
+            create_attack_missile(start, cities.at(target_index), damage, speed);
         }
     }
 }
@@ -421,18 +419,20 @@ void Game::pass_turn(void)
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 
-    for (auto &missile : missile_manager.get_attack_missiles())
+    for (auto missile : missile_manager.get_attack_missiles())
     {
-        if (missile->get_progress() == MissileProgress::HIT && missile->get_direction() == MissileDirection::A)
+        if (!(missile->type == MissileType::ATTACK))
         {
-            City *city = select_city(missile->get_position());
-            if (city == nullptr)
-            {
-                continue;
-            }
-            hit_city(city, missile->damage);
+            continue;
+        }
+        AttackMissile *attack_missile = static_cast<AttackMissile *>(missile);
+
+        if (attack_missile->get_progress() == MissileProgress::HIT && attack_missile->get_direction() == MissileDirection::A)
+        {
+            hit_city(attack_missile->city, attack_missile->damage);
         }
     }
+
     for (auto &city : cities)
     {
         if (city.hitpoint <= 0)
@@ -474,71 +474,55 @@ bool Game::is_game_over(void) const
     }
     return true;
 }
-
-City *Game::select_city(void)
+City &Game::select_city(void)
 {
     for (auto &city : cities)
     {
-        if (cursor.y == city.position.y && cursor.x == city.position.x)
+        if (is_in_range(cursor, city.position, 1))
         {
-            return &city;
+            return city;
         }
     }
-    return nullptr;
+    // if no city is selected, return the first city
+    return cities.at(0);
 }
 
-City *Game::select_city(Position p)
+void Game::hit_city(City &city, int damage)
 {
-    for (auto &city : cities)
-    {
-        if (p.y == city.position.y && p.x == city.position.x)
-        {
-            return &city;
-        }
-    }
-    return nullptr;
-}
-
-void Game::hit_city(City *city, int damage)
-{
-    if (city == nullptr)
+    if (!city.is_valid())
     {
         return;
     }
-    if (city->hitpoint - damage < 0)
+    if (!city.hitpoint - damage < 0)
     {
-        city->hitpoint = 0;
+        city.hitpoint = 0;
     }
     else
     {
-        city->hitpoint -= damage;
+        city.hitpoint -= damage;
     }
 }
 
 void Game::fix_city(void)
 {
-    City *city = select_city();
-    if (city == nullptr)
+    City &city = select_city();
+    if (city.is_valid())
     {
         return;
     }
-    city->hitpoint += 100;
+    city.hitpoint += 100;
 }
 
 void Game::launch_cruise(void)
 {
-    City *city = select_city();
-    if (city == nullptr)
+    City &city = select_city();
+    if (!city.is_valid() || city.deposit < 200)
     {
         return;
     }
-    if (city->deposit < 200)
+    if (missile_manager.create_cruise_missile(city, 100, 2))
     {
-        return;
-    }
-    if (missile_manager.create_cruise_missile(*city, 100, 2))
-    {
-        city->deposit -= 200;
+        city.deposit -= 200;
     }
     return;
 }

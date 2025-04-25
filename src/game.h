@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#define inf 0x3f3f3f3f
+
 class Position
 {
     // NOTE: The Position is (y, x) instead of (x, y)
@@ -25,6 +27,7 @@ public:
 public:
     Position() : y(0), x(0) {}
     Position(int ny, int nx) : y(ny), x(nx) {}
+    bool is_valid(void) const { return y < inf || x < inf; };
 };
 typedef Position Size;
 
@@ -41,8 +44,11 @@ private:
     int productivity;
 
 public:
+    static const City null_city;
+    City() : position(inf, inf), name(""), hitpoint(0), deposit(0), productivity(0) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
+    bool is_valid(void) const { return position.is_valid() && name != ""; };
 };
 
 enum class MissileType
@@ -52,6 +58,7 @@ enum class MissileType
     UNKNOWN
 };
 
+// TODO: add more detailed MissileProgress MissileDirection comments
 enum class MissileProgress
 {
     EXPLODED,   // Exploded
@@ -191,10 +198,9 @@ public:
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
     bool is_game_over(void) const;
-    City *select_city(void);
-    City *select_city(Position p);
+    City &select_city(void);
 
-    void hit_city(City *city, int damage);
+    void hit_city(City &city, int damage);
     void fix_city(void);
     void launch_cruise(void);
 };
