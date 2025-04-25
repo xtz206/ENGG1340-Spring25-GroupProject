@@ -4,7 +4,7 @@
 #include <random>
 #include <fstream>
 #include <ctime>
-
+#include "saver.h"
 #include "game.h"
 
 #define DEFEND_RADIUS 10
@@ -154,9 +154,10 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v)
+CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v,int t_id)
     : Missile(i, p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
+    target_id = t_id;
 }
 
 void CruiseMissile::move_step(void)
@@ -215,17 +216,18 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     for (auto attack_missile : get_attack_missiles())
     {
         int distance = abs(attack_missile->get_position().y - c.get_position().y) + abs(attack_missile->get_position().x - c.get_position().x);
-        if (distance < target_distance)
+        if (distance < target_distance && attack_missile.is_aimed == false)
         {
             target_distance = distance;
             target_missile = attack_missile;
+            attack_missile->is_aimed = true;
         }
     }
     if (target_missile == nullptr || target_distance > DEFEND_RADIUS)
     {
         return false;
     }
-    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v);
+    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v ,target_missile->id);
     missiles.push_back(missile);
     return true;
 }

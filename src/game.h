@@ -123,6 +123,7 @@ class AttackMissile : public Missile
 
 private:
     City &city;
+    is_aimed = false;
 
 public:
     AttackMissile(int i, Position p, City &c, int d, int v);
@@ -137,9 +138,10 @@ class CruiseMissile : public Missile
 
 private:
     Missile &missile;
+    int target_id;
 
 public:
-    CruiseMissile(int i, Position p, Missile &m, int d, int v);
+    CruiseMissile(int i, Position p, Missile &m, int d, int v,int t_id);
     virtual Position get_target(void) override { return missile.get_position(); };
     virtual void move_step(void) override;
 };
