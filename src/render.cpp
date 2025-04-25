@@ -21,6 +21,8 @@
 #define OPERATION_COLS 100
 #define MENU_LINES 10
 #define MENU_COLS 40
+#define TECH_LINES 30
+#define TECH_COLS 80
 
 void Renderer::debug(const std::string &str, int line)
 {
@@ -49,22 +51,72 @@ void MenuRenderer::draw(void)
         mvwprintw(menu_window, line, 1, "%s", std::string(MENU_COLS - 2, ' ').c_str());
     }
 
-    for (size_t index = 0; index < menu.get_buttons().size(); index++)
+    for (size_t index = 0; index < menu.get_items().size(); index++)
     {
         if (index == menu.get_cursor())
         {
             wattron(menu_window, A_REVERSE);
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
+            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_items().at(index).length()) / 2, "%s", menu.get_items().at(index).c_str());
             wattroff(menu_window, A_REVERSE);
         }
         else
         {
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
+            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_items().at(index).length()) / 2, "%s", menu.get_items().at(index).c_str());
         }
-        if (index == menu.get_buttons().size() - 1)
+        if (index == menu.get_items().size() - 1)
         {
             break;
         }
+    }
+}
+
+void TechMenuRenderer::init(void)
+{
+    clear();
+
+    menu_window = subwin(stdscr, TECH_LINES, TECH_COLS, (LINES - TECH_LINES) / 2, (COLS - TECH_COLS) / 2);
+    box(menu_window, 0, 0);
+
+    mvwprintw(menu_window, 0, (TECH_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
+}
+
+void TechMenuRenderer::render(void)
+{
+    wrefresh(menu_window);
+}
+
+void TechMenuRenderer::draw()
+{
+    for (size_t line = 1; line < TECH_LINES - 1; line++)
+    {
+        mvwprintw(menu_window, line, 1, "%s", std::string(TECH_COLS - 2, ' ').c_str());
+    }
+    mvwhline(menu_window, menu.get_items().size() + 1, 1, ACS_HLINE, TECH_COLS - 2);
+
+    std::vector<std::string> items = menu.get_items();
+    for (size_t index = 0; index < items.size(); index++)
+    {
+        if (index == menu.get_cursor())
+        {
+            wattron(menu_window, A_REVERSE);
+            mvwprintw(menu_window, index + 1, 1, "%s", items.at(index).c_str());
+            wattroff(menu_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(menu_window, index + 1, 1, "%s", items.at(index).c_str());
+        }
+        if (index == TECH_LINES - 1)
+        {
+            break;
+        }
+    }
+
+    std::vector<std::string> description = menu.get_item_description();
+
+    for (size_t index = 0; index < description.size(); index++)
+    {
+        mvwprintw(menu_window, index + menu.get_items().size() + 2, 1, "%s", description.at(index).c_str());
     }
 }
 

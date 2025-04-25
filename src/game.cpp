@@ -452,6 +452,16 @@ TechTree::~TechTree(void)
     }
 }
 
+std::vector<std::string> TechTree::get_tech_names(void) const
+{
+    std::vector<std::string> names;
+    for (auto node : nodes)
+    {
+        names.push_back(node->name);
+    }
+    return names;
+}
+
 void TechTree::start_research(TechNode *node)
 {
     if (researching != nullptr || node == nullptr)
@@ -496,7 +506,7 @@ void TechTree::proceed_research(void)
     }
 }
 
-bool TechTree::is_available(TechNode *node,int deposit) const
+bool TechTree::check_available(TechNode *node, int deposit) const
 {
     if (node -> name == "Root")
     {
@@ -522,11 +532,12 @@ void TechTree::update_available(int deposit)
     {
         if (std::find(available.begin(), available.end(), node) != available.end())
         {
-            if (!is_available(node, deposit)) {
+            if (!check_available(node, deposit))
+            {
                 available.erase(std::find(available.begin(), available.end(), node));
             }
         } else {
-            if (is_available(node, deposit)) {
+            if (check_available(node, deposit)) {
                 available.push_back(node);
             }
         }
@@ -835,7 +846,7 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){}
+    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){} // TODO: impl here
 }
 
 void Game::build_counter_attack(void)

@@ -4,12 +4,14 @@
 #include <string>
 #include <vector>
 
+#include "game.h"
+
 class Menu
 {
-private:
+protected:
     bool activated;
     std::string title;
-    std::vector<std::string> buttons;
+    std::vector<std::string> items;
     int cursor;
 
 public:
@@ -21,7 +23,17 @@ public:
     void deactivate(void) { activated = false; };
 
     const std::string &get_title(void) const { return title; };
-    const std::vector<std::string> &get_buttons(void) const { return buttons; };
+    const std::vector<std::string> &get_items(void) const { return items; };
 };
 
+class TechMenu : public Menu
+{
+private:
+    TechTree &tech_tree;
+
+public:
+    TechMenu(TechTree &t);
+    TechNode *get_tech_node(void) const { return tech_tree.nodes.at(cursor); };
+    std::vector<std::string> get_item_description(void);
+};
 #endif

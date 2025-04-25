@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <algorithm>
 
 #define inf 0x3f3f3f3f
 
@@ -177,6 +177,7 @@ class TechNode
     friend class Game;
     friend class GameRenderer;
     friend class TechTree;
+    friend class TechMenu;
 
 private:
     std::string name;
@@ -193,6 +194,7 @@ class TechTree
 {
     friend class Game;
     friend class GameRenderer;
+    friend class TechMenu;
 
 private:
     std::vector<TechNode *> nodes;
@@ -204,10 +206,17 @@ private:
 public:
     TechTree(void);
     ~TechTree(void);
+
+    std::vector<std::string> get_tech_names(void) const;
+
     void start_research(TechNode *node);
     void proceed_research(void);
+    bool is_researched(TechNode *node) const { return std::find(researched.begin(), researched.end(), node) != researched.end(); };
+    bool is_available(TechNode *node) const { return std::find(available.begin(), available.end(), node) != available.end(); };
     void update_available(int deposit);
-    bool is_available(TechNode *node, int deposit) const;
+
+private:
+    bool check_available(TechNode *node, int deposit) const;
 };
 
 class Game
@@ -256,6 +265,8 @@ public:
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
+    MissileManager &get_missile_manager(void) { return missile_manager; };
+    TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
 

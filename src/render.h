@@ -31,6 +31,20 @@ public:
     void draw(void);
 };
 
+class TechMenuRenderer : public Renderer
+{
+private:
+    TechMenu &menu;
+    WINDOW *menu_window;
+
+public:
+    TechMenuRenderer(TechMenu &m) : menu(m) {};
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
 class GameRenderer : public Renderer
 {
 private:
