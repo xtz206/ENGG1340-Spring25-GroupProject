@@ -368,7 +368,7 @@ TechTree::TechTree(void)
     
     TechNode* self_defense_sys = new TechNode("Self Defense System", "Can build a self defense system to protect the city", 2000, 10, {enhanced_cruise_III,enhanced_radar_III});
 
-    TechNode* fortress_city = new TechNode("Fortress City", "Increase cities's base hitpoint by 50%", 2000, 10, {root_node});
+    TechNode* fortress_city = new TechNode("Fortress City", "Increase cities's hitpoint by 50%", 2000, 10, {root_node});
     TechNode* urgent_production = new TechNode("Urgent Production", "Increase cities's base production by 200%", 5000, 30, {fortress_city});
     TechNode* evacuated_industry = new TechNode("Evacuated Industry","City may maintain base production after destroyed", 10000, 50, {urgent_production});
 
@@ -463,6 +463,7 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     missile_manager.damage_list = dmg;
     missile_manager.inc_turn = inc_turn;
     missile_manager.hitpoint = 1000;
+    deposit = 0;
 }
 
 int Game::get_deposit(void) const
