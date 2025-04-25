@@ -40,13 +40,12 @@ private:
     Position position;
     std::string name;
     int hitpoint;
-    int deposit;
     int productivity;
     int countdown;
 
 public:
     static const City null_city;
-    City() : position(inf, inf), name(""), hitpoint(0), deposit(0), productivity(0), countdown(0) {};
+    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -170,6 +169,7 @@ public:
 class TechNode
 {
     friend class Game;
+    friend class GameRenderer;
     friend class TechTree;
 
 private:
@@ -185,14 +185,21 @@ public:
 };
 class TechTree
 {
+    friend class Game;
+    friend class GameRenderer;
+
 private:
     std::vector<TechNode *> nodes;
     std::vector<TechNode *> researched;
     std::vector<TechNode *> available;
+    TechNode *researching;
+    int remaining_time;
 
 public:
     TechTree(void);
     ~TechTree(void);
+    void start_research(TechNode *node);
+    void proceed_research(void);
 };
 
 class Game
@@ -204,9 +211,11 @@ private:
     Size size;
     Position cursor;
     int turn;
+    int deposit;
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
+    TechTree tech_tree;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
@@ -219,8 +228,8 @@ public:
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
 
-    int get_total_deposit(void) const;
-    int get_total_productivity(void) const;
+    int get_deposit(void) const;
+    int get_productivity(void) const;
 
     void move_cursor(Position dcursor);
     void pass_turn(void);
@@ -229,6 +238,8 @@ public:
     bool is_game_over(void) const;
     City &select_city(void);
 
+    void start_research(void);
+    void finish_research(City &city, TechNode &node);
     void hit_city(City &city, int damage);
     void fix_city(void);
     void launch_cruise(void);

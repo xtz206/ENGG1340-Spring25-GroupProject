@@ -118,6 +118,8 @@ void GameRenderer::draw(void)
     }
 
     mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
+    mvwprintw(radar_window, 2, 1, "Researched: %zu", game.tech_tree.researched.size());
+    mvwprintw(radar_window, 3, 1, "Available: %zu", game.tech_tree.available.size());
 
     // NODE WINDOW
     for (size_t line = 1; line < NODE_LINES - 1; line++)
@@ -130,9 +132,8 @@ void GameRenderer::draw(void)
     {
         mvwprintw(node_window, 1, 1, "Name: %s", city.name.c_str());
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
-        mvwprintw(node_window, 3, 1, "Deposit: %d", city.deposit);
-        mvwprintw(node_window, 4, 1, "Productivity: %d", city.productivity);
-        mvwprintw(node_window, 5, 1, "Countdown: %d", city.countdown);
+        mvwprintw(node_window, 3, 1, "Productivity: %d", city.productivity);
+        mvwprintw(node_window, 4, 1, "Countdown: %d", city.countdown);
     }
     else
     {
@@ -146,8 +147,10 @@ void GameRenderer::draw(void)
     }
 
     mvwprintw(info_window, 1, 1, "Turn: %d", game.get_turn());
-    mvwprintw(info_window, 2, 1, "Total Deposit: %d", game.get_total_deposit());
-    mvwprintw(info_window, 3, 1, "Total Productivity: %d", game.get_total_productivity());
+    mvwprintw(info_window, 2, 1, "Deposit: %d", game.get_deposit());
+    mvwprintw(info_window, 3, 1, "Productivity: %d", game.get_productivity());
+    mvwprintw(info_window, 4, 1, "Researching: %s", game.tech_tree.researching != nullptr ? game.tech_tree.researching->name.c_str() : "None");
+    mvwprintw(info_window, 5, 1, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
 
     // MAP WINDOW
     for (size_t line = 0; line < game.get_background().size(); line++)

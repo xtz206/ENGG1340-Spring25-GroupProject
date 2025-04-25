@@ -351,7 +351,6 @@ void MissileManager::create_attack_wave(int turn)
 
 City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), countdown(0)
 {
-    deposit = 200;
     productivity = 50 + hitpoint / 10;
 }
 
@@ -361,6 +360,7 @@ TechTree::TechTree(void)
     TechNode *node1 = new TechNode("Node1", "Node 1", 100, 10, {root_node});
     nodes.push_back(root_node);
     nodes.push_back(node1);
+    available.push_back(node1);
 }
 
 TechTree::~TechTree(void)
@@ -368,6 +368,50 @@ TechTree::~TechTree(void)
     for (auto node : nodes)
     {
         delete node;
+    }
+}
+
+void TechTree::start_research(TechNode *node)
+{
+    if (researching != nullptr || node == nullptr)
+    {
+        return;
+    }
+    if (std::find(available.begin(), available.end(), node) == available.end())
+    {
+        return;
+    }
+    researching = node;
+    remaining_time = node->time;
+    available.erase(std::find(available.begin(), available.end(), node));
+}
+
+void TechTree::proceed_research(void)
+{
+    if (researching == nullptr)
+    {
+        return;
+    }
+    remaining_time--;
+    if (remaining_time <= 0)
+    {
+        researched.push_back(researching);
+        researching = nullptr;
+        for (auto node : nodes)
+        {
+            if (std::find(researched.begin(), researched.end(), node) != researched.end())
+            {
+                continue;
+            }
+            if (std::find(available.begin(), available.end(), node) != available.end())
+            {
+                continue;
+            }
+            if (std::find(node->prerequisites.begin(), node->prerequisites.end(), researching) != node->prerequisites.end())
+            {
+                available.push_back(node);
+            }
+        }
     }
 }
 
@@ -386,17 +430,12 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     missile_manager.hitpoint = 1000;
 }
 
-int Game::get_total_deposit(void) const
+int Game::get_deposit(void) const
 {
-    int total = 0;
-    for (auto &city : cities)
-    {
-        total += city.deposit;
-    }
-    return total;
+    return deposit;
 }
 
-int Game::get_total_productivity(void) const
+int Game::get_productivity(void) const
 {
     int total = 0;
     for (auto &city : cities)
@@ -443,24 +482,29 @@ void Game::pass_turn(void)
         }
         AttackMissile *attack_missile = static_cast<AttackMissile *>(missile);
 
-        if (attack_missile->get_progress() == MissileProgress::HIT && attack_missile->get_direction() == MissileDirection::A)
+        if (attack_missile->get_progress() == MissileProgress::HIT &&
+            attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
         }
     }
 
+    // TODO: Economy Refactor
     for (auto &city : cities)
     {
         if (city.hitpoint <= 0)
         {
+            city.countdown = 0;
             continue;
         }
-        city.deposit += city.productivity;
+        deposit += city.productivity;
         if (city.countdown > 0)
         {
             city.countdown--;
         }
     }
+
+    tech_tree.proceed_research();
 
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
@@ -508,6 +552,21 @@ City &Game::select_city(void)
     return cities.at(0);
 }
 
+void Game::start_research(void)
+{
+    TechNode *node = tech_tree.nodes.at(1);
+    if (deposit < node->cost)
+    {
+        return;
+    }
+    deposit -= node->cost;
+    tech_tree.start_research(node);
+}
+
+void Game::finish_research(City &city, TechNode &node)
+{
+}
+
 void Game::hit_city(City &city, int damage)
 {
     if (!city.is_valid())
@@ -537,13 +596,13 @@ void Game::fix_city(void)
 void Game::launch_cruise(void)
 {
     City &city = select_city();
-    if (!city.is_valid() || city.deposit < 200)
+    if (!city.is_valid() || deposit < 200)
     {
         return;
     }
     if (missile_manager.create_cruise_missile(city, 100, 2))
     {
-        city.deposit -= 200;
+        deposit -= 200;
     }
     return;
 }

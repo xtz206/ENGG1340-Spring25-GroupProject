@@ -66,7 +66,6 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
         case 'd':
             game.move_cursor(Position(0, 1));
             return;
-
         case '\n':
             game.pass_turn();
             return;
@@ -74,6 +73,10 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
         case '\033':
             game.deactivate();
             pause_menu.activate();
+            return;
+
+        case 'r':
+            game.start_research();
             return;
 
         case 'f':
