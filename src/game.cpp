@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <random>
 #include <fstream>
+#include <ctime>
 
 #include "game.h"
 
@@ -590,6 +591,16 @@ void Game::pass_turn(void)
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
     turn++;
+
+    if (iron_curtain_activated)
+    {
+        iron_curtain_cnt--;
+        if (iron_curtain_cnt <= 0)
+        {
+            iron_curtain_activated = false;
+            iron_curtain_cnt = 30;
+        }
+    }
 }
 
 bool Game::is_in_range(Position p1, Position p2, int range) const
@@ -654,6 +665,10 @@ void Game::hit_city(City &city, int damage)
     {
         return;
     }
+    if (iron_curtain_activated)
+    {
+        return;
+    }
     if (!city.hitpoint - damage < 0)
     {
         city.hitpoint = 0;
@@ -699,4 +714,71 @@ void Game::launch_cruise(void)
         launch_time--;
     }
     return;
+}
+void Game::launch_counter_attack(void)
+{
+    if (deposit <2000)
+    {
+        return;
+    }
+    deposit -= 2000;
+    missile_manager.hitpoint -= 50;
+}
+
+void Game::launch_dirty_bomb(void)
+{
+    if (!en_dirty_bomb)
+    {
+        return;
+    }
+    if (deposit < 1000)
+    {
+        return;
+    }
+    deposit -= 1000;
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int rand_factor = rand()%4;
+    if (rand_factor == 0)
+    {
+        return;
+    }
+    missile_manager.hitpoint -= 50;
+}
+
+void Game::launch_hydron_bomb(void)
+{
+    if (!en_hydron_bomb)
+    {
+        return;
+    }
+    if (deposit < 5000)
+    {
+        return;
+    }
+    deposit -= 5000;
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int rand_factor = rand()%2;
+    if (rand_factor == 0)
+    {
+        return;
+    }
+    missile_manager.hitpoint -= 500;
+}
+
+void Game::activate_iron_curtain(void)
+{
+    if (!en_iron_curtain)
+    {
+        return;
+    }
+    if (iron_curtain_activated)
+    {
+        return;
+    }
+    if (deposit < 10000)
+    {
+        return;
+    }
+    deposit -= 10000;
+    iron_curtain_activated = true;
 }
