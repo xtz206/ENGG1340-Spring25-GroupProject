@@ -83,6 +83,7 @@ class Missile
     friend class MissileManager;
 
 protected:
+    int id;
     Position position;
     Position target;
     MissileProgress progress;
@@ -91,7 +92,7 @@ protected:
     int speed;
 
 public:
-    Missile(Position p, Position t, int d, int v, MissileType tp);
+    Missile(int i, Position p, Position t, int d, int v, MissileType tp);
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
     MissileDirection get_direction(void);
@@ -110,7 +111,7 @@ private:
     City &city;
 
 public:
-    AttackMissile(Position p, City &c, int d, int v);
+    AttackMissile(int i, Position p, City &c, int d, int v);
     virtual Position get_target(void) override { return city.get_position(); };
     virtual void move_step(void) override;
 };
@@ -124,7 +125,7 @@ private:
     Missile &missile;
 
 public:
-    CruiseMissile(Position p, Missile &m, int d, int v);
+    CruiseMissile(int i, Position p, Missile &m, int d, int v);
     virtual Position get_target(void) override { return missile.get_position(); };
     virtual void move_step(void) override;
 };
@@ -135,6 +136,7 @@ class MissileManager
     friend class GameRenderer;
 
 private:
+    int id;
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;

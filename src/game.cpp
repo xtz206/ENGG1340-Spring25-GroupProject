@@ -9,8 +9,8 @@
 #define INF 0x3f3f3f3f
 #define DEFEND_RADIUS 5
 
-Missile::Missile(Position p, Position t, int d, int v, MissileType tp)
-    : position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
+Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
+    : id(i), position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
 {
 }
 
@@ -144,8 +144,8 @@ void Missile::collide(void)
     progress = MissileProgress::EXPLODED;
 }
 
-AttackMissile::AttackMissile(Position p, City &c, int d, int v)
-    : Missile(p, c.get_position(), d, v, MissileType::ATTACK), city(c)
+AttackMissile::AttackMissile(int i, Position p, City &c, int d, int v)
+    : Missile(i, p, c.get_position(), d, v, MissileType::ATTACK), city(c)
 {
 }
 
@@ -154,8 +154,8 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(Position p, Missile &m, int d, int v)
-    : Missile(p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
+CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v)
+    : Missile(i, p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
 }
 
@@ -169,7 +169,7 @@ void CruiseMissile::move_step(void)
         collide();
     }
 }
-MissileManager::MissileManager(std::vector<City> &cts) : cities(cts) {}
+MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
 
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
@@ -204,7 +204,7 @@ std::vector<Missile *> MissileManager::get_cruise_missiles(void)
 
 void MissileManager::create_attack_missile(Position p, City &c, int d, int v)
 {
-    Missile *missile = new AttackMissile(p, c, d, v);
+    Missile *missile = new AttackMissile(id++, p, c, d, v);
     missiles.push_back(missile);
 }
 
@@ -226,7 +226,7 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     {
         return false;
     }
-    Missile *missile = new CruiseMissile(c.get_position(), *target_missile, d, v);
+    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v);
     missiles.push_back(missile);
     return true;
 }
@@ -259,7 +259,7 @@ void MissileManager::remove_missiles(void)
         }
     }
 
-    for (auto &attack_missile : get_attack_missiles())
+    for (auto attack_missile : get_attack_missiles())
     {
         if (attack_missile->get_progress() == MissileProgress::EXPLODED)
         {
