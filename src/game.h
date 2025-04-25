@@ -233,12 +233,14 @@ private:
     bool en_urgent_production = false;  //done
     bool en_evacuated_industry = false; //done
 
-    bool en_dirty_bomb = false;
+    bool en_dirty_bomb = false;         //done
     bool en_fast_nuke = false;
-    bool en_hydron_bomb = false;
+    bool en_hydron_bomb = false;        //done
 
     bool en_self_defense_sys = false;
-    bool en_iron_curtain = false;
+    bool en_iron_curtain = false;       //done
+    bool iron_curtain_activated = false;
+    int iron_curtain_cnt = 30;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
@@ -266,6 +268,11 @@ public:
     void hit_city(City &city, int damage);
     void fix_city(void);
     void launch_cruise(void);
+    void launch_counter_attack(void);
+    void launch_dirty_bomb(void);
+    void launch_hydron_bomb(void);
+    void activate_iron_curtain(void);
+    void self_defense(void);
 };
 
 #endif

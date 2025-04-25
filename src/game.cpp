@@ -7,7 +7,7 @@
 
 #include "game.h"
 
-#define DEFEND_RADIUS 5
+#define DEFEND_RADIUS 10
 
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
     : id(i), position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
@@ -781,4 +781,26 @@ void Game::activate_iron_curtain(void)
     }
     deposit -= 10000;
     iron_curtain_activated = true;
+}
+
+void Game::self_defense(void)
+{
+    if (!en_self_defense_sys)
+    {
+        return;
+    }
+    for (auto &city : cities)
+    {
+        for (auto missile : missile_manager.get_attack_missiles())
+        {
+            if (deposit < 1000)
+            {
+                return;
+            }
+            if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
+            {
+                deposit -= en_enhanced_cruise_I ? 100 : 200;
+            }
+        }
+    }
 }
