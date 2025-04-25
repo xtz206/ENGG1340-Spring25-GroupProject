@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <map>
 #include <ncurses.h>
 #include <unistd.h>
 
@@ -19,34 +20,34 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &end_menu)
+void control(short key, Game &game, std::map<std::string, Menu> &menus)
 {
-    if (start_menu.is_activated())
+    if (menus.at("start").is_activated())
     {
         switch (key)
         {
         case 'w':
-            start_menu.move_cursor(-1);
+            menus.at("start").move_cursor(-1);
             return;
 
         case 's':
-            start_menu.move_cursor(1);
+            menus.at("start").move_cursor(1);
             return;
 
         case '\n':
-            if (start_menu.get_cursor() == 0)
+            if (menus.at("start").get_cursor() == 0)
             {
-                start_menu.deactivate();
+                menus.at("start").deactivate();
                 game.activate();
             }
-            else if (start_menu.get_cursor() == 1)
+            else if (menus.at("start").get_cursor() == 1)
             {
-                start_menu.deactivate();
+                menus.at("start").deactivate();
             }
             return;
 
         case 'q':
-            start_menu.deactivate();
+            menus.at("start").deactivate();
             return;
         }
     }
@@ -72,7 +73,7 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
 
         case '\033':
             game.deactivate();
-            pause_menu.activate();
+            menus.at("pause").activate();
             return;
 
         case 'r':
@@ -91,70 +92,70 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
             game.deactivate();
         }
     }
-    else if (pause_menu.is_activated())
+    else if (menus.at("pause").is_activated())
     {
         switch (key)
         {
         case 'w':
-            pause_menu.move_cursor(-1);
+            menus.at("pause").move_cursor(-1);
             return;
         case 's':
-            pause_menu.move_cursor(1);
+            menus.at("pause").move_cursor(1);
             return;
 
         case '\n':
-            if (pause_menu.get_cursor() == 0)
+            if (menus.at("pause").get_cursor() == 0)
             {
-                pause_menu.deactivate();
+                menus.at("pause").deactivate();
                 game.activate();
             }
-            else if (pause_menu.get_cursor() == 1)
+            else if (menus.at("pause").get_cursor() == 1)
             {
-                pause_menu.deactivate();
+                menus.at("pause").deactivate();
                 game.deactivate();
-                start_menu.activate();
+                menus.at("start").activate();
             }
-            else if (pause_menu.get_cursor() == 2)
+            else if (menus.at("pause").get_cursor() == 2)
             {
-                pause_menu.deactivate();
+                menus.at("pause").deactivate();
             }
             return;
 
         case '\033':
-            pause_menu.deactivate();
+            menus.at("pause").deactivate();
             game.activate();
             return;
 
         case 'q':
-            pause_menu.deactivate();
+            menus.at("pause").deactivate();
             return;
         }
     }
-    else if (end_menu.is_activated())
+    else if (menus.at("end").is_activated())
     {
         switch (key)
         {
         case 'w':
-            end_menu.move_cursor(-1);
+            menus.at("end").move_cursor(-1);
             return;
         case 's':
-            end_menu.move_cursor(1);
+            menus.at("end").move_cursor(1);
             return;
 
         case '\n':
-            if (end_menu.get_cursor() == 1)
+            if (menus.at("end").get_cursor() == 1)
             {
-                end_menu.deactivate();
-                start_menu.activate();
+                menus.at("end").deactivate();
+                menus.at("start").activate();
             }
-            else if (end_menu.get_cursor() == 2)
+            else if (menus.at("end").get_cursor() == 2)
             {
-                end_menu.deactivate();
+                menus.at("end").deactivate();
             }
             return;
 
         case 'q':
-            end_menu.deactivate();
+            menus.at("end").deactivate();
             return;
         }
     }
@@ -169,24 +170,27 @@ int main(void)
         short key;
         Loader loader = Loader();
         // TODO: store menu title and buttons in separate file instead of hardcoding
-        Menu start_menu = Menu("MISSILE COMMANDER", {"START THE GAME", "QUIT"});
-        Menu pause_menu = Menu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
-        Menu end_menu = Menu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
+        std::map<std::string, Menu> menus = {
+            {"start", Menu("MISSILE COMMANDER", {"START THE GAME", "QUIT"})},
+            {"pause", Menu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"})},
+            {"end", Menu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"})}
+            // DEBUG: the 'DEBUG' button is just for testing, remove later
+        };
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
 
-        MenuRenderer start_menu_renderer = MenuRenderer(start_menu);
-        MenuRenderer pause_menu_renderer = MenuRenderer(pause_menu);
-        MenuRenderer end_menu_renderer = MenuRenderer(end_menu);
+        MenuRenderer start_menu_renderer = MenuRenderer(menus.at("start"));
+        MenuRenderer pause_menu_renderer = MenuRenderer(menus.at("pause"));
+        MenuRenderer end_menu_renderer = MenuRenderer(menus.at("end"));
         GameRenderer game_renderer = GameRenderer(game);
 
         // TODO: add FRAME_INTERVAL macro instead of magic number
 
-        start_menu.activate();
+        menus.at("start").activate();
         start_menu_renderer.init();
-        while (start_menu.is_activated())
+        while (menus.at("start").is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu, end_menu);
+            control(key, game, menus);
 
             if (!game.is_activated())
             {
@@ -200,15 +204,15 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu);
+                control(key, game, menus);
                 if (game.is_game_over())
                 {
                     game.deactivate();
-                    end_menu.activate();
+                    menus.at("end").activate();
                     break;
                 }
 
-                if (!pause_menu.is_activated())
+                if (!menus.at("pause").is_activated())
                 {
                     game_renderer.draw();
                     game_renderer.render();
@@ -217,10 +221,10 @@ int main(void)
                 }
 
                 pause_menu_renderer.init();
-                while (pause_menu.is_activated())
+                while (menus.at("pause").is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu);
+                    control(key, game, menus);
                     pause_menu_renderer.draw();
                     pause_menu_renderer.render();
                     usleep(10000);
@@ -229,17 +233,17 @@ int main(void)
                     game_renderer.init();
             }
 
-            if (!end_menu.is_activated())
+            if (!menus.at("end").is_activated())
             {
                 start_menu_renderer.init();
                 continue;
             }
 
             end_menu_renderer.init();
-            while (end_menu.is_activated())
+            while (menus.at("end").is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu);
+                control(key, game, menus);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);
