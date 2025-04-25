@@ -37,6 +37,7 @@ class City
 {
     friend class Game;
     friend class GameRenderer;
+    friend class MissileManager;
 
 private:
     Position position;
@@ -159,6 +160,8 @@ public:
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
+
+    bool city_weight_check(City &c);//this checks cities weight of becoming a target
     void create_attack_missile(Position p, City &c, int d, int v);
     bool create_cruise_missile(City &c, int d, int v);
     void update_missiles(void);
