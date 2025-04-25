@@ -368,17 +368,18 @@ TechTree::TechTree(void)
     
     TechNode* self_defense_sys = new TechNode("Self Defense System", "Can build a self defense system to protect the city", 2000, 10, {enhanced_cruise_III,enhanced_radar_III});
 
-    TechNode* fortress_city = new TechNode("Fortress City", "Increase cities's hitpoint by 50%", 2000, 10, {root_node});
+    TechNode* fortress_city = new TechNode("Fortress City", "City will undertake half of damage", 2000, 10, {root_node});
     TechNode* urgent_production = new TechNode("Urgent Production", "Increase cities's base production by 200%", 5000, 30, {fortress_city});
     TechNode* evacuated_industry = new TechNode("Evacuated Industry","City may maintain base production after destroyed", 10000, 50, {urgent_production});
 
     TechNode* dirty_bomb = new TechNode("Dirty Bomb", "Allow to launch a new counter-atk missile with 50% cost but 75% hitrate", 2000, 10, {root_node});
     TechNode* fast_nuke = new TechNode("Fast Nuke", "Reduce counter-atk missile build-time by 50%", 5000, 30, {dirty_bomb});
-    TechNode* hydrom_bomb = new TechNode("HydronBomb", "Allow to launch a new counter-atk missile with 500% demage but 50% hitrate, and much more costly", 10000, 50, {fast_nuke});
+    TechNode* hydron_bomb = new TechNode("HydronBomb", "Allow to launch a new counter-atk missile with 500% demage but 50% hitrate, and much more costly", 10000, 50, {fast_nuke});
 
-    TechNode* iron_curtain = new TechNode("Iron Curtain", "All your cities will not get damage in next 50 turns", 2000, 10, {hydrom_bomb,evacuated_industry});
+    TechNode* iron_curtain = new TechNode("Iron Curtain", "All your cities will not get damage in next 50 turns", 2000, 10, {hydron_bomb,evacuated_industry});
 
     nodes.push_back(root_node);
+    researched.push_back(root_node);
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);
     nodes.push_back(enhanced_radar_III);
@@ -391,7 +392,7 @@ TechTree::TechTree(void)
     nodes.push_back(evacuated_industry);
     nodes.push_back(dirty_bomb);
     nodes.push_back(fast_nuke);
-    nodes.push_back(hydrom_bomb);
+    nodes.push_back(hydron_bomb);
     nodes.push_back(iron_curtain);
     researching = nullptr;
     remaining_time = -1;
@@ -450,8 +451,46 @@ void TechTree::proceed_research(void)
     }
 }
 
+bool TechTree::is_available(TechNode *node,int deposit) const
+{
+    if (node -> name == "Root")
+    {
+        return false;
+    }
+    if (node->cost > deposit)
+    {
+        return false;
+    }
+    for (auto node : node->prerequisites)
+    {
+        if (std::find(researched.begin(), researched.end(), node) == researched.end())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void TechTree::update_available(int deposit)
+{
+    for (auto node : nodes)
+    {
+        if (std::find(available.begin(), available.end(), node) != available.end())
+        {
+            if (!is_available(node, deposit)) {
+                available.erase(std::find(available.begin(), available.end(), node));
+            }
+        } else {
+            if (is_available(node, deposit)) {
+                available.push_back(node);
+            }
+        }
+    }
+}
+
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
-    : activated(false), size(s), cities(cts), background(bg), missile_manager(cities)
+    : activated(false), size(s), cities(cts), background(bg), missile_manager(cities),
+      tech_tree()
 {
     cursor = cities[0].position;
     turn = 0;
@@ -530,9 +569,14 @@ void Game::pass_turn(void)
     {
         if (city.hitpoint <= 0)
         {
-            city.countdown = 0;
-            continue;
+            city.productivity = en_evacuated_industry ? city.base_productivity : 0;
+            if (city.productivity == 0)
+            {
+                city.countdown = 0;
+                continue;
+            }
         }
+        city.productivity = city.base_productivity*(en_urgent_production ? 3 : 1)+city.hitpoint/10;
         deposit += city.productivity;
         if (city.countdown > 0)
         {
@@ -541,6 +585,7 @@ void Game::pass_turn(void)
     }
 
     tech_tree.proceed_research();
+    tech_tree.update_available(deposit);
 
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
@@ -615,7 +660,7 @@ void Game::hit_city(City &city, int damage)
     }
     else
     {
-        city.hitpoint -= damage;
+        city.hitpoint -= damage/(en_fortress_city ? 2 : 1);
     }
 }
 
@@ -632,13 +677,26 @@ void Game::fix_city(void)
 void Game::launch_cruise(void)
 {
     City &city = select_city();
-    if (!city.is_valid() || deposit < 200)
+    if (city.is_valid())
     {
         return;
     }
-    if (missile_manager.create_cruise_missile(city, 100, 2))
+    int launch_time = en_enhanced_cruise_III ? 2 : 1;
+    while (launch_time > 0)
     {
-        deposit -= 200;
+        if (deposit < 200 && !en_enhanced_radar_I)
+        {
+            return;
+        }
+        if (deposit < 100)
+        {
+            return;
+        }
+        if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
+        {
+            deposit -= en_enhanced_cruise_I ? 100 : 200;
+        }
+        launch_time--;
     }
     return;
 }

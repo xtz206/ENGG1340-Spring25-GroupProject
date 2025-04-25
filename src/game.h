@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #define inf 0x3f3f3f3f
 
@@ -42,10 +43,11 @@ private:
     int hitpoint;
     int productivity;
     int countdown;
+    int base_productivity;
 
 public:
     static const City null_city;
-    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0) {};
+    City() : position(inf, inf), name(""), hitpoint(0), productivity(0), countdown(0),base_productivity(50) {};
     City(Position p, std::string n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -200,6 +202,8 @@ public:
     ~TechTree(void);
     void start_research(TechNode *node);
     void proceed_research(void);
+    void update_available(int deposit);
+    bool is_available(TechNode *node,int deposit) const;
 };
 
 class Game
@@ -216,6 +220,25 @@ private:
     std::vector<std::string> background;
     MissileManager missile_manager;
     TechTree tech_tree;
+
+    bool en_enhanced_radar_I = false;
+    bool en_enhanced_radar_II = false;
+    bool en_enhanced_radar_III = false;
+
+    bool en_enhanced_cruise_I = false;  //done
+    bool en_enhanced_cruise_II = false; //done
+    bool en_enhanced_cruise_III = false;//done
+
+    bool en_fortress_city = false;      //done
+    bool en_urgent_production = false;  //done
+    bool en_evacuated_industry = false; //done
+
+    bool en_dirty_bomb = false;
+    bool en_fast_nuke = false;
+    bool en_hydron_bomb = false;
+
+    bool en_self_defense_sys = false;
+    bool en_iron_curtain = false;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
