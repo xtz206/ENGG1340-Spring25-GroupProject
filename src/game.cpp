@@ -355,6 +355,23 @@ City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(h
     productivity = 50 + hitpoint / 10;
 }
 
+TechTree::TechTree(void)
+{
+    TechNode *root_node = new TechNode("Root", "Root Node", 0, 0, {});
+    TechNode *node1 = new TechNode("Node1", "Node 1", 100, 10, {root_node});
+    nodes.push_back(root_node);
+    nodes.push_back(node1);
+
+}
+
+TechTree::~TechTree(void)
+{
+    for (auto node : nodes)
+    {
+        delete node;
+    }
+}
+
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     : activated(false), size(s), cities(cts), background(bg), missile_manager(cities)
 {

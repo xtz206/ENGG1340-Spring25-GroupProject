@@ -167,6 +167,34 @@ public:
     void create_attack_wave(int turn);
 };
 
+class TechNode
+{
+    friend class Game;
+    friend class TechTree;
+
+private:
+    std::string name;
+    std::string description;
+    int cost;
+    int time;
+    std::vector<TechNode *> prerequisites;
+
+public:
+    TechNode(const std::string &n, const std::string &d, int c, int t, const std::vector<TechNode *> p)
+        : name(n), description(d), cost(c), time(t), prerequisites(p) {};
+};
+class TechTree
+{
+private:
+    std::vector<TechNode *> nodes;
+    std::vector<TechNode *> researched;
+    std::vector<TechNode *> available;
+
+public:
+    TechTree(void);
+    ~TechTree(void);
+};
+
 class Game
 {
     friend class GameRenderer;
