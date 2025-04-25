@@ -361,7 +361,6 @@ TechTree::TechTree(void)
     TechNode *node1 = new TechNode("Node1", "Node 1", 100, 10, {root_node});
     nodes.push_back(root_node);
     nodes.push_back(node1);
-
 }
 
 TechTree::~TechTree(void)

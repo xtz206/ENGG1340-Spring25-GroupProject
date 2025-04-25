@@ -14,7 +14,7 @@ public:
     virtual void render(void) = 0;
     virtual void init(void) = 0;
     virtual void draw(void) = 0;
-    void debug(const std::string &str);
+    void debug(const std::string &str, int line = 0);
 };
 
 class MenuRenderer : public Renderer

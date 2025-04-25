@@ -22,9 +22,9 @@
 #define MENU_LINES 10
 #define MENU_COLS 40
 
-void Renderer::debug(const std::string &str)
+void Renderer::debug(const std::string &str, int line)
 {
-    mvwprintw(stdscr, 0, 1, "%s", str.c_str());
+    mvwprintw(stdscr, line, 1, "%s", str.c_str());
 }
 
 void MenuRenderer::init(void)
