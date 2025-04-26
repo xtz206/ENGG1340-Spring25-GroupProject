@@ -114,7 +114,7 @@ void GameRenderer::init(void)
     general_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     selected_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES + 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     tech_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 2 + 3, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
-    counter_attack_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    super_weapon_info = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
 
     box(box_window, 0, 0);
@@ -137,9 +137,9 @@ void GameRenderer::init(void)
     // mvwprintw(box_window, 0, (TOTAL_COLS - 2 - 2) / 2, "Missile Command");
     mvwprintw(box_window, 0, 2, "Map");
     mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "General");
-    mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "Selected");
-    mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Tech");
-    mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Counter Attack");
+    mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "City & Missile");
+    mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Technology & Research");
+    mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Super Weapon");
     mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
 }
 
@@ -149,7 +149,7 @@ void GameRenderer::render(void)
     wrefresh(general_info_window);
     wrefresh(selected_info_window);
     wrefresh(tech_info_window);
-    wrefresh(counter_attack_info_window);
+    wrefresh(super_weapon_info);
     wrefresh(operation_window);
 }
 
@@ -159,7 +159,7 @@ void GameRenderer::draw(void)
     werase(general_info_window);
     werase(selected_info_window);
     werase(tech_info_window);
-    werase(counter_attack_info_window);
+    werase(super_weapon_info);
     werase(operation_window);
 
     // NOTE: draw map window
@@ -236,10 +236,10 @@ void GameRenderer::draw(void)
     {
         mvwprintw(tech_info_window, index, 0, "%s", info.at(index).c_str());
     }
-    info = game.get_counter_attack_info();
+    info = game.get_super_weapon_info();
     for (size_t index = 0; index < info.size(); index++)
     {
-        mvwprintw(counter_attack_info_window, index, 0, "%s", info.at(index).c_str());
+        mvwprintw(super_weapon_info, index, 0, "%s", info.at(index).c_str());
     }
 
     // NOTE: draw operation window

@@ -280,7 +280,7 @@ public:
     std::vector<std::string> get_general_info(void);
     std::vector<std::string> get_selected_info(void);
     std::vector<std::string> get_tech_info(void) const;
-    std::vector<std::string> get_counter_attack_info(void) const;
+    std::vector<std::string> get_super_weapon_info(void) const;
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
     int get_enemy_hp(void) const { return enemy_hitpoint; };

@@ -558,10 +558,28 @@ std::vector<std::string> Game::get_general_info(void)
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
     info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
-    if (true) // DEBUG: game.en_enhanced_radar_I
+    if (true) // DEBUG: en_self_defense_sys
     {
-        info.push_back("There is " + std::to_string(missile_manager.get_attack_missiles().size()) + " approaching missiles");
+        info.push_back("Self Defense System: ON");
     }
+    if (true) // DEBUG: en_enhanced_radar_I
+    {
+
+        int missile_count = missile_manager.get_attack_missiles().size();
+        if (missile_count == 0)
+        {
+            info.push_back("No Missiles Approaching");
+        }
+        else if (missile_count < 5)
+        {
+            info.push_back(std::to_string(missile_count) + " Missile Approaching");
+        }
+        else
+        {
+            info.push_back(std::to_string(missile_count) + " Missiles Approaching !!!");
+        }
+    }
+
     return info;
 }
 
@@ -583,17 +601,30 @@ std::vector<std::string> Game::get_selected_info(void)
         info.push_back("Productivity: " + std::to_string(city.productivity));
         info.push_back("Countdown: " + std::to_string(city.countdown));
         info.push_back("Cruise Storage: " + std::to_string(city.cruise_storage));
-        if (true) // DEBUG: game.en_enhanced_radar_II
+        if (true) // DEBUG: en_enhanced_radar_II
         {
-            int targeted_missile_count = 0;
+
+            int missile_count = 0;
             for (auto missile : missile_manager.get_attack_missiles())
             {
                 if (missile->get_position() == city.get_position())
                 {
-                    targeted_missile_count++;
+                    missile_count++;
                 }
             }
-            info.push_back("There are " + std::to_string(targeted_missile_count) + " missiles targeting this city");
+
+            if (missile_count == 0)
+            {
+                info.push_back("No missiles targeting the city");
+            }
+            else if (missile_count < 3)
+            {
+                info.push_back(std::to_string(missile_count) + " approaching the city");
+            }
+            else
+            {
+                info.push_back(std::to_string(missile_count) + " Missiles Approaching !!!");
+            }
         }
     }
     else
@@ -623,7 +654,7 @@ std::vector<std::string> Game::get_tech_info(void) const
     return info;
 }
 
-std::vector<std::string> Game::get_counter_attack_info(void) const
+std::vector<std::string> Game::get_super_weapon_info(void) const
 {
     std::vector<std::string> info;
     if (standard_bomb_counter > 0)
@@ -639,7 +670,7 @@ std::vector<std::string> Game::get_counter_attack_info(void) const
         info.push_back("Standard Bomb Not Built");
     }
 
-    if (en_dirty_bomb)
+    if (true) // DEBUG: en_dirty_bomb
     {
         if (dirty_bomb_counter > 0)
         {
@@ -655,7 +686,7 @@ std::vector<std::string> Game::get_counter_attack_info(void) const
         }
     }
 
-    if (en_hydrogen_bomb)
+    if (true) // DEBUG: en_hydrogen_bomb
     {
         if (hydrogen_bomb_counter > 0)
         {
@@ -671,7 +702,7 @@ std::vector<std::string> Game::get_counter_attack_info(void) const
         }
     }
 
-    if (en_iron_curtain)
+    if (true) // DEBUG: en_iron_curtain
     {
         if (iron_curtain_activated)
         {
@@ -1003,6 +1034,10 @@ void Game::hit_city(City &city, int damage)
 
 void Game::fix_city(void)
 {
+    if (!is_selected_city())
+    {
+        return;
+    }
     City &city = select_city();
     if (city.is_valid())
     {
@@ -1013,6 +1048,10 @@ void Game::fix_city(void)
 
 void Game::build_cruise(void)
 {
+    if (!is_selected_city())
+    {
+        return;
+    }
     City &city = select_city();
     if (!city.is_valid())
     {
@@ -1032,6 +1071,10 @@ void Game::build_cruise(void)
 
 void Game::launch_cruise(void)
 {
+    if (!is_selected_city())
+    {
+        return;
+    }
     City &city = select_city();
     if (!city.is_valid())
     {

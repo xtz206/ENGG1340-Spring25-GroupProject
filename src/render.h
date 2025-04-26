@@ -58,7 +58,7 @@ private:
     WINDOW *general_info_window;
     WINDOW *selected_info_window;
     WINDOW *tech_info_window;
-    WINDOW *counter_attack_info_window;
+    WINDOW *super_weapon_info;
     WINDOW *operation_window;
 
 public:
