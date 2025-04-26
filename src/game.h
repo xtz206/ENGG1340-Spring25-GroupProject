@@ -141,6 +141,7 @@ class CruiseMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class MissileManager;
     friend class Saver;
 
 private:
