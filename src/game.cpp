@@ -701,6 +701,7 @@ bool Game::is_selected_missile(void)
 {
     for (auto &missile : missile_manager.get_attack_missiles())
     {
+        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1))
         {
             return true;
@@ -713,6 +714,7 @@ bool Game::is_selected_city(void)
 {
     for (auto &city : cities)
     {
+        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1))
         {
             return true;
@@ -729,6 +731,7 @@ Missile &Game::select_missile(void)
     }
     for (auto &missile : missile_manager.get_attack_missiles())
     {
+        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1))
         {
             return *missile;
@@ -746,6 +749,7 @@ City &Game::select_city(void)
 
     for (auto &city : cities)
     {
+        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1))
         {
             return city;
