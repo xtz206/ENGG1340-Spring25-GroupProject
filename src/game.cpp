@@ -423,9 +423,9 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     // TODO: Change effects into more innovative ones
     TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-atk missile with 50% cost but 75% hit rate"}, 2000, 10, {});
     TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-atk missile build-time by 50%"}, 5000, 30, {dirty_bomb});
-    TechNode *hydron_bomb = new TechNode("HydronBomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
+    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
 
-    TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydron_bomb, evacuated_industry});
+    TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
 
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);
@@ -439,7 +439,7 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     nodes.push_back(evacuated_industry);
     nodes.push_back(dirty_bomb);
     nodes.push_back(fast_nuke);
-    nodes.push_back(hydron_bomb);
+    nodes.push_back(hydrogen_bomb);
     nodes.push_back(iron_curtain);
 }
 
@@ -840,9 +840,9 @@ void Game::finish_research(TechNode *node)
     {
         en_fast_nuke = true;
     }
-    else if (node->name == "Hydron Bomb")
+    else if (node->name == "Hydrogen Bomb")
     {
-        en_hydron_bomb = true;
+        en_hydrogen_bomb = true;
     }
     else if (node->name == "Iron Curtain")
     {
@@ -968,9 +968,9 @@ void Game::launch_dirty_bomb(void)
     missile_manager.hitpoint -= 50;
 }
 
-void Game::build_hydron_bomb(void)
+void Game::build_hydrogen_bomb(void)
 {
-    if (!en_hydron_bomb)
+    if (!en_hydrogen_bomb)
     {
         return;
     }
@@ -986,7 +986,7 @@ void Game::build_hydron_bomb(void)
     countdowns[2] = 20;
 }
 
-void Game::launch_hydron_bomb(void)
+void Game::launch_hydrogen_bomb(void)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand() % 2;

@@ -235,8 +235,8 @@ private:
     int deposit;
     // TODO: fix typo
     // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
-    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydron
-    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydron
+    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
+    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydrogen
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
@@ -257,7 +257,7 @@ private:
 
     bool en_dirty_bomb = false; // done
     bool en_fast_nuke = false;
-    bool en_hydron_bomb = false; // done
+    bool en_hydrogen_bomb = false; // done
 
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false; // done
@@ -302,8 +302,8 @@ public:
     void launch_counter_attack(void);
     void build_dirty_bomb(void);
     void launch_dirty_bomb(void);
-    void launch_hydron_bomb(void);
-    void build_hydron_bomb(void);
+    void launch_hydrogen_bomb(void);
+    void build_hydrogen_bomb(void);
     void activate_iron_curtain(void);
     void self_defense(void);
 };
