@@ -4,6 +4,9 @@
 #include <vector>
 #include "game.h"
 
+class Game;
+class City;
+
 class Saver
 {
     Game* game;
