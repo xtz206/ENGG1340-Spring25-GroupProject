@@ -25,6 +25,20 @@ void Saver::save_game_general(std::string filepath)
         general_log << "hydron_bomb_num: " << game -> attack_missile_num[2] << "\n";
         general_log << "enemy_hp" << game -> missile_manager.hitpoint << "\n";
         general_log << "iron_curtain_activated: " << game -> iron_curtain_activated << "\n";
+        general_log << "enhanced_radar_I: " << game -> en_enhanced_radar_I << "\n";
+        general_log << "enhanced_radar_II: " << game -> en_enhanced_radar_II << "\n";
+        general_log << "enhanced_radar_III: " << game -> en_enhanced_radar_III << "\n";
+        general_log << "enhanced_cruise_I: " << game -> en_enhanced_cruise_I << "\n";
+        general_log << "enhanced_cruise_II: " << game -> en_enhanced_cruise_II << "\n";
+        general_log << "enhanced_cruise_III: " << game -> en_enhanced_cruise_III << "\n";
+        general_log << "fortress_city: " << game -> en_fortress_city << "\n";
+        general_log << "urgent_production: " << game -> en_urgent_production << "\n";
+        general_log << "evacuated_industry: " << game -> en_evacuated_industry << "\n";
+        general_log << "dirty_bomb: " << game -> en_dirty_bomb << "\n";
+        general_log << "fast_nuke: " << game -> en_fast_nuke << "\n";
+        general_log << "hydron_bomb: " << game -> en_hydrogen_bomb << "\n";
+        general_log << "self_defense_sys: " << game -> en_self_defense_sys << "\n";
+        general_log << "iron_curtain: "  << game -> en_iron_curtain  << "\n";
     }
     general_log.close();
 }
@@ -39,7 +53,7 @@ void Saver::save_attack_missile(std::string filepath)
         for (auto &missile : game -> missile_manager.get_attack_missiles())
         {
             AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
-            atkmissile_log <<missile->id<<", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile -> target.y << ", " << missile -> target.x << ", " << ", " << missile -> damage << ", " << missile -> speed <<", "<<attack_missile->is_aimed<<"\n";
+            atkmissile_log <<missile->id<<", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile -> target.y << ", " << missile -> target.x << ", " << missile -> damage << ", " << missile -> speed <<", "<<attack_missile->is_aimed<<"\n";
         }
     }
     atkmissile_log.close();
@@ -57,7 +71,7 @@ void Saver::save_cruise(std::string filepath)
             cruise_log << "id, y, x, target_id, damage, speed\n";
             for (auto &missile : game -> missile_manager.get_cruise_missiles())
             {
-                cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", " << ", " << missile -> damage << ", " << missile -> speed << "\n";
+                cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", "  << missile -> damage << ", " << missile -> speed << "\n";
         }
         }
     }
@@ -87,20 +101,67 @@ void Saver::save_tech_tree(std::string filepath)
     std::ofstream tech_tree_log(filename);
     if (tech_tree_log.is_open())
     {
-        tech_tree_log << "enhanced_radar_I: " << game -> en_enhanced_radar_I << "\n";
-        tech_tree_log << "enhanced_radar_II: " << game -> en_enhanced_radar_II << "\n";
-        tech_tree_log << "enhanced_radar_III: " << game -> en_enhanced_radar_III << "\n";
-        tech_tree_log << "enhanced_cruise_I: " << game -> en_enhanced_cruise_I << "\n";
-        tech_tree_log << "enhanced_cruise_II: " << game -> en_enhanced_cruise_II << "\n";
-        tech_tree_log << "enhanced_cruise_III: " << game -> en_enhanced_cruise_III << "\n";
-        tech_tree_log << "fortress_city: " << game -> en_fortress_city << "\n";
-        tech_tree_log << "urgent_production: " << game -> en_urgent_production << "\n";
-        tech_tree_log << "evacuated_industry: " << game -> en_evacuated_industry << "\n";
-        tech_tree_log << "dirty_bomb: " << game -> en_dirty_bomb << "\n";
-        tech_tree_log << "fast_nuke: " << game -> en_fast_nuke << "\n";
-        tech_tree_log << "hydron_bomb: " << game -> en_hydron_bomb << "\n";
-        tech_tree_log << "self_defense_sys: " << game -> en_self_defense_sys << "\n";
-        tech_tree_log << "iron_curtain: "  << game -> en_iron_curtain  << "\n";
+        tech_tree_log << "researched, ";
+        if (game -> tech_tree.researched.empty())
+        {
+            tech_tree_log << "none\n";
+        }
+        else
+        {
+            for (auto &node : game -> tech_tree.researched)
+            {
+                if (node != game->tech_tree.researched.back())
+                {
+                    tech_tree_log << node->name << ", ";
+                }
+                else
+                {
+                    tech_tree_log << node->name << "\n";
+                }
+            }
+        }
+
+        tech_tree_log << "available, ";
+        if (game -> tech_tree.available.empty())
+        {
+            tech_tree_log << "none\n";
+        }
+        else
+        {
+            for (auto &node : game -> tech_tree.available)
+            {
+                if (node != game->tech_tree.available.back())
+                {
+                    tech_tree_log << node->name << ", ";
+                }
+                else
+                {
+                    tech_tree_log << node->name << "\n";
+                }
+            }
+        }
+
+        tech_tree_log << "researching, ";
+        if (game -> tech_tree.researching == nullptr)
+        {
+            tech_tree_log << "none\n";
+        }
+        else
+        {
+            tech_tree_log << game -> tech_tree.researching->name << "\n";
+        }
+
+        tech_tree_log<< "prev_researching, ";
+        if (game -> tech_tree.prev_researching == nullptr)
+        {
+            tech_tree_log << "none\n";
+        }
+        else
+        {
+            tech_tree_log << game -> tech_tree.prev_researching->name << "\n";
+        }
+        
+        tech_tree_log << "remaining_time: "<< game -> tech_tree.remaining_time << "\n"; 
     }
     tech_tree_log.close();
 }

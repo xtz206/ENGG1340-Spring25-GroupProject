@@ -92,13 +92,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case 'l':
             game.launch_cruise();
             return;
-
+        //DEBUG: remove this later
+        case 'p':
+            saver.save_game();
+            return;
         case 'q':
             game.deactivate();
-         //DEBUG: remove this later
-        case 'p':
-         saver.save_game();
-         return;
+        
         }
     }
     else if (pause_menu.is_activated())

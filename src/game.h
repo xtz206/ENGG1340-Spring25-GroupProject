@@ -189,6 +189,7 @@ class TechNode
     friend class GameRenderer;
     friend class TechTree;
     friend class TechMenu;
+    friend class Saver;
 
 private:
     std::string name;
@@ -201,12 +202,14 @@ public:
     TechNode(const std::string &n, const std::vector<std::string> &d, int c, int t, const std::vector<TechNode *> p)
         : name(n), description(d), cost(c), time(t), prerequisites(p) {};
 };
+
 class TechTree
 {
     friend class Game;
     friend class GameRenderer;
     friend class TechMenu;
-
+    friend class Saver;
+    
 private:
     std::vector<TechNode *> nodes;
     std::vector<TechNode *> researched;
