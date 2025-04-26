@@ -220,7 +220,10 @@ int main(void)
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
         Saver saver = Saver(&game);
-
+        
+        //DEBUG: Test Logloader
+        LogLoader log_loader = LogLoader("../save/game_2025-04-26_16-50-19/");
+        log_loader.load_game(game);
         // TODO: add FRAME_INTERVAL macro instead of magic number
 
         start_menu.activate();

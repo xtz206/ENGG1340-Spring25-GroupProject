@@ -14,32 +14,32 @@ void Saver::save_game_general(std::string filepath)
     std::ofstream general_log(filename);
     if (general_log.is_open())
     {
-        general_log << "turn: " << game -> get_turn() << "\n";
-        general_log << "deposit: " << game -> get_deposit() << "\n";
-        general_log << "cursor_y: " << game->cursor.y << "\n";
-        general_log << "cursor_x: " << game->cursor.x << "\n";
-        general_log << "counter_missile_cnt_down: " << game -> countdowns[0] << "\n";
-        general_log << "dirty_bomb_cnt_down: " << game -> countdowns[1] << "\n";
-        general_log << "hydron_bomb_cnt_down: " << game -> countdowns[2] << "\n";
-        general_log << "counter_missile_num: " << game -> attack_missile_num[0] << "\n";
-        general_log << "dirty_bomb_num: " << game -> attack_missile_num[1] << "\n";
-        general_log << "hydron_bomb_num: " << game -> attack_missile_num[2] << "\n";
-        general_log << "enemy_hp" << game -> missile_manager.hitpoint << "\n";
-        general_log << "iron_curtain_activated: " << game -> iron_curtain_activated << "\n";
-        general_log << "enhanced_radar_I: " << game -> en_enhanced_radar_I << "\n";
-        general_log << "enhanced_radar_II: " << game -> en_enhanced_radar_II << "\n";
-        general_log << "enhanced_radar_III: " << game -> en_enhanced_radar_III << "\n";
-        general_log << "enhanced_cruise_I: " << game -> en_enhanced_cruise_I << "\n";
-        general_log << "enhanced_cruise_II: " << game -> en_enhanced_cruise_II << "\n";
-        general_log << "enhanced_cruise_III: " << game -> en_enhanced_cruise_III << "\n";
-        general_log << "fortress_city: " << game -> en_fortress_city << "\n";
-        general_log << "urgent_production: " << game -> en_urgent_production << "\n";
-        general_log << "evacuated_industry: " << game -> en_evacuated_industry << "\n";
-        general_log << "dirty_bomb: " << game -> en_dirty_bomb << "\n";
-        general_log << "fast_nuke: " << game -> en_fast_nuke << "\n";
-        general_log << "hydron_bomb: " << game -> en_hydrogen_bomb << "\n";
-        general_log << "self_defense_sys: " << game -> en_self_defense_sys << "\n";
-        general_log << "iron_curtain: "  << game -> en_iron_curtain  << "\n";
+        general_log << "turn:" << game -> get_turn() << "\n";
+        general_log << "deposit:" << game -> get_deposit() << "\n";
+        general_log << "cursor_y:" << game->cursor.y << "\n";
+        general_log << "cursor_x:" << game->cursor.x << "\n";
+        general_log << "counter_missile_cnt_down:" << game -> countdowns[0] << "\n";
+        general_log << "dirty_bomb_cnt_down:" << game -> countdowns[1] << "\n";
+        general_log << "hydron_bomb_cnt_down:" << game -> countdowns[2] << "\n";
+        general_log << "counter_missile_num:" << game -> attack_missile_num[0] << "\n";
+        general_log << "dirty_bomb_num:" << game -> attack_missile_num[1] << "\n";
+        general_log << "hydron_bomb_num:" << game -> attack_missile_num[2] << "\n";
+        general_log << "enemy_hp:" << game -> missile_manager.hitpoint << "\n";
+        general_log << "iron_curtain_activated:" << game -> iron_curtain_activated << "\n";
+        general_log << "enhanced_radar_I:" << game -> en_enhanced_radar_I << "\n";
+        general_log << "enhanced_radar_II:" << game -> en_enhanced_radar_II << "\n";
+        general_log << "enhanced_radar_III:" << game -> en_enhanced_radar_III << "\n";
+        general_log << "enhanced_cruise_I:" << game -> en_enhanced_cruise_I << "\n";
+        general_log << "enhanced_cruise_II:" << game -> en_enhanced_cruise_II << "\n";
+        general_log << "enhanced_cruise_III:" << game -> en_enhanced_cruise_III << "\n";
+        general_log << "fortress_city:" << game -> en_fortress_city << "\n";
+        general_log << "urgent_production:" << game -> en_urgent_production << "\n";
+        general_log << "evacuated_industry:" << game -> en_evacuated_industry << "\n";
+        general_log << "dirty_bomb:" << game -> en_dirty_bomb << "\n";
+        general_log << "fast_nuke:" << game -> en_fast_nuke << "\n";
+        general_log << "hydron_bomb:" << game -> en_hydrogen_bomb << "\n";
+        general_log << "self_defense_sys:" << game -> en_self_defense_sys << "\n";
+        general_log << "iron_curtain:"  << game -> en_iron_curtain  << "\n";
     }
     general_log.close();
 }
@@ -50,11 +50,11 @@ void Saver::save_attack_missile(std::string filepath)
     std::ofstream atkmissile_log(filename);
     if (atkmissile_log.is_open())
     {
-        atkmissile_log << "id, y, x, target_y, target_x, damage, speed, is_aimed\n";
+        atkmissile_log << "id,y,x,target_y,target_x,damage,speed,is_aimed\n";
         for (auto &missile : game -> missile_manager.get_attack_missiles())
         {
             AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
-            atkmissile_log <<missile->id<<", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << missile -> target.y << ", " << missile -> target.x << ", " << missile -> damage << ", " << missile -> speed <<", "<<attack_missile->is_aimed<<"\n";
+            atkmissile_log <<missile->id<<","<<missile -> get_position().y << "," << missile -> get_position().x << "," << missile -> target.y << "," << missile -> target.x << "," << missile -> damage << "," << missile -> speed <<","<<attack_missile->is_aimed<<"\n";
         }
     }
     atkmissile_log.close();
@@ -66,13 +66,13 @@ void Saver::save_cruise(std::string filepath)
     std::ofstream cruise_log(filename);
     if (cruise_log.is_open())
     {
-        cruise_log << "id, y, x, target_id, damage, speed\n";
+        cruise_log << "id,y,x,target_id,damage,speed\n";
             
             
         for (auto &missile : game -> missile_manager.get_cruise_missiles())
         {
             CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
-            cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", "  << missile -> damage << ", " << missile -> speed << "\n";
+            cruise_log << missile -> id << ","<<missile -> get_position().y << "," << missile -> get_position().x << "," << cruise_missile->target_id<< ","  << missile -> damage << "," << missile -> speed << "\n";
         }
     }
     cruise_log.close();
@@ -84,12 +84,12 @@ void Saver::save_city(std::string filepath)
     std::ofstream city_log(filename);
     if (city_log.is_open())
     {
-        city_log << "Name, y, x, hitpoint, base_productivity, productivity, cruise_num, countdown\n";
+        city_log << "Name,y,x,hitpoint,base_productivity,productivity,cruise_num,countdown\n";
         for (const auto &city : game -> cities)
         {
-            city_log << city.name << ", " << city.position.y << ", " << city.position.x << ", " 
-            << city.hitpoint << ", " << city.base_productivity << ", " 
-            <<city.productivity<<", "<<city.cruise_num << ", "<<city.countdown << "\n";
+            city_log << city.name << "," << city.position.y << "," << city.position.x << "," 
+            << city.hitpoint << "," << city.base_productivity << "," 
+            <<city.productivity<<","<<city.cruise_num << ","<<city.countdown << "\n";
         }
     }
     city_log.close();
@@ -101,7 +101,7 @@ void Saver::save_tech_tree(std::string filepath)
     std::ofstream tech_tree_log(filename);
     if (tech_tree_log.is_open())
     {
-        tech_tree_log << "researched, ";
+        tech_tree_log << "researched,";
         if (game -> tech_tree.researched.empty())
         {
             tech_tree_log << "none\n";
@@ -112,7 +112,7 @@ void Saver::save_tech_tree(std::string filepath)
             {
                 if (node != game->tech_tree.researched.back())
                 {
-                    tech_tree_log << node->name << ", ";
+                    tech_tree_log << node->name << ",";
                 }
                 else
                 {
@@ -121,7 +121,7 @@ void Saver::save_tech_tree(std::string filepath)
             }
         }
 
-        tech_tree_log << "available, ";
+        tech_tree_log << "available,";
         if (game -> tech_tree.available.empty())
         {
             tech_tree_log << "none\n";
@@ -132,7 +132,7 @@ void Saver::save_tech_tree(std::string filepath)
             {
                 if (node != game->tech_tree.available.back())
                 {
-                    tech_tree_log << node->name << ", ";
+                    tech_tree_log << node->name << ",";
                 }
                 else
                 {
@@ -141,7 +141,7 @@ void Saver::save_tech_tree(std::string filepath)
             }
         }
 
-        tech_tree_log << "researching, ";
+        tech_tree_log << "researching,";
         if (game -> tech_tree.researching == nullptr)
         {
             tech_tree_log << "none\n";
@@ -151,7 +151,7 @@ void Saver::save_tech_tree(std::string filepath)
             tech_tree_log << game -> tech_tree.researching->name << "\n";
         }
 
-        tech_tree_log<< "prev_researching, ";
+        tech_tree_log<< "prev_researching,";
         if (game -> tech_tree.prev_researching == nullptr)
         {
             tech_tree_log << "none\n";
@@ -161,7 +161,7 @@ void Saver::save_tech_tree(std::string filepath)
             tech_tree_log << game -> tech_tree.prev_researching->name << "\n";
         }
         
-        tech_tree_log << "remaining_time, "<< game -> tech_tree.remaining_time << "\n"; 
+        tech_tree_log << "remaining_time,"<< game -> tech_tree.remaining_time << "\n"; 
     }
     tech_tree_log.close();
 }
@@ -321,6 +321,76 @@ void LogLoader::load_game_general(Game &game) {
         {
             getline(iss, word);
             game.iron_curtain_activated = std::stoi(word);
+        }
+        else if (word == "enhanced_radar_I")
+        {
+            getline(iss, word);
+            game.en_enhanced_radar_I = std::stoi(word);
+        }
+        else if (word == "enhanced_radar_II")
+        {
+            getline(iss, word);
+            game.en_enhanced_radar_II = std::stoi(word);
+        }
+        else if (word == "enhanced_radar_III")
+        {
+            getline(iss, word);
+            game.en_enhanced_radar_III = std::stoi(word);
+        }
+        else if (word == "enhanced_cruise_I")
+        {
+            getline(iss, word);
+            game.en_enhanced_cruise_I = std::stoi(word);
+        }
+        else if (word == "enhanced_cruise_II")
+        {
+            getline(iss, word);
+            game.en_enhanced_cruise_II = std::stoi(word);
+        }
+        else if (word == "enhanced_cruise_III")
+        {
+            getline(iss, word);
+            game.en_enhanced_cruise_III = std::stoi(word);
+        }
+        else if (word == "fortress_city")
+        {
+            getline(iss, word);
+            game.en_fortress_city = std::stoi(word);
+        }
+        else if (word == "urgent_production")
+        {
+            getline(iss, word);
+            game.en_urgent_production = std::stoi(word);
+        }
+        else if (word == "evacuated_industry")
+        {
+            getline(iss, word);
+            game.en_evacuated_industry = std::stoi(word);
+        }
+        else if (word == "dirty_bomb")
+        {
+            getline(iss, word);
+            game.en_dirty_bomb = std::stoi(word); 
+        }
+        else if (word == "fast_nuke")
+        {
+            getline(iss, word);
+            game.en_fast_nuke = std::stoi(word); 
+        }
+        else if (word == "hydron_bomb")
+        {
+            getline(iss, word);
+            game.en_hydrogen_bomb = std::stoi(word); 
+        }
+        else if (word == "self_defense_sys")
+        {
+            getline(iss, word);
+            game.en_self_defense_sys = std::stoi(word); 
+        }
+        else if (word == "iron_curtain")
+        {
+            getline(iss, word);
+            game.en_iron_curtain = std::stoi(word); 
         }
     }       
 }
