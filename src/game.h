@@ -155,7 +155,9 @@ private:
     std::vector<int> damage_list;
     std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
     // TODO: fix typo
-    int hitpoint;
+
+    int generate_random(int turn, int hitpoint);
+    int get_process_level(int turn, int hitpoint);
 
 public:
     MissileManager(std::vector<City> &cts);
@@ -169,9 +171,7 @@ public:
     void update_missiles(void);
     void remove_missiles(void);
 
-    int generate_random(int turn);
-    int get_process_level(int turn);
-    void create_attack_wave(int turn);
+        void create_attack_wave(int turn, int hitpoint);
 };
 
 class TechNode
@@ -233,7 +233,7 @@ private:
     Position cursor;
     int turn;
     int deposit;
-    // TODO: fix typo
+    int enemy_hitpoint;
     // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
     std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
     std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydrogen
@@ -279,7 +279,7 @@ public:
 
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
-    int get_enemy_hp(void) const { return missile_manager.hitpoint; };
+    int get_enemy_hp(void) const { return enemy_hitpoint; };
 
     void move_cursor(Position dcursor);
     void pass_turn(void);

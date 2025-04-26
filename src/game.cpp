@@ -273,7 +273,7 @@ void MissileManager::remove_missiles(void)
 }
 #define HP_PHASE 200
 #define TURN_PHASE 100
-int MissileManager::get_process_level(int turn)
+int MissileManager::get_process_level(int turn, int hitpoint)
 {
     int HP_factor = hitpoint / HP_PHASE;
     int turn_factor = turn / TURN_PHASE;
@@ -288,9 +288,9 @@ int MissileManager::get_process_level(int turn)
     return (HP_factor + turn_factor) / 2;
 }
 
-int MissileManager::generate_random(int turn)
+int MissileManager::generate_random(int turn, int hitpoint)
 {
-    int randFactor = get_process_level(turn);
+    int randFactor = get_process_level(turn, hitpoint);
     std::vector<double> weights = {1.0, 1.0, 1.0, 1.0, 1.0};
     weights[0] += (randFactor == 0) ? 1.0 : 0.0;
     weights[1] += (randFactor == 1) ? 1.0 : 0.0;
@@ -350,15 +350,15 @@ bool MissileManager::city_weight_check(City &c)
     return false;
 }
 
-void MissileManager::create_attack_wave(int turn)
+void MissileManager::create_attack_wave(int turn, int hitpoint)
 {
     std::random_device rng;
     int num = turn / inc_turn[0] + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
-        int speed = speed_list[generate_random(turn)];
-        int damage = damage_list[generate_random(turn)];
+        int speed = speed_list.at(generate_random(turn, hitpoint));
+        int damage = damage_list.at(generate_random(turn, hitpoint));
 
         // randomly select a city
         std::uniform_int_distribution<> targetDist(0, cities.size() - 1);
@@ -539,11 +539,9 @@ void TechTree::update_available(int deposit)
 }
 
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
-    : activated(false), size(s), cities(cts), background(bg), missile_manager(cities),
-      tech_tree()
+    : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
+      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
 {
-    cursor = cities[0].position;
-    turn = 0;
     // DEBUG: just for testing, remove later
     std::vector<int> sl = {1, 2, 3, 4, 5};
     std::vector<int> dmg = {100, 150, 200, 250, 300};
@@ -551,8 +549,6 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     missile_manager.speed_list = sl;
     missile_manager.damage_list = dmg;
     missile_manager.inc_turn = inc_turn;
-    missile_manager.hitpoint = 1000;
-    deposit = 0;
 }
 
 int Game::get_productivity(void) const
@@ -605,6 +601,7 @@ void Game::pass_turn(void)
     }
 
     // TODO: Economy Refactor
+    // TODO: economy parameter tuning
 
     // NOTE: update cities production
     for (auto &city : cities)
@@ -657,7 +654,7 @@ void Game::pass_turn(void)
     check_iron_curtain();
 
     if (turn % 40 == 0)
-        missile_manager.create_attack_wave(turn);
+        missile_manager.create_attack_wave(turn, enemy_hitpoint);
     turn++;
 }
 
@@ -676,7 +673,7 @@ bool Game::is_in_range(Position p1, Position p2, int range) const
 
 bool Game::is_game_over(void) const
 {
-    if (missile_manager.hitpoint <= 0)
+    if (enemy_hitpoint <= 0)
     {
         return true;
     }
@@ -987,7 +984,7 @@ void Game::launch_hydrogen_bomb(void)
     {
         return;
     }
-    missile_manager.hitpoint -= 500;
+    enemy_hitpoint -= 500;
 }
 
 void Game::activate_iron_curtain(void)
