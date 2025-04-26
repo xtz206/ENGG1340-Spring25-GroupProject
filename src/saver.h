@@ -13,8 +13,7 @@ class Saver
     std::string folderpath = "../save/";
 public:
     Saver(Game* game) : game(game){}
-    std::string generate_folder_name_by_time();
-    void save_game();
+    void save_game(std::string index);
     void save_game_general(std::string filepath);
     void save_attack_missile(std::string filepath);
     void save_cruise(std::string filepath);

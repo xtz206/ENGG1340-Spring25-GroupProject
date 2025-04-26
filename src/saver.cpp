@@ -166,7 +166,7 @@ void Saver::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
-void Saver::save_game()
+void Saver::save_game(std::string index)
 {
     //check if the save folder exists, if not, create it
     struct stat info;
@@ -181,16 +181,25 @@ void Saver::save_game()
     {
         return;
     }
+    
     //generate timestamp
-    std::time_t now = std::time(nullptr);
-    char timeStamp[20];
-    std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
+    // std::time_t now = std::time(nullptr);
+    // char timeStamp[20];
+    // std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
 
-    std::string sub_folderpath_by_time = folderpath + "game_" + timeStamp + "/";
-    if (mkdir(sub_folderpath_by_time.c_str(), 0777) != 0)
+    std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
+    
+    struct stat sub_info;
+    if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    {
+        return; 
+    }
+    else if (mkdir(sub_folderpath_by_time.c_str(), 0777) != 0)
     {
         return;
     }
+    /*TODO: add hint to notify user slot is occupied*/
+    
     save_game_general(sub_folderpath_by_time);
     save_attack_missile(sub_folderpath_by_time);
     save_cruise(sub_folderpath_by_time);

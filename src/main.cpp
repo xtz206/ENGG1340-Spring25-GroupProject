@@ -92,10 +92,6 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case 'l':
             game.launch_cruise();
             return;
-        //DEBUG: remove this later
-        case 'p':
-            saver.save_game();
-            return;
         case 'q':
             game.deactivate();
         
@@ -215,19 +211,19 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case '\n':
             if (save_menu.get_cursor() == 0)
             {
-                //saver.save_game_general("save_slot_1.txt");
+                saver.save_game("1");
                 save_menu.deactivate();
                 pause_menu.activate();
             }
             else if (save_menu.get_cursor() == 1)
             {
-                //saver.save_game_general("save_slot_2.txt");
+                saver.save_game("2");
                 save_menu.deactivate();
                 pause_menu.activate();
             }
             else if (save_menu.get_cursor() == 2)
             {
-                //saver.save_game_general("save_slot_3.txt");
+                saver.save_game("3");
                 save_menu.deactivate();
                 pause_menu.activate();
             }
