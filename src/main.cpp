@@ -70,7 +70,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.pass_turn();
             return;
 
-        case '\033':
+        case 'p':
             game.deactivate();
             pause_menu.activate();
             return;
@@ -125,7 +125,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             }
             return;
 
-        case '\033':
+        case 'p':
             pause_menu.deactivate();
             game.activate();
             return;
@@ -152,7 +152,6 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             return;
 
         case 'r':
-        case '\033':
             tech_menu.deactivate();
             game.activate();
             return;
