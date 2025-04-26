@@ -503,10 +503,6 @@ bool TechTree::check_research(void)
 
 bool TechTree::check_available(TechNode *node, int deposit) const
 {
-    if (node->name == "Root")
-    {
-        return false;
-    }
     if (node->cost > deposit)
     {
         return false;
