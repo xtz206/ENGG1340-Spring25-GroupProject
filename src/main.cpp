@@ -20,7 +20,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, Saver &saver)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, Saver &saver, BasicMenu &save_menu)
 {
     if (start_menu.is_activated())
     {
@@ -127,6 +127,11 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             else if (pause_menu.get_cursor() == 2)
             {
                 pause_menu.deactivate();
+                save_menu.activate();  
+            }
+            else if (pause_menu.get_cursor() == 3)
+            {
+                pause_menu.deactivate();
             }
             return;
 
@@ -196,6 +201,48 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             return;
         }
     }
+    else if (save_menu.is_activated())
+    {
+        switch (key)
+        {
+        case 'w':
+            save_menu.move_cursor(-1);
+            return;
+        case 's':
+            save_menu.move_cursor(1);
+            return;
+
+        case '\n':
+            if (save_menu.get_cursor() == 0)
+            {
+                //saver.save_game_general("save_slot_1.txt");
+                save_menu.deactivate();
+                pause_menu.activate();
+            }
+            else if (save_menu.get_cursor() == 1)
+            {
+                //saver.save_game_general("save_slot_2.txt");
+                save_menu.deactivate();
+                pause_menu.activate();
+            }
+            else if (save_menu.get_cursor() == 2)
+            {
+                //saver.save_game_general("save_slot_3.txt");
+                save_menu.deactivate();
+                pause_menu.activate();
+            }
+            else if (save_menu.get_cursor() == 3)
+            {
+                save_menu.deactivate();
+                pause_menu.activate();
+            }
+            return;
+
+        case 'q':
+            save_menu.deactivate();
+            return;
+        }
+    }
 }
 
 int main(void)
@@ -208,30 +255,28 @@ int main(void)
         Loader loader = Loader();
         // TODO: store menu title and buttons in separate file instead of hardcoding
         BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "QUIT"});
-        BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
+        BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE      GAME","QUIT"});
+        BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1","SLOT 2","SLOT 3","RETURN TO MENU"});
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
+        BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu);
         BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu);
         GameRenderer game_renderer = GameRenderer(game);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
         Saver saver = Saver(&game);
         
-        //DEBUG: Test Logloader
-        // LogLoader log_loader = LogLoader("../save/game_2025-04-26_16-50-19/");
-        // log_loader.load_game(game);
-        // TODO: add FRAME_INTERVAL macro instead of magic number
 
         start_menu.activate();
         start_menu_renderer.init();
         while (start_menu.is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
 
             if (!game.is_activated())
             {
@@ -245,7 +290,7 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
                 if (game.is_game_over())
                 {
                     game.deactivate();
@@ -266,7 +311,7 @@ int main(void)
                     while (tech_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
                         tech_menu_renderer.draw();
                         tech_menu_renderer.render();
                         usleep(10000);
@@ -278,10 +323,24 @@ int main(void)
                     while (pause_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
-                        pause_menu_renderer.draw();
-                        pause_menu_renderer.render();
-                        usleep(10000);
+                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
+                        if (!save_menu.is_activated())
+                        {
+                            pause_menu_renderer.draw();
+                            pause_menu_renderer.render();
+                            usleep(10000);
+                            continue;
+                        }
+                        save_menu_renderer.init();
+                        while (save_menu.is_activated())
+                        {
+                            key = getch();
+                            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
+                            save_menu_renderer.draw();
+                            save_menu_renderer.render();
+                            usleep(10000);
+                        }
+                        
                     }
                 }
 
@@ -299,7 +358,7 @@ int main(void)
             while (end_menu.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,save_menu);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);

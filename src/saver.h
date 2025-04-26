@@ -24,9 +24,10 @@ public:
 
 class LogLoader
 {
+    std::string dft_folderpath = "../save/";
     std::string folderpath;
 public:
-    LogLoader(std::string fpath) : folderpath(fpath) {};
+    LogLoader(std::string fpath) : folderpath(dft_folderpath+fpath) {};
     std::vector<City> load_cities();
     void load_game_general(Game &game);
     void load_attack_missile(Game &game);
