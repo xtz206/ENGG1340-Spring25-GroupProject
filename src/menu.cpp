@@ -35,6 +35,36 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
+OperationMenu::OperationMenu(Game &g, int lim)
+    : ScrollMenu("Operation", {}, lim), game(g),
+      all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
+                 "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"})
+{
+    for (int index = 0; index < 6; index++)
+    {
+        items.push_back(all_items.at(index));
+    }
+}
+
+void OperationMenu::update_items(void)
+{
+    items.erase(items.begin() + 6);
+    if (game.en_dirty_bomb)
+    {
+        items.push_back(all_items.at(6));
+        items.push_back(all_items.at(7));
+    }
+    if (game.en_hydrogen_bomb)
+    {
+        items.push_back(all_items.at(8));
+        items.push_back(all_items.at(9));
+    }
+    if (game.en_iron_curtain)
+    {
+        items.push_back(all_items.at(10));
+    }
+}
+
 TechMenu::TechMenu(TechTree &t)
     : Menu("Technology", t.get_tech_names()), tech_tree(t)
 {

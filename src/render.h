@@ -52,7 +52,7 @@ class GameRenderer : public Renderer
 {
 private:
     Game &game;
-    ScrollMenu &menu;
+    OperationMenu &menu;
     WINDOW *box_window;
     WINDOW *map_window;
     WINDOW *general_info_window;
@@ -63,7 +63,7 @@ private:
     WINDOW *feedback_window;
 
 public:
-    GameRenderer(Game &g, ScrollMenu &m) : game(g), menu(m) {};
+    GameRenderer(Game &g, OperationMenu &m) : game(g), menu(m) {};
 
     void init(void);
     void render(void);

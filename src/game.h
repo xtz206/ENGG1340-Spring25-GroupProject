@@ -226,6 +226,7 @@ private:
 class Game
 {
     friend class GameRenderer;
+    friend class OperationMenu;
 
 private:
     bool activated;

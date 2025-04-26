@@ -47,6 +47,19 @@ public:
     int get_limit(void) const { return limit; };
 };
 
+class OperationMenu : public ScrollMenu
+{
+private:
+    Game &game;
+    std::vector<std::string> all_items;
+
+public:
+    OperationMenu(Game &g, int lim);
+    virtual const std::vector<std::string> &get_items(void) const override { return items; };
+    virtual const std::string &get_item(int index) const override { return items.at(index); };
+    void update_items(void);
+};
+
 class TechMenu : public Menu
 {
 private:

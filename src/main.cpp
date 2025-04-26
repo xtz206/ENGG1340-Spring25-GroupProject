@@ -283,7 +283,7 @@ int main(void)
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 9);
+        OperationMenu operation_menu = OperationMenu(game, 9);
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
