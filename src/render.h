@@ -60,6 +60,7 @@ private:
     WINDOW *tech_info_window;
     WINDOW *super_weapon_info;
     WINDOW *operation_window;
+    WINDOW *feedback_window;
 
 public:
     GameRenderer(Game &g, ScrollMenu &m) : game(g), menu(m) {};

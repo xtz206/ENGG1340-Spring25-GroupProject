@@ -240,6 +240,7 @@ private:
     int hydrogen_bomb_counter = -1;
     std::vector<City> cities;
     std::vector<std::string> background;
+    std::vector<std::string> feedbacks;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -263,7 +264,7 @@ private:
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false; // done
     bool iron_curtain_activated = false;
-    int iron_curtain_cnt = 30;
+    int iron_curtain_cnt = 0;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
@@ -273,6 +274,7 @@ public:
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
+    const std::vector<std::string> &get_feedbacks(void) const { return feedbacks; };
     MissileManager &get_missile_manager(void) { return missile_manager; };
     TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
@@ -281,6 +283,8 @@ public:
     std::vector<std::string> get_selected_info(void);
     std::vector<std::string> get_tech_info(void) const;
     std::vector<std::string> get_super_weapon_info(void) const;
+    std::vector<std::string> get_feedback_info(void) const;
+    void insert_feedback(const std::string &feedback);
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
     int get_enemy_hp(void) const { return enemy_hitpoint; };

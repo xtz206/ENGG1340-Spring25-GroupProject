@@ -15,7 +15,9 @@
 #define INFO_LINES 6
 #define INFO_COLS 49
 #define OPERATION_LINES 9
-#define OPERATION_COLS 98
+#define OPERATION_COLS 40
+#define FEEDBACK_LINES 9
+#define FEEDBACK_COLS 56
 #define MENU_LINES 10
 #define MENU_COLS 40
 #define TECH_LINES 30
@@ -116,20 +118,30 @@ void GameRenderer::init(void)
     tech_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 2 + 3, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     super_weapon_info = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
+    feedback_window = subwin(box_window, FEEDBACK_LINES, FEEDBACK_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + OPERATION_COLS + 3);
 
     box(box_window, 0, 0);
     mvwhline(box_window, MAP_LINES + 1, 1, ACS_HLINE, MAP_COLS);
     mvwvline(box_window, 1, MAP_COLS + 1, ACS_VLINE, TOTAL_LINES - 2);
-    mvwaddch(box_window, MAP_LINES + 1, 0, ACS_LTEE);
-    mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
+
     mvwaddch(box_window, 0, MAP_COLS + 1, ACS_TTEE);
     mvwaddch(box_window, TOTAL_LINES - 1, MAP_COLS + 1, ACS_BTEE);
+    
+    mvwaddch(box_window, MAP_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
+
+    mvwvline(box_window, MAP_LINES + 2, OPERATION_COLS + 2, ACS_VLINE, OPERATION_LINES);
+    mvwaddch(box_window, MAP_LINES + 1, OPERATION_COLS + 2, ACS_TTEE);
+    mvwaddch(box_window, TOTAL_LINES - 1, OPERATION_COLS + 2, ACS_BTEE);
+
     mvwhline(box_window, INFO_LINES + 1, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
     mvwaddch(box_window, INFO_LINES + 1, MAP_COLS + 1, ACS_LTEE);
     mvwaddch(box_window, INFO_LINES + 1, TOTAL_COLS - 1, ACS_RTEE);
+
     mvwhline(box_window, INFO_LINES * 2 + 2, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
     mvwaddch(box_window, INFO_LINES * 2 + 2, MAP_COLS + 1, ACS_LTEE);
     mvwaddch(box_window, INFO_LINES * 2 + 2, TOTAL_COLS - 1, ACS_RTEE);
+
     mvwhline(box_window, INFO_LINES * 3 + 3, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
     mvwaddch(box_window, INFO_LINES * 3 + 3, MAP_COLS + 1, ACS_LTEE);
     mvwaddch(box_window, INFO_LINES * 3 + 3, TOTAL_COLS - 1, ACS_RTEE);
@@ -141,6 +153,7 @@ void GameRenderer::init(void)
     mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Technology & Research");
     mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Super Weapon");
     mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
+    mvwprintw(box_window, MAP_LINES + 1, 2 + OPERATION_COLS + 2, "Feedback");
 }
 
 void GameRenderer::render(void)
@@ -151,6 +164,7 @@ void GameRenderer::render(void)
     wrefresh(tech_info_window);
     wrefresh(super_weapon_info);
     wrefresh(operation_window);
+    wrefresh(feedback_window);
 }
 
 void GameRenderer::draw(void)
@@ -161,11 +175,12 @@ void GameRenderer::draw(void)
     werase(tech_info_window);
     werase(super_weapon_info);
     werase(operation_window);
+    werase(feedback_window);
 
     // NOTE: draw map window
     for (int index = 0; index < game.get_background().size(); index++)
     {
-        mvwprintw(map_window, index, 1, "%s", game.get_background().at(index).c_str());
+        mvwprintw(map_window, index, 0, "%s", game.get_background().at(index).c_str());
     }
 
     for (auto missile : game.get_missiles())
@@ -259,5 +274,16 @@ void GameRenderer::draw(void)
         {
             mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
         }
+    }
+
+    // NOTE: draw feedback window
+    for (size_t index = 0; index < game.get_feedback_info().size(); index++)
+    {
+        mvwprintw(feedback_window, index, 0, "%s", game.get_feedback_info().at(index).c_str());
+    }
+    if (game.is_game_over())
+    {
+        mvwprintw(feedback_window, 0, 0, "Game Over");
+        mvwprintw(feedback_window, 1, 0, "Press any key to exit");
     }
 }
