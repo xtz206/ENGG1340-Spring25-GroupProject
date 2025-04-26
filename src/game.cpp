@@ -1074,10 +1074,13 @@ void Game::fix_city(void)
         return;
     }
     City &city = select_city();
-    if (city.is_valid())
+    if (!city.is_valid())
     {
         return;
     }
+    // TODO: city countdown when fixing
+    // TODO: deposit cost when fixing
+    insert_feedback("City Fixed, Hitpoint +100");
     city.hitpoint += 100;
 }
 
