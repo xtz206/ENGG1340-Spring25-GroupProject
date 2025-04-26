@@ -116,7 +116,6 @@ void GameRenderer::init(void)
     tech_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 2 + 3, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     counter_attack_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
-    
 
     box(box_window, 0, 0);
     mvwhline(box_window, MAP_LINES + 1, 1, ACS_HLINE, MAP_COLS);
@@ -221,46 +220,27 @@ void GameRenderer::draw(void)
     mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
 
     // NOTE: draw info windows
-    mvwprintw(general_info_window, 0, 0, "Turn: %d", game.get_turn());
-    mvwprintw(general_info_window, 1, 0, "Deposit: %d", game.get_deposit());
-    mvwprintw(general_info_window, 2, 0, "Productivity: %d", game.get_productivity());
-    mvwprintw(general_info_window, 3, 0, "Enemy HP: %d", game.get_enemy_hp());
-    if (true) // DEBUG: game.en_enhanced_radar_I
+    std::vector<std::string> info;
+    info = game.get_general_info();
+    for (size_t index = 0; index < info.size(); index++)
     {
-        mvwprintw(general_info_window, 4, 0, "Approaching Missile Count: %zu", game.get_missiles().size());
+        mvwprintw(general_info_window, index, 0, "%s", info.at(index).c_str());
     }
-
-    if (game.is_selected_missile()) // DEBUG: en_enhanced_radar_III
+    info = game.get_selected_info();
+    for (size_t index = 0; index < info.size(); index++)
     {
-        AttackMissile &missile = static_cast<AttackMissile &>(game.select_missile());
-        mvwprintw(selected_info_window, 0, 0, "Target: %s", missile.city.name.c_str());
-        mvwprintw(selected_info_window, 1, 0, "Speed: %d", missile.speed);
-        mvwprintw(selected_info_window, 2, 0, "Damage: %d", missile.damage);
+        mvwprintw(selected_info_window, index, 0, "%s", info.at(index).c_str());
     }
-    else if (game.is_selected_city())
+    info = game.get_tech_info();
+    for (size_t index = 0; index < info.size(); index++)
     {
-        City &city = game.select_city();
-        mvwprintw(selected_info_window, 0, 0, "Name: %s", city.name.c_str());
-        mvwprintw(selected_info_window, 1, 0, "Hitpoint: %d", city.hitpoint);
-        mvwprintw(selected_info_window, 2, 0, "Productivity: %d", city.productivity);
-        mvwprintw(selected_info_window, 3, 0, "Countdown: %d", city.countdown);
-        mvwprintw(selected_info_window, 4, 0, "Missile Storage: %d", city.cruise_num);
+        mvwprintw(tech_info_window, index, 0, "%s", info.at(index).c_str());
     }
-    else
+    info = game.get_counter_attack_info();
+    for (size_t index = 0; index < info.size(); index++)
     {
-        mvwprintw(selected_info_window, 0, 0, "Nothing Selected Now");
+        mvwprintw(counter_attack_info_window, index, 0, "%s", info.at(index).c_str());
     }
-
-    mvwprintw(tech_info_window, 0, 0, "Researching: %s", game.tech_tree.researching != nullptr ? game.tech_tree.researching->name.c_str() : "None");
-    mvwprintw(tech_info_window, 1, 0, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
-    mvwprintw(tech_info_window, 2, 0, "Available: %zu", game.tech_tree.available.size());
-    mvwprintw(tech_info_window, 3, 0, "Researched: %zu", game.tech_tree.researched.size());
-
-    mvwprintw(counter_attack_info_window, 0, 0, "Standard Bomb Storage: %d", game.standard_bomb_counter);
-    mvwprintw(counter_attack_info_window, 1, 0, "Dirty Bomb Storage: %d", game.dirty_bomb_counter);
-    mvwprintw(counter_attack_info_window, 2, 0, "Hydrogen Bomb Storage: %d", game.hydrogen_bomb_counter);
-    mvwprintw(counter_attack_info_window, 3, 0, "Iron Curtain: %s", game.iron_curtain_activated ? "Activated" : "Not Activated");
-    mvwprintw(counter_attack_info_window, 4, 0, "Iron Curtain Remaining: %d", game.iron_curtain_cnt);
 
     // NOTE: draw operation window
     for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)

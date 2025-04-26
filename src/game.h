@@ -46,7 +46,7 @@ private:
     int productivity;
     int countdown;
     int base_productivity;
-    int cruise_num;
+    int cruise_storage;
     // TODO: add to config file or make it variable to difficulty
     const int cruise_build_time = 5;
 
@@ -171,7 +171,7 @@ public:
     void update_missiles(void);
     void remove_missiles(void);
 
-        void create_attack_wave(int turn, int hitpoint);
+    void create_attack_wave(int turn, int hitpoint);
 };
 
 class TechNode
@@ -277,11 +277,15 @@ public:
     TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
-
+    std::vector<std::string> get_general_info(void);
+    std::vector<std::string> get_selected_info(void);
+    std::vector<std::string> get_tech_info(void) const;
+    std::vector<std::string> get_counter_attack_info(void) const;
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
     int get_enemy_hp(void) const { return enemy_hitpoint; };
 
+    // NOTE: cursor/position-related functions
     void move_cursor(Position dcursor);
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
