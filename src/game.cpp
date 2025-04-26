@@ -221,13 +221,14 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
         {
             target_distance = distance;
             target_missile = attack_missile;
-            attack_missile_ptr->is_aimed = true;
         }
     }
     if (target_missile == nullptr || target_distance > DEFEND_RADIUS)
     {
         return false;
     }
+    AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(target_missile);
+    attack_missile_ptr->is_aimed = true;
     Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v ,target_missile->id);
     missiles.push_back(missile);
     return true;
