@@ -45,7 +45,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             }
             return;
 
-        case 'q':
+        case '\033':
             start_menu.deactivate();
             return;
         }
@@ -67,13 +67,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.move_cursor(Position(0, 1));
             return;
 
-        case 'j':
-            operation_menu.move_cursor(1);
-            return;
-        case 'k':
+        case 'q':
             operation_menu.move_cursor(-1);
             return;
-        case 'o':
+        case 'e':
+            operation_menu.move_cursor(1);
+            return;
+        case '\n':
             if (operation_menu.get_cursor() == 0)
             {
                 game.deactivate();
@@ -121,7 +121,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             }
             return;
 
-        case '\n':
+        case ' ':
             game.pass_turn();
             return;
 
@@ -147,7 +147,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.launch_cruise();
             return;
 
-        case 'q':
+        case '\033':
             game.deactivate();
         }
     }
@@ -156,9 +156,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         switch (key)
         {
         case 'w':
+        case 'a':
+        case 'q':
             pause_menu.move_cursor(-1);
             return;
         case 's':
+        case 'd':
+        case 'e':
             pause_menu.move_cursor(1);
             return;
 
@@ -185,7 +189,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.activate();
             return;
 
-        case 'q':
+        case '\033':
             pause_menu.deactivate();
             return;
         }
@@ -211,7 +215,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.activate();
             return;
 
-        case 'q':
+        case '\033':
             tech_menu.deactivate();
             return;
         }
@@ -240,7 +244,7 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             }
             return;
 
-        case 'q':
+        case '\033':
             end_menu.deactivate();
             return;
         }
@@ -260,7 +264,7 @@ int main(void)
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD COUNTER ATTACK", "LAUNCH COUNTER ATTACK", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 4);
+        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD COUNTER ATTACK", "LAUNCH COUNTER ATTACK", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 8);
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
