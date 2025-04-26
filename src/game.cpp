@@ -249,23 +249,23 @@ void MissileManager::update_missiles(void)
 
 void MissileManager::remove_missiles(void)
 {
-    for (auto cruise_missile : get_cruise_missiles())
-    {
-        if (cruise_missile->get_progress() == MissileProgress::EXPLODED)
-        {
-            auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
-            if (iter != missiles.end())
-            {
-                missiles.erase(iter);
-            }
-            delete cruise_missile;
-        }
-    }
-
+   
     for (auto attack_missile : get_attack_missiles())
     {
         if (attack_missile->get_progress() == MissileProgress::EXPLODED)
         {
+            for (auto &missile : get_cruise_missiles()) {
+                CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
+                if (cruise_missile->target_id == attack_missile->id)
+                {
+                    auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
+                    if (iter != missiles.end())
+                    {
+                        missiles.erase(iter);
+                    }
+                    delete cruise_missile;
+                }
+            }
             auto iter = std::find(missiles.begin(), missiles.end(), attack_missile);
             if (iter != missiles.end())
             {
@@ -274,6 +274,19 @@ void MissileManager::remove_missiles(void)
             delete attack_missile;
         }
     }
+
+    // for (auto cruise_missile : get_cruise_missiles())
+    // {
+    //     if (cruise_missile->get_progress() == MissileProgress::EXPLODED)
+    //     {
+    //         auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
+    //         if (iter != missiles.end())
+    //         {
+    //             missiles.erase(iter);
+    //         }
+    //         delete cruise_missile;
+    //     }
+    // }
 }
 #define HP_PHASE 200
 #define TURN_PHASE 100
