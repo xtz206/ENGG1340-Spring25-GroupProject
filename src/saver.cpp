@@ -593,8 +593,22 @@ void LogLoader::load_tech_tree(Game &game)
     }    
 }
 
-void LogLoader::load_game(Game &game)
+void LogLoader::load_game(Game &game, std::string index)
 {
+    folderpath = "../save/game_" + index + "/";
+    
+    struct stat info;
+    if (stat(folderpath.c_str(), &info) != 0)
+    {
+        // throw std::runtime_error("Cannot open save folder");
+        return;
+    }
+    else if (!(info.st_mode & S_IFDIR))
+    {
+        // throw std::runtime_error("Cannot open save folder");
+        return;
+    }
+    
     load_game_general(game);
     game.cities = load_cities();
     load_attack_missile(game);
