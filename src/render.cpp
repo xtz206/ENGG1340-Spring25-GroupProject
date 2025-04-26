@@ -12,7 +12,7 @@
 #define TOTAL_COLS 150
 #define MAP_LINES 18
 #define MAP_COLS 98
-#define INFO_LINES 5
+#define INFO_LINES 6
 #define INFO_COLS 49
 #define OPERATION_LINES 19
 #define OPERATION_COLS 98
@@ -123,10 +123,21 @@ void GameRenderer::init(void)
     mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
     mvwaddch(box_window, 0, MAP_COLS + 1, ACS_TTEE);
     mvwaddch(box_window, TOTAL_LINES - 1, MAP_COLS + 1, ACS_BTEE);
+    mvwhline(box_window, INFO_LINES + 1, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
+    mvwaddch(box_window, INFO_LINES + 1, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES + 1, TOTAL_COLS - 1, ACS_RTEE);
+    mvwhline(box_window, INFO_LINES * 2 + 2, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
+    mvwaddch(box_window, INFO_LINES * 2 + 2, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES * 2 + 2, TOTAL_COLS - 1, ACS_RTEE);
+    mvwhline(box_window, INFO_LINES * 3 + 3, MAP_COLS + 2, ACS_HLINE, OPERATION_COLS);
+    mvwaddch(box_window, INFO_LINES * 3 + 3, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES * 3 + 3, TOTAL_COLS - 1, ACS_RTEE);
 
     // mvwprintw(box_window, 0, (TOTAL_COLS - 2 - 2) / 2, "Missile Command");
     mvwprintw(box_window, 0, 2, "Map");
-    mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "Info");
+    mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "General");
+    mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "Selected");
+    mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Tech");
     mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
 }
 
