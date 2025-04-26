@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 #include "saver.h"
 #include "game.h"
 
@@ -65,14 +66,13 @@ void Saver::save_cruise(std::string filepath)
     std::ofstream cruise_log(filename);
     if (cruise_log.is_open())
     {
-        for (auto &cruise : game -> missile_manager.get_cruise_missiles())
+        cruise_log << "id, y, x, target_id, damage, speed\n";
+            
+            
+        for (auto &missile : game -> missile_manager.get_cruise_missiles())
         {
-                CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(cruise);
-            cruise_log << "id, y, x, target_id, damage, speed\n";
-            for (auto &missile : game -> missile_manager.get_cruise_missiles())
-            {
-                cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", "  << missile -> damage << ", " << missile -> speed << "\n";
-        }
+            CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
+            cruise_log << missile -> id << ", "<<missile -> get_position().y << ", " << missile -> get_position().x << ", " << cruise_missile->target_id<< ", "  << missile -> damage << ", " << missile -> speed << "\n";
         }
     }
     cruise_log.close();
@@ -84,12 +84,12 @@ void Saver::save_city(std::string filepath)
     std::ofstream city_log(filename);
     if (city_log.is_open())
     {
-        city_log << "Name, y, x, hitpoint, base_productivity, productivity, cruise_num, cruise_build_time\n";
+        city_log << "Name, y, x, hitpoint, base_productivity, productivity, cruise_num, countdown\n";
         for (const auto &city : game -> cities)
         {
             city_log << city.name << ", " << city.position.y << ", " << city.position.x << ", " 
             << city.hitpoint << ", " << city.base_productivity << ", " 
-            <<city.productivity<<", "<<city.cruise_num << ", "<<city.cruise_build_time << "\n";
+            <<city.productivity<<", "<<city.cruise_num << ", "<<city.countdown << "\n";
         }
     }
     city_log.close();
@@ -196,4 +196,225 @@ void Saver::save_game()
     save_cruise(sub_folderpath_by_time);
     save_city(sub_folderpath_by_time);
     save_tech_tree(sub_folderpath_by_time);
+}
+
+std::vector <City> LogLoader::load_cities()
+{
+    std::string filename = folderpath + "cities.txt";
+    std::ifstream city_log(filename);
+    if(!city_log.is_open())
+    {
+        throw std::runtime_error("Cannot open cities.txt");
+    }
+    std::vector<City> cities;
+    std::vector<std::string> words;
+    std::string line;
+    std::string word;
+    std::istringstream iss;
+    std::getline(city_log, line);
+    while (getline(city_log,line))
+    {
+        words.clear();
+        iss.clear();
+        iss.str(line);
+
+        while (getline(iss, word, ','))
+        {
+            words.push_back(word);
+        }
+
+        std::string name = words[0];
+        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
+        int hitpoint = std::stoi(words[3]);
+        int base_productivity = std::stoi(words[4]);
+        int productivity = std::stoi(words[5]);
+        int cruise_num = std::stoi(words[6]);
+        int countdown = std::stoi(words[7]);
+        cities.push_back(City(position, name, hitpoint));
+        cities.back().base_productivity = base_productivity;
+        cities.back().productivity = productivity;
+        cities.back().cruise_num = cruise_num;
+        cities.back().countdown = countdown;
+
+    }
+    city_log.close();
+    return cities;
+}
+
+void LogLoader::load_game_general(Game &game) {
+    std::string filename = folderpath + "general.txt";
+    std::ifstream general_log(filename);
+    if(!general_log.is_open())
+    {
+        throw std::runtime_error("Cannot open general.txt");
+    }
+    std::string line;
+    std::string word;
+    std::istringstream iss;
+    while (getline(general_log,line))
+    {
+        iss.clear();
+        iss.str(line);
+        getline(iss, word, ':');
+        if (word == "turn")
+        {
+            getline(iss, word);
+            game.turn = std::stoi(word);
+        }
+        else if (word == "deposit")
+        {
+            getline(iss, word);
+            game.deposit = std::stoi(word);
+        }
+        else if (word == "cursor_y")
+        {
+            getline(iss, word);
+            game.cursor.y = std::stoi(word);
+        }
+        else if (word == "cursor_x")
+        {
+            getline(iss, word);
+            game.cursor.x = std::stoi(word);
+        }
+        else if (word == "counter_missile_cnt_down")
+        {
+            getline(iss, word);
+            game.countdowns[0] = std::stoi(word);
+        }
+        else if (word == "dirty_bomb_cnt_down")
+        {
+            getline(iss, word);
+            game.countdowns[1] = std::stoi(word);
+        }
+        else if (word == "hydron_bomb_cnt_down")
+        {
+            getline(iss, word);
+            game.countdowns[2] = std::stoi(word);
+        }
+        else if (word == "counter_missile_num")
+        {
+            getline(iss, word);
+            game.attack_missile_num[0] = std::stoi(word);
+        }
+        else if (word == "dirty_bomb_num")
+        {
+            getline(iss, word);
+            game.attack_missile_num[1] = std::stoi(word);
+        }
+        else if (word == "hydron_bomb_num")
+        {
+            getline(iss, word);
+            game.attack_missile_num[2] = std::stoi(word);
+        }
+         else if (word == "enemy_hp")
+         {
+            getline(iss, word);
+            game.missile_manager.hitpoint = std::stoi(word); 
+         }
+         else if (word == "iron_curtain_activated")
+        {
+            getline(iss, word);
+            game.iron_curtain_activated = std::stoi(word);
+        }
+    }       
+}
+
+void LogLoader::load_attack_missile(Game &game)
+{
+    std::string filename = folderpath + "atkmissiles.txt";
+    std::ifstream atkmissile_log(filename);
+    if(!atkmissile_log.is_open())
+    {
+        throw std::runtime_error("Cannot open atkmissiles.txt");
+    }
+    std::string line;
+    std::string word;
+    std::vector<std::string> words;
+    std::istringstream iss;
+    std::getline(atkmissile_log, line);
+    while (getline(atkmissile_log,line))
+    {
+        if (line.empty())
+        {
+            atkmissile_log.close();
+            return;
+        }
+        
+        words.clear();
+        iss.clear();
+        iss.str(line);
+        
+        while (getline(iss, word, ','))
+        {
+            words.push_back(word);
+        }
+        
+        int id = std::stoi(words[0]);
+        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
+        Position target = Position(std::stoi(words[3]), std::stoi(words[4]));
+        int damage = std::stoi(words[5]);
+        int speed = std::stoi(words[6]);
+        bool is_aimed = std::stoi(words[7]);
+        
+        //set target
+        for (auto &city : game.cities)
+        {
+            if (city.get_position() == target)
+            {
+                game.missile_manager.create_attack_missile(position, city, damage, speed);
+            }
+        }
+        //set is_aimed
+        AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(game.missile_manager.get_attack_missiles().back());
+        attack_missile->is_aimed = is_aimed;
+    }
+}
+
+void LogLoader::load_cruise(Game &game)
+{
+    std::string filename = folderpath + "cruise.txt";
+    std::ifstream cruise_log(filename);
+    if(!cruise_log.is_open())
+    {
+        throw std::runtime_error("Cannot open cruise.txt");
+    }
+    std::string line;
+    std::string word;
+    std::vector<std::string> words;
+    std::istringstream iss;
+    std::getline(cruise_log, line);
+    while (getline(cruise_log,line))
+    {
+        if (line.empty())
+        {
+            cruise_log.close();
+            return;
+        }
+        
+        words.clear();
+        iss.clear();
+        iss.str(line);
+        
+        while (getline(iss, word, ','))
+        {
+            words.push_back(word);
+        }
+        
+        int id = std::stoi(words[0]);
+        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
+        int target_id = std::stoi(words[3]);
+        int damage = std::stoi(words[4]);
+        int speed = std::stoi(words[5]);
+        
+        //set target
+        for (auto &missile : game.missile_manager.get_attack_missiles())
+        {
+            if (missile->id == target_id)
+            {
+                Missile *missile = new CruiseMissile(id, position, *missile, damage, speed ,missile->id);
+                game.missile_manager.missiles.push_back(missile);
+                break;
+            }
+        }
+    }
 }
