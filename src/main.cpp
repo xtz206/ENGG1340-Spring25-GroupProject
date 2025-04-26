@@ -20,7 +20,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, Saver &saver)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, SaveDumper &saver)
 {
     if (start_menu.is_activated())
     {
@@ -219,11 +219,11 @@ int main(void)
         GameRenderer game_renderer = GameRenderer(game);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
-        Saver saver = Saver(&game);
+        SaveDumper save_dumper = SaveDumper(&game);
         
         //DEBUG: Test Logloader
-        LogLoader log_loader = LogLoader("../save/game_2025-04-26_16-50-19/");
-        log_loader.load_game(game);
+        SaveLoader save_loader = SaveLoader("../save/game_2025-04-26_16-50-19/");
+        save_loader.load_game(game);
         // TODO: add FRAME_INTERVAL macro instead of magic number
 
         start_menu.activate();
@@ -231,7 +231,7 @@ int main(void)
         while (start_menu.is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper);
 
             if (!game.is_activated())
             {
@@ -245,7 +245,7 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper);
                 if (game.is_game_over())
                 {
                     game.deactivate();
@@ -266,7 +266,7 @@ int main(void)
                     while (tech_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                        control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper);
                         tech_menu_renderer.draw();
                         tech_menu_renderer.render();
                         usleep(10000);
@@ -278,7 +278,7 @@ int main(void)
                     while (pause_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                        control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper);
                         pause_menu_renderer.draw();
                         pause_menu_renderer.render();
                         usleep(10000);
@@ -299,7 +299,7 @@ int main(void)
             while (end_menu.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);

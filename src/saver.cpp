@@ -8,7 +8,7 @@
 #include "saver.h"
 #include "game.h"
 
-void Saver::save_game_general(std::string filepath)
+void SaveDumper::save_game_general(std::string filepath)
 {
     std::string filename = filepath + "general.txt";
     std::ofstream general_log(filename);
@@ -44,7 +44,7 @@ void Saver::save_game_general(std::string filepath)
     general_log.close();
 }
 
-void Saver::save_attack_missile(std::string filepath)
+void SaveDumper::save_attack_missile(std::string filepath)
 {
     std::string filename = filepath + "atkmissiles.txt";
     std::ofstream atkmissile_log(filename);
@@ -60,7 +60,7 @@ void Saver::save_attack_missile(std::string filepath)
     atkmissile_log.close();
 }
 
-void Saver::save_cruise(std::string filepath)
+void SaveDumper::save_cruise(std::string filepath)
 {
     std::string filename = filepath + "cruise.txt";
     std::ofstream cruise_log(filename);
@@ -78,7 +78,7 @@ void Saver::save_cruise(std::string filepath)
     cruise_log.close();
 }
 
-void Saver::save_city(std::string filepath)
+void SaveDumper::save_city(std::string filepath)
 {
     std::string filename = filepath + "cities.txt";
     std::ofstream city_log(filename);
@@ -95,7 +95,7 @@ void Saver::save_city(std::string filepath)
     city_log.close();
 }
 
-void Saver::save_tech_tree(std::string filepath)
+void SaveDumper::save_tech_tree(std::string filepath)
 {
     std::string filename = filepath + "tech_tree.txt";
     std::ofstream tech_tree_log(filename);
@@ -166,7 +166,7 @@ void Saver::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
-void Saver::save_game()
+void SaveDumper::save_game()
 {
     //check if the save folder exists, if not, create it
     struct stat info;
@@ -198,7 +198,7 @@ void Saver::save_game()
     save_tech_tree(sub_folderpath_by_time);
 }
 
-std::vector <City> LogLoader::load_cities()
+std::vector <City> SaveLoader::load_cities()
 {
     std::string filename = folderpath + "cities.txt";
     std::ifstream city_log(filename);
@@ -241,7 +241,7 @@ std::vector <City> LogLoader::load_cities()
     return cities;
 }
 
-void LogLoader::load_game_general(Game &game) {
+void SaveLoader::load_game_general(Game &game) {
     std::string filename = folderpath + "general.txt";
     std::ifstream general_log(filename);
     if(!general_log.is_open())
@@ -395,7 +395,7 @@ void LogLoader::load_game_general(Game &game) {
     }       
 }
 
-void LogLoader::load_attack_missile(Game &game)
+void SaveLoader::load_attack_missile(Game &game)
 {
     std::string filename = folderpath + "atkmissiles.txt";
     std::ifstream atkmissile_log(filename);
@@ -446,7 +446,7 @@ void LogLoader::load_attack_missile(Game &game)
     }
 }
 
-void LogLoader::load_cruise(Game &game)
+void SaveLoader::load_cruise(Game &game)
 {
     std::string filename = folderpath + "cruise.txt";
     std::ifstream cruise_log(filename);
@@ -495,7 +495,7 @@ void LogLoader::load_cruise(Game &game)
     }
 }
 
-void LogLoader::load_tech_tree(Game &game)
+void SaveLoader::load_tech_tree(Game &game)
 {
     std::string filename = folderpath + "tech_tree.txt";
     std::ifstream tech_tree_log(filename);
@@ -584,7 +584,7 @@ void LogLoader::load_tech_tree(Game &game)
     }    
 }
 
-void LogLoader::load_game(Game &game)
+void SaveLoader::load_game(Game &game)
 {
     load_game_general(game);
     game.cities = load_cities();

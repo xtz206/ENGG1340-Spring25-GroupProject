@@ -39,8 +39,8 @@ class City
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     Position position;
@@ -96,8 +96,8 @@ class Missile
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 protected:
     int id;
@@ -124,8 +124,8 @@ class AttackMissile : public Missile
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     City &city;
@@ -141,7 +141,7 @@ class CruiseMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
-    friend class Saver;
+    friend class SaveDumper;
 
 private:
     Missile &missile;
@@ -157,8 +157,8 @@ class MissileManager
 {
     friend class Game;
     friend class GameRenderer;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     int id;
@@ -193,8 +193,8 @@ class TechNode
     friend class GameRenderer;
     friend class TechTree;
     friend class TechMenu;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     std::string name;
@@ -213,8 +213,8 @@ class TechTree
     friend class Game;
     friend class GameRenderer;
     friend class TechMenu;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
     
 private:
     std::vector<TechNode *> nodes;
@@ -244,8 +244,8 @@ private:
 class Game
 {
     friend class GameRenderer;
-    friend class Saver;
-    friend class LogLoader;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     bool activated;

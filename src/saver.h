@@ -7,12 +7,12 @@
 class Game;
 class City;
 
-class Saver
+class SaveDumper
 {
     Game* game;
     std::string folderpath = "../save/";
 public:
-    Saver(Game* game) : game(game){}
+    SaveDumper(Game* game) : game(game){}
     std::string generate_folder_name_by_time();
     void save_game();
     void save_game_general(std::string filepath);
@@ -22,11 +22,11 @@ public:
     void save_tech_tree(std::string filepath);
 };
 
-class LogLoader
+class SaveLoader
 {
     std::string folderpath;
 public:
-    LogLoader(std::string fpath) : folderpath(fpath) {};
+    SaveLoader(std::string fpath) : folderpath(fpath) {};
     std::vector<City> load_cities();
     void load_game_general(Game &game);
     void load_attack_missile(Game &game);
