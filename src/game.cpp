@@ -397,9 +397,11 @@ void MissileManager::create_attack_wave(int turn)
     }
 }
 
-City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), countdown(0)
+City::City(Position p, std::string n, int hp)
+    : position(p), name(n), hitpoint(hp), countdown(0), cruise_num(0)
 {
-    productivity = 50 + hitpoint / 10;
+    base_productivity = 50;
+    productivity = base_productivity + hitpoint / 10;
 }
 
 TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), remaining_time(0)
@@ -610,29 +612,53 @@ void Game::pass_turn(void)
     }
 
     // TODO: Economy Refactor
+
+    // NOTE: update cities production
     for (auto &city : cities)
     {
-        if (city.hitpoint <= 0)
+        if (city.hitpoint > 0)
         {
-            city.productivity = en_evacuated_industry ? city.base_productivity : 0;
-            if (city.productivity == 0)
-            {
-                city.countdown = 0;
-                continue;
-            }
+            city.productivity = city.base_productivity * (en_urgent_production ? 3 : 1) + city.hitpoint / 10;
         }
-        city.productivity = city.base_productivity * (en_urgent_production ? 3 : 1) + city.hitpoint / 10;
+        else if (en_evacuated_industry)
+        {
+            city.productivity = city.base_productivity;
+        }
+        else
+        {
+            city.hitpoint = 0;
+            city.productivity = 0;
+            city.countdown = 0;
+            city.cruise_num = 0;
+        }
         deposit += city.productivity;
+
         if (city.countdown > 0)
         {
             city.countdown--;
+            if (city.countdown == 0)
+            {
+                city.cruise_num += (en_enhanced_cruise_III ? 2 : 1);
+            }
         }
     }
 
+    // NOTE: update global production
+    for (int index = 0; index < 3; index++)
+    {
+        if (countdowns[index] > 0)
+        {
+            countdowns[index]--;
+            if (countdowns[index] == 0)
+            {
+                attack_missile_num[index]++;
+            }
+        }
+    }
+
+    // NOTE: update research
     tech_tree.proceed_research();
     check_research();
-    update_cruise_num();
-    update_counter_attack_num();
 
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
@@ -821,27 +847,6 @@ void Game::build_cruise(void)
     city.countdown = city.cruise_build_time;
 }
 
-void Game::update_cruise_num(void)
-{
-    for (auto &city : cities)
-    {
-        if (city.hitpoint <= 0)
-        {
-            city.cruise_num = 0;
-            city.countdown = 0;
-            continue;
-        }
-        if (city.countdown > 0)
-        {
-            city.countdown--;
-            if (city.countdown == 0)
-            {
-                city.cruise_num += (en_enhanced_cruise_III ? 2 : 1);
-            }
-        }
-    }
-}
-
 void Game::launch_cruise(void)
 {
     City &city = select_city();
@@ -855,7 +860,9 @@ void Game::launch_cruise(void)
     }
     if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
     {
-    } // TODO: impl here
+        city.cruise_num--;
+        // TODO: city countdown when launching cruise
+    }
 }
 
 void Game::build_counter_attack(void)
@@ -934,20 +941,6 @@ void Game::launch_hydron_bomb(void)
     missile_manager.hitpoint -= 500;
 }
 
-void Game::update_counter_attack_num(void)
-{
-    for (int i = 0; i < 3; i++)
-    {
-        if (countdowns[i] > 0)
-        {
-            countdowns[i]--;
-            if (countdowns[i] == 0)
-            {
-                attack_missile_num[i]++;
-            }
-        }
-    }
-}
 void Game::activate_iron_curtain(void)
 {
     if (!en_iron_curtain)

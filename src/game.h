@@ -47,6 +47,7 @@ private:
     int countdown;
     int base_productivity;
     int cruise_num;
+    // TODO: add to config file or make it variable to difficulty
     const int cruise_build_time = 5;
 
 public:
@@ -233,6 +234,7 @@ private:
     int turn;
     int deposit;
     // TODO: fix typo
+    // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
     std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydron
     std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydron
     std::vector<City> cities;
@@ -288,22 +290,20 @@ public:
     Missile &select_missile(void);
     City &select_city(void);
 
-    // NOTE: technology and reseach related functions
+    // NOTE: production/research/fix-related functions 
     void start_research(TechNode *node);
     void check_research(void);
     void finish_research(TechNode *node);
     void hit_city(City &city, int damage);
     void fix_city(void);
     void build_cruise(void);
-    void update_cruise_num(void);
     void launch_cruise(void);
     void build_counter_attack(void);
     void launch_counter_attack(void);
     void build_dirty_bomb(void);
-    void build_hydron_bomb(void);
     void launch_dirty_bomb(void);
     void launch_hydron_bomb(void);
-    void update_counter_attack_num(void);
+    void build_hydron_bomb(void);
     void activate_iron_curtain(void);
     void self_defense(void);
 };

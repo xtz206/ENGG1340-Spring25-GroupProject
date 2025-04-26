@@ -84,6 +84,10 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             game.fix_city();
             return;
 
+        case 'b':
+            game.build_cruise();
+            return;
+
         case 'l':
             game.launch_cruise();
             return;

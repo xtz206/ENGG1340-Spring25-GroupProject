@@ -195,6 +195,7 @@ void GameRenderer::draw(void)
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
         mvwprintw(node_window, 3, 1, "Productivity: %d", city.productivity);
         mvwprintw(node_window, 4, 1, "Countdown: %d", city.countdown);
+        mvwprintw(node_window, 5, 1, "Missile Storage: %d", city.cruise_num);
         if (true) // DEBUG: game.en_enhanced_radar_II
         {
             int missile_count = 0;
@@ -206,7 +207,7 @@ void GameRenderer::draw(void)
                 }
             }
 
-            mvwprintw(node_window, 5, 1, "Targeted by %d Missiles", missile_count);
+            mvwprintw(node_window, 6, 1, "Targeted by %d Missiles", missile_count);
         }
     }
     else
