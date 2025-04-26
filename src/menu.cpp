@@ -66,7 +66,7 @@ void OperationMenu::update_items(void)
 }
 
 TechMenu::TechMenu(TechTree &t)
-    : Menu("Technology", t.get_tech_names()), tech_tree(t)
+    : ScrollMenu("Technology", t.get_tech_names(), 10), tech_tree(t)
 {
     items.insert(items.begin(), "Return to Game");
 }

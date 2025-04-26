@@ -20,7 +20,7 @@
 #define FEEDBACK_COLS 56
 #define MENU_LINES 10
 #define MENU_COLS 40
-#define TECH_LINES 30
+#define TECH_LINES 10
 #define TECH_COLS 80
 
 void Renderer::debug(const std::string &str, int line)
@@ -65,14 +65,14 @@ void TechMenuRenderer::init(void)
 {
     erase();
 
-    box_window = subwin(stdscr, TECH_LINES + 2, TECH_COLS + 2, (LINES - TECH_LINES - 2) / 2, (COLS - TECH_COLS - 2) / 2);
-    item_window = subwin(box_window, menu.get_items().size(), TECH_COLS, (LINES - TECH_LINES) / 2, (COLS - TECH_COLS) / 2);
-    desc_window = subwin(box_window, TECH_LINES - 1 - menu.get_items().size(), TECH_COLS, (LINES - TECH_LINES) / 2 + 1 + menu.get_items().size(), (COLS - TECH_COLS) / 2);
+    box_window = subwin(stdscr, TECH_LINES * 2 + 3, TECH_COLS + 2, (LINES - TECH_LINES * 2 - 2) / 2, (COLS - TECH_COLS - 2) / 2);
+    item_window = subwin(box_window, TECH_LINES, TECH_COLS, (LINES - TECH_LINES * 2 - 3) / 2 + 1, (COLS - TECH_COLS) / 2);
+    desc_window = subwin(box_window, TECH_LINES, TECH_COLS, (LINES - TECH_LINES * 2 - 3) / 2 + TECH_LINES + 2, (COLS - TECH_COLS) / 2);
     box(box_window, 0, 0);
     mvwprintw(box_window, 0, (TECH_COLS + 2 - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
-    mvwhline(box_window, menu.get_items().size() + 1, 1, ACS_HLINE, TECH_COLS);
-    mvwaddch(box_window, menu.get_items().size() + 1, 0, ACS_LTEE);
-    mvwaddch(box_window, menu.get_items().size() + 1, TECH_COLS + 1, ACS_RTEE);
+    mvwhline(box_window, TECH_LINES + 1, 1, ACS_HLINE, TECH_COLS);
+    mvwaddch(box_window, TECH_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, TECH_LINES + 1, TECH_COLS + 1, ACS_RTEE);
 }
 
 void TechMenuRenderer::render(void)
@@ -86,17 +86,21 @@ void TechMenuRenderer::draw()
     werase(item_window);
     werase(desc_window);
 
-    for (size_t index = 0; index < menu.get_items().size(); index++)
+    for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
     {
+        if (index >= menu.get_items().size())
+        {
+            break;
+        }
         if (index == menu.get_cursor())
         {
             wattron(item_window, A_REVERSE);
-            mvwprintw(item_window, index, 0, "%s", menu.get_items().at(index).c_str());
+            mvwprintw(item_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
             wattroff(item_window, A_REVERSE);
         }
         else
         {
-            mvwprintw(item_window, index, 0, "%s", menu.get_items().at(index).c_str());
+            mvwprintw(item_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
         }
     }
 
@@ -126,7 +130,7 @@ void GameRenderer::init(void)
 
     mvwaddch(box_window, 0, MAP_COLS + 1, ACS_TTEE);
     mvwaddch(box_window, TOTAL_LINES - 1, MAP_COLS + 1, ACS_BTEE);
-    
+
     mvwaddch(box_window, MAP_LINES + 1, 0, ACS_LTEE);
     mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
 

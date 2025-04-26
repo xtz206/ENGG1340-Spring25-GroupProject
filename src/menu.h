@@ -60,7 +60,7 @@ public:
     void update_items(void);
 };
 
-class TechMenu : public Menu
+class TechMenu : public ScrollMenu
 {
 private:
     TechTree &tech_tree;
