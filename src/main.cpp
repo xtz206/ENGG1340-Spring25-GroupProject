@@ -257,19 +257,19 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case '\n':
             if (load_menu.get_cursor() == 0)
             {
-                log_loader.load_game(game,"1");
+                save_loader.load_game(game,"1");
                 load_menu.deactivate();
                 start_menu.activate();
             }
             else if (load_menu.get_cursor() == 1)
             {
-                log_loader.load_game(game,"2");
+                save_loader.load_game(game,"2");
                 load_menu.deactivate();
                 start_menu.activate();
             }
             else if (load_menu.get_cursor() == 2)
             {
-                log_loader.load_game(game,"3");
+                save_loader.load_game(game,"3");
                 load_menu.deactivate();
                 start_menu.activate();
             }
@@ -337,7 +337,7 @@ int main(void)
                 while (load_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                    control(key, game, start_menu, pause_menu, end_menu, tech_menu,save_dumper,save_loader,save_menu,load_menu);
                     load_menu_renderer.draw();
                     load_menu_renderer.render();
                     usleep(10000);
@@ -349,7 +349,7 @@ int main(void)
                 while (game.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
+                    control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu);
                     if (game.is_game_over())
                     {
                         game.deactivate();
@@ -370,7 +370,7 @@ int main(void)
                         while (tech_menu.is_activated())
                         {
                             key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
+                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu);
                             tech_menu_renderer.draw();
                             tech_menu_renderer.render();
                             usleep(10000);
@@ -382,7 +382,7 @@ int main(void)
                         while (pause_menu.is_activated())
                         {
                             key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
+                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu);
                             if (!save_menu.is_activated())
                             {
                                 pause_menu_renderer.draw();
@@ -394,7 +394,7 @@ int main(void)
                             while (save_menu.is_activated())
                             {
                                 key = getch();
-                                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                                control(key, game, start_menu, pause_menu, end_menu, tech_menu,save_dumper,save_loader,save_menu,load_menu);
                                 save_menu_renderer.draw();
                                 save_menu_renderer.render();
                                 usleep(10000);
@@ -417,7 +417,7 @@ int main(void)
             while (end_menu.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);
