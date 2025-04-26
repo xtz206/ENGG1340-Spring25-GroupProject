@@ -1,30 +1,34 @@
-## Tech Renderer
+# Tech Renderer
 
-### Enhanced_Radar_I
-```
+## Enhanced_Radar_I
+
+```[plaintext]
 WIN: General
 TITLE: Approaching missile count
 - not_researched
-    CONTENT: [TOBE RESEARCHED]
-- researched
-    CONTENT: [Approaching missile num]
-```
-### Enhance_Radar_II
-```
-WIN: Selected (City)
-TITLE: Approaching missile count
-- not_researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     CONTENT: [Approaching missile num]
 ```
 
-### Enhance_Radar_III
+## Enhance_Radar_II
+
+```[plaintext]
+WIN: Selected (City)
+TITLE: Approaching missile count
+- not_researched
+    CONTENT: [TO BE RESEARCHED]
+- researched
+    CONTENT: [Approaching missile num]
 ```
+
+## Enhance_Radar_III
+
+```[plaintext]
 WIN: Selected (Missile)
 TITLE: Speed
 - not_researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     CONTENT: [Speed]
 TITLE: Damage
@@ -38,21 +42,25 @@ TITLE: Target
 - researched
     CONTENT: [Target_name]
 ```
-### Self_defense_sys
-```
+
+## Self_defense_sys
+
+```[plaintext]
 WIN: General
 TITLE: Self_defense_sys
 - not_researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     CONTENT: [ON]
 ```
-### Iron_curtain
-```
+
+## Iron_curtain
+
+```[plaintext]
 WIN: Tech
 TITLE: Iron Curtain
 - not researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     -not_in_use
         CONTENT: [AVAILABLE]
@@ -60,31 +68,35 @@ TITLE: Iron Curtain
         CONTENT: [ACTIVATED]
 TITLE: Iron Curtain CountDown
 - not researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     -not_in_use
         CONTENT: [NOT ACTIVATED]
     -in_use
         CONTENT: [remaining_time]
 ```
-### DIRTY_BOMB
-```
+
+## DIRTY_BOMB
+
+```[plaintext]
 WIN: Tech
 TITLE: Dirty Bomb Countdown
 - not researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     -not_in_use
         CONTENT: [none]
     -in_use
         CONTENT: [remaining_time]
 ```
-### HYDROGEN BOMB
-```
+
+## HYDROGEN BOMB
+
+```[plaintext]
 WIN: Tech
 TITLE: Hydrogen Bomb Countdown
 - not researched
-    CONTENT: [TOBE RESEARCHED]
+    CONTENT: [TO BE RESEARCHED]
 - researched
     -not_in_use
         CONTENT: [none]
