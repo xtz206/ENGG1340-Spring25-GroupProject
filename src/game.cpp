@@ -418,12 +418,12 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
 
     TechNode *fortress_city = new TechNode("Fortress City", {"City will undertake half of damage"}, 2000, 10, {});
     TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
-    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile storage even after destroyed"}, 10000, 50, {urgent_production});
+    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile", "storage even after destroyed"}, 10000, 50, {urgent_production});
 
     // TODO: Change effects into more innovative ones
-    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-atk missile with 50% cost but 75% hit rate"}, 2000, 10, {});
-    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-atk missile build-time by 50%"}, 5000, 30, {dirty_bomb});
-    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
+    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-attack missile", "with 50% cost but 75% hit rate"}, 2000, 10, {});
+    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-attack missile build-time by 50%"}, 5000, 30, {dirty_bomb});
+    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-attack missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
 
     TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
 
