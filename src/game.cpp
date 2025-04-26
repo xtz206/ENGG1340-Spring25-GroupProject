@@ -648,8 +648,8 @@ std::vector<std::string> Game::get_tech_info(void) const
         info.push_back("");
     }
 
-    info.push_back("Available:" + std::to_string(tech_tree.available.size()));
-    info.push_back("Researched:" + std::to_string(tech_tree.researched.size()));
+    info.push_back("Available: " + std::to_string(tech_tree.available.size()));
+    info.push_back("Researched: " + std::to_string(tech_tree.researched.size()));
 
     return info;
 }
