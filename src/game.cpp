@@ -634,16 +634,17 @@ void Game::pass_turn(void)
     }
 
     // NOTE: update global production
-    for (int index = 0; index < 3; index++)
+    if (standard_bomb_counter > 0)
     {
-        if (countdowns[index] > 0)
-        {
-            countdowns[index]--;
-            if (countdowns[index] == 0)
-            {
-                attack_missile_num[index]++;
-            }
-        }
+        standard_bomb_counter--;
+    }
+    if (dirty_bomb_counter > 0)
+    {
+        dirty_bomb_counter--;
+    }
+    if (hydrogen_bomb_counter > 0)
+    {
+        hydrogen_bomb_counter--;
     }
 
     // NOTE: update research
@@ -911,23 +912,31 @@ void Game::launch_cruise(void)
     }
 }
 
-void Game::build_counter_attack(void)
+void Game::build_standard_bomb(void)
 {
-    if (deposit < 2000)
+    if (standard_bomb_counter != -1)
     {
         return;
     }
-    if (countdowns[0] > 0)
+    if (deposit < 3000)
     {
         return;
     }
+
+
     deposit -= 2000;
-    countdowns[0] = (en_fast_nuke ? 5 : 10);
+    standard_bomb_counter = (en_fast_nuke ? 5 : 10);
 }
 
-void Game::launch_counter_attack(void)
+void Game::launch_standard_bomb(void)
 {
-    missile_manager.hitpoint -= 50;
+    if (standard_bomb_counter != 0)
+    {
+        return;
+    }
+    standard_bomb_counter = -1;
+
+    enemy_hitpoint -= 50;
 }
 
 void Game::build_dirty_bomb(void)
@@ -936,26 +945,33 @@ void Game::build_dirty_bomb(void)
     {
         return;
     }
-    if (deposit < 1000)
+    if (dirty_bomb_counter != -1)
     {
         return;
     }
-    if (countdowns[1] > 0)
+    if (deposit < 2000)
     {
         return;
     }
     deposit -= 1000;
-    countdowns[1] = 10;
+    dirty_bomb_counter = 10;
 }
+
 void Game::launch_dirty_bomb(void)
 {
+    if (dirty_bomb_counter != 0)
+    {
+        return;
+    }
+    dirty_bomb_counter = -1;
+
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand() % 4;
     if (rand_factor == 0)
     {
         return;
     }
-    missile_manager.hitpoint -= 50;
+    enemy_hitpoint -= 50;
 }
 
 void Game::build_hydrogen_bomb(void)
@@ -964,20 +980,26 @@ void Game::build_hydrogen_bomb(void)
     {
         return;
     }
-    if (deposit < 5000)
+    if (hydrogen_bomb_counter != -1)
     {
         return;
     }
-    if (countdowns[2] > 0)
+    if (deposit < 7500)
     {
         return;
     }
     deposit -= 5000;
-    countdowns[2] = 20;
+    hydrogen_bomb_counter = 20;
 }
 
 void Game::launch_hydrogen_bomb(void)
 {
+    if (hydrogen_bomb_counter != 0)
+    {
+        return;
+    }
+    hydrogen_bomb_counter = -1;
+
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand() % 2;
     if (rand_factor == 0)

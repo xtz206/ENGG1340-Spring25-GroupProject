@@ -256,9 +256,9 @@ void GameRenderer::draw(void)
     mvwprintw(tech_info_window, 2, 0, "Available: %zu", game.tech_tree.available.size());
     mvwprintw(tech_info_window, 3, 0, "Researched: %zu", game.tech_tree.researched.size());
 
-    mvwprintw(counter_attack_info_window, 0, 0, "Counter Attack Storage: %d", game.attack_missile_num[0]);
-    mvwprintw(counter_attack_info_window, 1, 0, "Dirty Bomb Storage: %d", game.attack_missile_num[1]);
-    mvwprintw(counter_attack_info_window, 2, 0, "Hydrogen Bomb Storage: %d", game.attack_missile_num[2]);
+    mvwprintw(counter_attack_info_window, 0, 0, "Standard Bomb Storage: %d", game.standard_bomb_counter);
+    mvwprintw(counter_attack_info_window, 1, 0, "Dirty Bomb Storage: %d", game.dirty_bomb_counter);
+    mvwprintw(counter_attack_info_window, 2, 0, "Hydrogen Bomb Storage: %d", game.hydrogen_bomb_counter);
     mvwprintw(counter_attack_info_window, 3, 0, "Iron Curtain: %s", game.iron_curtain_activated ? "Activated" : "Not Activated");
     mvwprintw(counter_attack_info_window, 4, 0, "Iron Curtain Remaining: %d", game.iron_curtain_cnt);
 

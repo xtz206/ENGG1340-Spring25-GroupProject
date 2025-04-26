@@ -234,9 +234,10 @@ private:
     int turn;
     int deposit;
     int enemy_hitpoint;
-    // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
-    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
-    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydrogen
+    // NOTE: -1 means not built yet, 0 means built, otherwise means building (remaining time)
+    int standard_bomb_counter = -1;
+    int dirty_bomb_counter = -1;
+    int hydrogen_bomb_counter = -1;
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
@@ -299,8 +300,8 @@ public:
     void fix_city(void);
     void build_cruise(void);
     void launch_cruise(void);
-    void build_counter_attack(void);
-    void launch_counter_attack(void);
+    void build_standard_bomb(void);
+    void launch_standard_bomb(void);
     void build_dirty_bomb(void);
     void launch_dirty_bomb(void);
     void build_hydrogen_bomb(void);

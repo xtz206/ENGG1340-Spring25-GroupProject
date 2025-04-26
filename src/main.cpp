@@ -96,11 +96,11 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             }
             else if (operation_menu.get_cursor() == 4)
             {
-                game.build_counter_attack();
+                game.build_standard_bomb();
             }
             else if (operation_menu.get_cursor() == 5)
             {
-                game.launch_counter_attack();
+                game.launch_standard_bomb();
             }
             else if (operation_menu.get_cursor() == 6)
             {
@@ -275,7 +275,7 @@ int main(void)
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD COUNTER ATTACK", "LAUNCH COUNTER ATTACK", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 8);
+        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 8);
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
