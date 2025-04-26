@@ -263,7 +263,7 @@ int main(void)
                     while (tech_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+                        control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver);
                         tech_menu_renderer.draw();
                         tech_menu_renderer.render();
                         usleep(10000);
