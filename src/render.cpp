@@ -34,36 +34,32 @@ void BasicMenuRenderer::init(void)
     clear();
 
     menu_window = subwin(stdscr, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
+    item_window = subwin(menu_window, MENU_LINES - 2, MENU_COLS - 2, (LINES - MENU_LINES) / 2 + 1, (COLS - MENU_COLS) / 2 + 1);
     box(menu_window, 0, 0);
-
     mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
 }
 
 void BasicMenuRenderer::render(void)
 {
-    wrefresh(menu_window);
+    wrefresh(item_window);
 }
 
 void BasicMenuRenderer::draw(void)
 {
-    for (size_t line = 1; line < MENU_LINES - 1; line++)
-    {
-        mvwprintw(menu_window, line, 1, "%s", std::string(MENU_COLS - 2, ' ').c_str());
-    }
-
+    wclear(item_window);
     for (size_t index = 0; index < menu.get_items().size(); index++)
     {
         if (index == menu.get_cursor())
         {
-            wattron(menu_window, A_REVERSE);
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_items().at(index).length()) / 2, "%s", menu.get_items().at(index).c_str());
-            wattroff(menu_window, A_REVERSE);
+            wattron(item_window, A_REVERSE);
+            mvwprintw(item_window, index, (MENU_COLS - 2 - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
+            wattroff(item_window, A_REVERSE);
         }
         else
         {
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_items().at(index).length()) / 2, "%s", menu.get_items().at(index).c_str());
+            mvwprintw(item_window, index, (MENU_COLS - 2 - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
         }
-        if (index == menu.get_items().size() - 1)
+        if (index == MENU_COLS - 2)
         {
             break;
         }
@@ -75,48 +71,43 @@ void TechMenuRenderer::init(void)
     clear();
 
     menu_window = subwin(stdscr, TECH_LINES, TECH_COLS, (LINES - TECH_LINES) / 2, (COLS - TECH_COLS) / 2);
+    item_window = subwin(menu_window, menu.get_items().size(), TECH_COLS - 2, (LINES - TECH_LINES) / 2 + 1, (COLS - TECH_COLS) / 2 + 1);
+    desc_window = subwin(menu_window, TECH_LINES - 2 - menu.get_items().size() - 1, TECH_COLS - 2,
+                         (LINES - TECH_LINES) / 2 + 1 + menu.get_items().size() + 1, (COLS - TECH_COLS) / 2 + 1);
     box(menu_window, 0, 0);
-
     mvwprintw(menu_window, 0, (TECH_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
+    mvwhline(menu_window, menu.get_items().size() + 1, 1, ACS_HLINE, TECH_COLS - 2);
 }
 
 void TechMenuRenderer::render(void)
 {
-    wrefresh(menu_window);
+    wrefresh(item_window);
+    wrefresh(desc_window);
 }
 
 void TechMenuRenderer::draw()
 {
-    for (size_t line = 1; line < TECH_LINES - 1; line++)
-    {
-        mvwprintw(menu_window, line, 1, "%s", std::string(TECH_COLS - 2, ' ').c_str());
-    }
-    mvwhline(menu_window, menu.get_items().size() + 1, 1, ACS_HLINE, TECH_COLS - 2);
+    wclear(item_window);
+    wclear(desc_window);
 
-    std::vector<std::string> items = menu.get_items();
-    for (size_t index = 0; index < items.size(); index++)
+    for (size_t index = 0; index < menu.get_items().size(); index++)
     {
         if (index == menu.get_cursor())
         {
-            wattron(menu_window, A_REVERSE);
-            mvwprintw(menu_window, index + 1, 1, "%s", items.at(index).c_str());
-            wattroff(menu_window, A_REVERSE);
+            wattron(item_window, A_REVERSE);
+            mvwprintw(item_window, index, 0, "%s", menu.get_items().at(index).c_str());
+            wattroff(item_window, A_REVERSE);
         }
         else
         {
-            mvwprintw(menu_window, index + 1, 1, "%s", items.at(index).c_str());
-        }
-        if (index == TECH_LINES - 1)
-        {
-            break;
+            mvwprintw(item_window, index, 0, "%s", menu.get_items().at(index).c_str());
         }
     }
 
     std::vector<std::string> description = menu.get_item_description();
-
     for (size_t index = 0; index < description.size(); index++)
     {
-        mvwprintw(menu_window, index + menu.get_items().size() + 2, 1, "%s", description.at(index).c_str());
+        mvwprintw(desc_window, index, 0, "%s", description.at(index).c_str());
     }
 }
 

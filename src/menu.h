@@ -24,6 +24,7 @@ public:
 
     const std::string &get_title(void) const { return title; };
     const std::vector<std::string> &get_items(void) const { return items; };
+    const std::string &get_item(int index) const { return items.at(index); };
 };
 
 class BasicMenu : public Menu
