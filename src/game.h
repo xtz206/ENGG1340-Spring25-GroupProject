@@ -152,7 +152,8 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> inc_turn; // This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
+    std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
+    // TODO: fix typo
     int hitpoint;
 
 public:
@@ -161,7 +162,7 @@ public:
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
 
-    bool city_weight_check(City &c);//this checks cities weight of becoming a target
+    bool city_weight_check(City &c); // NOTE: this checks cities weight of becoming a target
     void create_attack_missile(Position p, City &c, int d, int v);
     bool create_cruise_missile(City &c, int d, int v);
     void update_missiles(void);
@@ -231,15 +232,17 @@ private:
     Position cursor;
     int turn;
     int deposit;
-    std::vector<int> countdowns = {0,0,0};// 0: counter, 1: dirty, 2: hydron
-    std::vector<int> attack_missile_num = {0,0,0};// 0: counter, 1: dirty, 2: hydron
+    // TODO: fix typo
+    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydron
+    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydron
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
     TechTree tech_tree;
 
+    // TODO: clean up and reorganize the following comments
     bool en_enhanced_radar_I = false;
-    bool en_enhanced_radar_II = false; 
+    bool en_enhanced_radar_II = false;
     bool en_enhanced_radar_III = false; // show attack missile details
 
     bool en_enhanced_cruise_I = false;   // done
