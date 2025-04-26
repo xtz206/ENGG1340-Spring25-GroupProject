@@ -142,6 +142,7 @@ void GameRenderer::draw(void)
     wclear(info_window);
     wclear(operation_window);
 
+    // NOTE: draw map window
     for (int index = 0; index < game.get_background().size(); index++)
     {
         mvwprintw(map_window, index, 1, "%s", game.get_background().at(index).c_str());
@@ -198,6 +199,7 @@ void GameRenderer::draw(void)
 
     mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
 
+    // NOTE: draw info window
     mvwprintw(info_window, 0, 0, "Turn: %d", game.get_turn());
     mvwprintw(info_window, 1, 0, "Deposit: %d", game.get_deposit());
     mvwprintw(info_window, 2, 0, "Productivity: %d", game.get_productivity());
@@ -244,6 +246,7 @@ void GameRenderer::draw(void)
         mvwprintw(info_window, 7, 0, "Nothing Selected Now");
     }
 
+    // NOTE: draw operation window
     for (int index = 0; index < menu.get_limit(); index++)
     {
         if (index + menu.get_offset() >= menu.get_items().size())
@@ -262,7 +265,6 @@ void GameRenderer::draw(void)
         }
     }
 
-
     for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
     {
         if (index >= menu.get_items().size())
@@ -280,7 +282,4 @@ void GameRenderer::draw(void)
             mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
         }
     }
-
-
-
 }
