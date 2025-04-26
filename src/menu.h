@@ -22,9 +22,9 @@ public:
     void activate(void) { activated = true; };
     void deactivate(void) { activated = false; };
 
-    const std::string &get_title(void) const { return title; };
-    const std::vector<std::string> &get_items(void) const { return items; };
-    const std::string &get_item(int index) const { return items.at(index); };
+    virtual const std::string &get_title(void) const { return title; };
+    virtual const std::vector<std::string> &get_items(void) const { return items; };
+    virtual const std::string &get_item(int index) const { return items.at(index); };
 };
 
 class BasicMenu : public Menu
@@ -54,7 +54,7 @@ private:
 
 public:
     TechMenu(TechTree &t);
-    TechNode *get_tech_node(void) const { return tech_tree.nodes.at(cursor); };
+    TechNode *get_tech_node(void) const { return tech_tree.nodes.at(cursor - 1); };
     std::vector<std::string> get_item_description(void);
 };
 #endif

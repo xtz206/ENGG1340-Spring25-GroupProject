@@ -38,10 +38,16 @@ void ScrollMenu::move_cursor(int dcursor)
 TechMenu::TechMenu(TechTree &t)
     : Menu("Technology", t.get_tech_names()), tech_tree(t)
 {
+    items.insert(items.begin(), "Return to Game");
 }
 
 std::vector<std::string> TechMenu::get_item_description()
 {
+    if (cursor == 0)
+    {
+        return {};
+    }
+
     TechNode *node = get_tech_node();
     std::vector<std::string> description;
     description.push_back("Name: " + node->name);
