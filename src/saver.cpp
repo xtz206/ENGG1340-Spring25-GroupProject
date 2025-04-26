@@ -161,7 +161,7 @@ void Saver::save_tech_tree(std::string filepath)
             tech_tree_log << game -> tech_tree.prev_researching->name << "\n";
         }
         
-        tech_tree_log << "remaining_time: "<< game -> tech_tree.remaining_time << "\n"; 
+        tech_tree_log << "remaining_time, "<< game -> tech_tree.remaining_time << "\n"; 
     }
     tech_tree_log.close();
 }
@@ -253,6 +253,12 @@ void LogLoader::load_game_general(Game &game) {
     std::istringstream iss;
     while (getline(general_log,line))
     {
+        if (line.empty())
+        {
+            general_log.close();
+            return;
+        }
+
         iss.clear();
         iss.str(line);
         getline(iss, word, ':');
@@ -417,4 +423,102 @@ void LogLoader::load_cruise(Game &game)
             }
         }
     }
+}
+
+void LogLoader::load_tech_tree(Game &game)
+{
+    std::string filename = folderpath + "tech_tree.txt";
+    std::ifstream tech_tree_log(filename);
+    if(!tech_tree_log.is_open())
+    {
+        throw std::runtime_error("Cannot open tech_tree.txt");
+    }
+    std::string line;
+    std::string word;
+    std::vector<std::string> words;
+    std::istringstream iss;
+    while (getline(tech_tree_log,line))
+    {
+        if (line.empty())
+        {
+            tech_tree_log.close();
+            return;
+        }
+
+        words.clear();
+        iss.clear();
+        iss.str(line);
+        
+        while (getline(iss, word, ','))
+        {
+            words.push_back(word);
+        }
+        
+        if (words[0] == "researched") {
+            if (words[1] == "none") {
+                continue;
+            }
+            for (size_t i = 1; i < words.size(); ++i) {
+                for (auto &node : game.tech_tree.nodes) {
+                    if (node->name == words[i]) {
+                        game.tech_tree.researched.push_back(node);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (words[0] == "available") {
+            if (words[1] == "none") {
+                continue;
+            }
+            for (size_t i = 1; i < words.size(); ++i) {
+                for (auto &node : game.tech_tree.nodes) {
+                    if (node->name == words[i]) {
+                        game.tech_tree.available.push_back(node);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (words[0] == "researching") {
+            if (words[1] == "none") {
+                continue;
+            }
+            std::string researching_name = words[1];
+            for (auto &node : game.tech_tree.nodes) {
+                if (node->name == researching_name) {
+                    game.tech_tree.researching = node;
+                    break;
+                }
+            }
+        }
+
+        if (words[0] == "prev_researching") {
+            if (words[1] == "none") {
+                continue;
+            }
+            std::string prev_researching_name = words[1];
+            for (auto &node : game.tech_tree.nodes) {
+                if (node->name == prev_researching_name) {
+                    game.tech_tree.prev_researching = node;
+                    break;
+                }
+            }
+        }
+
+        if (words[0] == "remaining_time") {
+            game.tech_tree.remaining_time = std::stoi(words[1]);
+        }
+    }    
+}
+
+void LogLoader::load_game(Game &game)
+{
+    load_game_general(game);
+    game.cities = load_cities();
+    load_attack_missile(game);
+    load_cruise(game);
+    load_tech_tree(game);
 }

@@ -194,6 +194,7 @@ class TechNode
     friend class TechTree;
     friend class TechMenu;
     friend class Saver;
+    friend class LogLoader;
 
 private:
     std::string name;
