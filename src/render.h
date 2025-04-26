@@ -40,7 +40,6 @@ private:
     WINDOW *item_window;
     WINDOW *desc_window;
 
-
 public:
     TechMenuRenderer(TechMenu &m) : menu(m) {};
 
@@ -53,9 +52,8 @@ class GameRenderer : public Renderer
 {
 private:
     Game &game;
+    WINDOW *box_window;
     WINDOW *map_window;
-    WINDOW *radar_window;
-    WINDOW *node_window;
     WINDOW *info_window;
     WINDOW *operation_window;
 

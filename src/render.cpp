@@ -7,18 +7,15 @@
 #include "menu.h"
 #include "render.h"
 
-#define TOTAL_LINES 30
-#define TOTAL_COLS 140
-#define MAP_LINES 20
-#define MAP_COLS 100
-#define RADAR_LINES 10
-#define RADAR_COLS 40
-#define NODE_LINES 10
-#define NODE_COLS 40
-#define INFO_LINES 10
-#define INFO_COLS 40
-#define OPERATION_LINES 10
-#define OPERATION_COLS 100
+// TODO: make screen size variable to map size
+#define TOTAL_LINES 40
+#define TOTAL_COLS 150
+#define MAP_LINES 18
+#define MAP_COLS 98
+#define INFO_LINES 38
+#define INFO_COLS 49
+#define OPERATION_LINES 19
+#define OPERATION_COLS 98
 #define MENU_LINES 10
 #define MENU_COLS 40
 #define TECH_LINES 30
@@ -112,116 +109,42 @@ void GameRenderer::init(void)
 {
     clear();
 
-    map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
-    radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    node_window = subwin(stdscr, NODE_LINES, NODE_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
+    box_window = subwin(stdscr, TOTAL_LINES, TOTAL_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
+    map_window = subwin(box_window, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + 1);
+    info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
 
-    box(map_window, 0, 0);
-    box(radar_window, 0, 0);
-    box(node_window, 0, 0);
-    box(info_window, 0, 0);
-    box(operation_window, 0, 0);
+    box(box_window, 0, 0);
+    mvwhline(box_window, MAP_LINES + 1, 1, ACS_HLINE, MAP_COLS);
+    mvwvline(box_window, 1, MAP_COLS + 1, ACS_VLINE, INFO_LINES);
+    mvwaddch(box_window, MAP_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
+    mvwaddch(box_window, 0, MAP_COLS + 1, ACS_TTEE);
+    mvwaddch(box_window, TOTAL_LINES - 1, MAP_COLS + 1, ACS_BTEE);
 
-    // TODO: store title in separate file instead of hardcoding
-    mvwprintw(map_window, 0, 2, "Map");
-    mvwprintw(radar_window, 0, 2, "Radar");
-    mvwprintw(node_window, 0, 2, "Node");
-    mvwprintw(info_window, 0, 2, "Info");
-    mvwprintw(operation_window, 0, 2, "Operation");
-
-    // TODO: store button text in separate file instead of hardcoding
-    mvwprintw(operation_window, 1, 1, "W/A/S/D: CURSOR MOVING");
-    mvwprintw(operation_window, 2, 1, "ENTER: PASS TURN");
-    mvwprintw(operation_window, 3, 1, "ESC: PAUSE");
-    mvwprintw(operation_window, 4, 1, "R: RESEARCH");
-    mvwprintw(operation_window, 5, 1, "F: FIX");
-    mvwprintw(operation_window, 6, 1, "B: BUILD");
-    mvwprintw(operation_window, 7, 1, "L: LAUNCH");
-    mvwprintw(operation_window, 8, 1, "Q: QUIT");
+    // mvwprintw(box_window, 0, (TOTAL_COLS - 2 - 2) / 2, "Missile Command");
+    mvwprintw(box_window, 0, 2, "Map");
+    mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "Info");
+    mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
 }
 
 void GameRenderer::render(void)
 {
     wrefresh(map_window);
-    wrefresh(radar_window);
-    wrefresh(node_window);
     wrefresh(info_window);
     wrefresh(operation_window);
 }
 
 void GameRenderer::draw(void)
 {
-    // RADAR WINDOW
-    for (size_t line = 1; line < RADAR_LINES - 1; line++)
-    {
-        mvwprintw(radar_window, line, 1, "%s", std::string(RADAR_COLS - 2, ' ').c_str());
-    }
 
-    mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
-    mvwprintw(radar_window, 2, 1, "Tech Nodes: %zu", game.tech_tree.nodes.size());
+    wclear(map_window);
+    wclear(info_window);
+    wclear(operation_window);
 
-    // NODE WINDOW
-    for (size_t line = 1; line < NODE_LINES - 1; line++)
+    for (int index = 0; index < game.get_background().size(); index++)
     {
-        mvwprintw(node_window, line, 1, "%s", std::string(NODE_COLS - 2, ' ').c_str());
-    }
-
-    if (game.is_selected_missile()) // DEBUG: en_enhanced_radar_III
-    {
-        AttackMissile &missile = static_cast<AttackMissile &>(game.select_missile());
-        mvwprintw(node_window, 1, 1, "Target: %s", missile.city.name.c_str());
-        mvwprintw(node_window, 2, 1, "Speed: %d", missile.speed);
-        mvwprintw(node_window, 3, 1, "Damage: %d", missile.damage);
-    }
-    else if (game.is_selected_city())
-    {
-        City &city = game.select_city();
-        mvwprintw(node_window, 1, 1, "Name: %s", city.name.c_str());
-        mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
-        mvwprintw(node_window, 3, 1, "Productivity: %d", city.productivity);
-        mvwprintw(node_window, 4, 1, "Countdown: %d", city.countdown);
-        mvwprintw(node_window, 5, 1, "Missile Storage: %d", city.cruise_num);
-        if (true) // DEBUG: game.en_enhanced_radar_II
-        {
-            int missile_count = 0;
-            for (auto missile : game.missile_manager.get_attack_missiles())
-            {
-                if (missile->get_target() == city.get_position())
-                {
-                    missile_count++;
-                }
-            }
-
-            mvwprintw(node_window, 6, 1, "Targeted by %d Missiles", missile_count);
-        }
-    }
-    else
-    {
-        mvwprintw(node_window, 1, 1, "Nothing Selected Now");
-    }
-
-    // INFO WINDOW
-    for (size_t line = 1; line < INFO_LINES - 1; line++)
-    {
-        mvwprintw(info_window, line, 1, "%s", std::string(INFO_COLS - 2, ' ').c_str());
-    }
-
-    mvwprintw(info_window, 1, 1, "Turn: %d", game.get_turn());
-    mvwprintw(info_window, 2, 1, "Deposit: %d", game.get_deposit());
-    mvwprintw(info_window, 3, 1, "Productivity: %d", game.get_productivity());
-    mvwprintw(info_window, 4, 1, "Researching: %s", game.tech_tree.researching != nullptr ? game.tech_tree.researching->name.c_str() : "None");
-    mvwprintw(info_window, 5, 1, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
-    if (true) // DEBUG: game.en_enhanced_radar_I
-    {
-        mvwprintw(info_window, 6, 1, "Approaching Missile Count: %zu", game.get_missiles().size());
-    }
-
-    // MAP WINDOW
-    for (size_t line = 0; line < game.get_background().size(); line++)
-    {
-        mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
+        mvwprintw(map_window, index, 1, "%s", game.get_background().at(index).c_str());
     }
 
     for (auto missile : game.get_missiles())
@@ -270,8 +193,54 @@ void GameRenderer::draw(void)
         default:
             break;
         }
-        mvwprintw(map_window, missile->get_position().y + 1, missile->get_position().x + 1, "%s", direction.c_str());
+        mvwprintw(map_window, missile->get_position().y, missile->get_position().x, "%s", direction.c_str());
     }
 
-    mvwprintw(map_window, game.get_cursor().y + 1, game.get_cursor().x + 1, "X");
+    mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
+
+    mvwprintw(info_window, 0, 0, "Turn: %d", game.get_turn());
+    mvwprintw(info_window, 1, 0, "Deposit: %d", game.get_deposit());
+    mvwprintw(info_window, 2, 0, "Productivity: %d", game.get_productivity());
+    mvwprintw(info_window, 3, 0, "Researching: %s", game.tech_tree.researching != nullptr ? game.tech_tree.researching->name.c_str() : "None");
+    mvwprintw(info_window, 4, 0, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
+    if (true) // DEBUG: game.en_enhanced_radar_I
+    {
+        mvwprintw(info_window, 5, 0, "Approaching Missile Count: %zu", game.get_missiles().size());
+    }
+
+    mvwhline(info_window, 6, 0, ACS_HLINE, INFO_COLS);
+
+    if (game.is_selected_missile()) // DEBUG: en_enhanced_radar_III
+    {
+        AttackMissile &missile = static_cast<AttackMissile &>(game.select_missile());
+        mvwprintw(info_window, 7, 0, "Target: %s", missile.city.name.c_str());
+        mvwprintw(info_window, 8, 0, "Speed: %d", missile.speed);
+        mvwprintw(info_window, 9, 0, "Damage: %d", missile.damage);
+    }
+    else if (game.is_selected_city())
+    {
+        City &city = game.select_city();
+        mvwprintw(info_window, 7, 0, "Name: %s", city.name.c_str());
+        mvwprintw(info_window, 8, 0, "Hitpoint: %d", city.hitpoint);
+        mvwprintw(info_window, 9, 0, "Productivity: %d", city.productivity);
+        mvwprintw(info_window, 10, 0, "Countdown: %d", city.countdown);
+        mvwprintw(info_window, 11, 0, "Missile Storage: %d", city.cruise_num);
+        if (true) // DEBUG: game.en_enhanced_radar_II
+        {
+            int missile_count = 0;
+            for (auto missile : game.missile_manager.get_attack_missiles())
+            {
+                if (missile->get_target() == city.get_position())
+                {
+                    missile_count++;
+                }
+            }
+
+            mvwprintw(info_window, 12, 0, "Targeted by %d Missiles", missile_count);
+        }
+    }
+    else
+    {
+        mvwprintw(info_window, 7, 0, "Nothing Selected Now");
+    }
 }
