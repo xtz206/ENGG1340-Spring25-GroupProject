@@ -37,6 +37,10 @@ std::vector<std::string> TechMenu::get_item_description()
     {
         description.push_back(prerequisite->name);
     }
+    if (node->prerequisites.empty())
+    {
+        description.push_back("None");
+    }
     // Check if the technology is available
     if (tech_tree.researching == node)
     {

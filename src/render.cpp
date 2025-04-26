@@ -172,7 +172,7 @@ void GameRenderer::draw(void)
     }
 
     mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
-    mvwprintw(radar_window, 2, 1, "Researched: %zu", game.tech_tree.researched.size() - 1);
+    mvwprintw(radar_window, 2, 1, "Researched: %zu", game.tech_tree.researched.size());
     mvwprintw(radar_window, 3, 1, "Available: %zu", game.tech_tree.available.size());
 
     // NODE WINDOW
