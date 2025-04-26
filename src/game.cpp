@@ -895,6 +895,13 @@ void Game::build_cruise(void)
     {
         return;
     }
+    if (city.countdown > 0) //FIX: avoid dulplicate building
+    {
+        return;
+    }
+    {
+        return;
+    }
     if (deposit < 200 && !en_enhanced_radar_I)
     {
         return;
