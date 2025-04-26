@@ -185,7 +185,7 @@ public:
 
     int generate_random(int turn);
     int get_process_level(int turn);
-    void create_attack_wave(int turn);
+    void create_attack_wave(int turn,int difficulty_level);
 };
 
 class TechNode
@@ -254,6 +254,7 @@ private:
     Position cursor;
     int turn;
     int deposit;
+    int difficulty_level;
     // TODO: fix typo
     // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
     std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
@@ -287,6 +288,9 @@ private:
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
+    //NOTE: set difficulty and params used by missile_manager
+    void set_difficulty (int lv);
+
     bool is_activated(void) { return activated; };
     void activate(void) { activated = true; };
     void deactivate(void) { activated = false; };

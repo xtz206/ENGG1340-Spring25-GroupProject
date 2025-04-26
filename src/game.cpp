@@ -367,10 +367,10 @@ bool MissileManager::city_weight_check(City &c)
     return false;
 }
 
-void MissileManager::create_attack_wave(int turn)
+void MissileManager::create_attack_wave(int turn,int difficulty_level)
 {
     std::random_device rng;
-    int num = turn / inc_turn[0] + 5;
+    int num = turn / inc_turn[difficulty_level-1] + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
@@ -565,15 +565,63 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
 {
     cursor = cities[0].position;
     turn = 0;
-    // DEBUG: just for testing, remove later
-    std::vector<int> sl = {1, 2, 3, 4, 5};
-    std::vector<int> dmg = {100, 150, 200, 250, 300};
-    std::vector<int> inc_turn = {50, 30, 10};
-    missile_manager.speed_list = sl;
-    missile_manager.damage_list = dmg;
+    std::vector<int> inc_turn = {50, 30, 20};
     missile_manager.inc_turn = inc_turn;
-    missile_manager.hitpoint = 1000;
-    deposit = 0;
+    set_difficulty(1);
+}
+
+void Game::set_difficulty(int lv)
+{
+    switch (lv)
+    {
+        case 1:
+        {
+            difficulty_level = 1;
+            missile_manager.hitpoint = 1000;
+            std::vector<int> sl = {1, 1, 1, 2, 2};
+            std::vector<int> dmg = {100, 100, 100, 150, 200};
+            missile_manager.speed_list = sl;
+            missile_manager.damage_list = dmg;
+            deposit = 2000;
+            break;
+        }
+        case 2:
+        {
+
+            difficulty_level = 2;
+            missile_manager.hitpoint = 2000;
+            missile_manager.hitpoint = 1000;
+            std::vector<int> sl = {1, 1, 2, 2, 3};
+            std::vector<int> dmg = {100, 100, 200, 200, 200};
+            missile_manager.speed_list = sl;
+            missile_manager.damage_list = dmg;
+            deposit = 1000;
+            break;
+        }
+        case 3:
+        {
+            difficulty_level = 3;
+            missile_manager.hitpoint = 3000;
+            std::vector<int> sl = {1, 2, 2, 3, 3};
+            std::vector<int> dmg = {150, 150, 200, 200, 300};
+            missile_manager.speed_list = sl;
+            missile_manager.damage_list = dmg;
+            deposit = 500;
+            break;
+        }
+        default:
+        {
+            difficulty_level = 1;
+            missile_manager.hitpoint = 1000;
+            missile_manager.hitpoint = 1000;
+            std::vector<int> sl = {1, 1, 2, 2, 3};
+            std::vector<int> dmg = {100, 100, 100, 150, 200};
+            missile_manager.speed_list = sl;
+            missile_manager.damage_list = dmg;
+            break;
+        }
+    }
+
 }
 
 int Game::get_productivity(void) const
@@ -675,7 +723,7 @@ void Game::pass_turn(void)
     check_research();
 
     if (turn % 40 == 0)
-        missile_manager.create_attack_wave(turn);
+        missile_manager.create_attack_wave(turn, difficulty_level);
     turn++;
 
     if (iron_curtain_activated)
