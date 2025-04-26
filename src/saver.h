@@ -14,7 +14,7 @@ class SaveDumper
 
 public:
     SaveDumper(Game *game) : game(game) {}
-    void save_game(std::string index);
+    bool save_game(std::string index, bool if_cover = false);
     void save_game_general(std::string filepath);
     void save_attack_missile(std::string filepath);
     void save_cruise(std::string filepath);
@@ -34,6 +34,6 @@ public:
     void load_attack_missile(Game &game);
     void load_cruise(Game &game);
     void load_tech_tree(Game &game);
-    void load_game(Game &game, std::string index);
+    bool load_game(Game &game, std::string index);
 };
 #endif

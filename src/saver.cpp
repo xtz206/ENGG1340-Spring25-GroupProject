@@ -165,7 +165,7 @@ void SaveDumper::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
-void SaveDumper::save_game(std::string index)
+bool SaveDumper::save_game(std::string index, bool if_cover)
 {
     // check if the save folder exists, if not, create it
     struct stat info;
@@ -173,12 +173,12 @@ void SaveDumper::save_game(std::string index)
     {
         if (mkdir(folderpath.c_str(), 0777) != 0)
         {
-            return;
+            throw std::runtime_error("Cannot create save folder");
         }
     }
     else if (!(info.st_mode & S_IFDIR))
     {
-        return;
+        throw std::runtime_error("Cannot create save folder");
     }
     
     //generate timestamp
@@ -187,15 +187,26 @@ void SaveDumper::save_game(std::string index)
     // std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
 
     std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
-    
     struct stat sub_info;
+    
+    if (!if_cover) {
+        if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+        {
+            std::string command = "rm -rf " + sub_folderpath_by_time;
+            if (system(command.c_str()) != 0)
+            {
+            throw std::runtime_error("Failed to remove existing folder");
+            }
+        }
+    }
+    
     if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
     {
-        return; 
+        return false; 
     }
     else if (mkdir(sub_folderpath_by_time.c_str(), 0777) != 0)
     {
-        return;
+        return false;
     }
     /*TODO: add hint to notify user slot is occupied*/
     
@@ -204,6 +215,7 @@ void SaveDumper::save_game(std::string index)
     save_cruise(sub_folderpath_by_time);
     save_city(sub_folderpath_by_time);
     save_tech_tree(sub_folderpath_by_time);
+    return true;
 }
 
 std::vector<City> SaveLoader::load_cities()
@@ -611,7 +623,7 @@ void SaveLoader::load_tech_tree(Game &game)
     }
 }
 
-void SaveLoader::load_game(Game &game, std::string index)
+bool SaveLoader::load_game(Game &game, std::string index)
 {
     folderpath = "../save/game_" + index + "/";
     
@@ -619,12 +631,12 @@ void SaveLoader::load_game(Game &game, std::string index)
     if (stat(folderpath.c_str(), &info) != 0)
     {
         // throw std::runtime_error("Cannot open save folder");
-        return;
+        return false;
     }
     else if (!(info.st_mode & S_IFDIR))
     {
         // throw std::runtime_error("Cannot open save folder");
-        return;
+        return false;
     }
     
     load_game_general(game);
@@ -632,4 +644,5 @@ void SaveLoader::load_game(Game &game, std::string index)
     load_attack_missile(game);
     load_cruise(game);
     load_tech_tree(game);
+    return true;
 }
