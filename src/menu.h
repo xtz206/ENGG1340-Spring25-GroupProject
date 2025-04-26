@@ -22,9 +22,10 @@ public:
     void activate(void) { activated = true; };
     void deactivate(void) { activated = false; };
 
-    virtual const std::string &get_title(void) const { return title; };
-    virtual const std::vector<std::string> &get_items(void) const { return items; };
-    virtual const std::string &get_item(int index) const { return items.at(index); };
+    const std::string &get_title(void) const { return title; };
+    const std::vector<std::string> &get_items(void) const { return items; };
+    const std::string &get_item(void) const { return items.at(cursor); };
+    const std::string &get_item(int index) const { return items.at(index); };
 };
 
 class BasicMenu : public Menu
@@ -55,8 +56,9 @@ private:
 
 public:
     OperationMenu(Game &g, int lim);
-    virtual const std::vector<std::string> &get_items(void) const override { return items; };
-    virtual const std::string &get_item(int index) const override { return items.at(index); };
+    int get_absolute_cursor(void) const;
+    const std::string& get_absolute_item(void) const {return all_items.at(get_absolute_cursor());};
+    const std::string& get_absolute_item(int index) const {return all_items.at(index);};
     void update_items(void);
 };
 

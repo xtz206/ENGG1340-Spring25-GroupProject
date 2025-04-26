@@ -19,7 +19,8 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, ScrollMenu &operation_menu, TechMenu &tech_menu)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu,
+             OperationMenu &operation_menu, TechMenu &tech_menu)
 {
     if (start_menu.is_activated())
     {
@@ -77,48 +78,48 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             operation_menu.move_cursor(1);
             return;
         case '\n':
-            if (operation_menu.get_cursor() == 0)
+            if (operation_menu.get_absolute_cursor() == 0)
             {
                 game.deactivate();
                 tech_menu.activate();
             }
-            else if (operation_menu.get_cursor() == 1)
+            else if (operation_menu.get_absolute_cursor() == 1)
             {
                 game.fix_city();
             }
-            else if (operation_menu.get_cursor() == 2)
+            else if (operation_menu.get_absolute_cursor() == 2)
             {
                 game.build_cruise();
             }
-            else if (operation_menu.get_cursor() == 3)
+            else if (operation_menu.get_absolute_cursor() == 3)
             {
                 game.launch_cruise();
             }
-            else if (operation_menu.get_cursor() == 4)
+            else if (operation_menu.get_absolute_cursor() == 4)
             {
                 game.build_standard_bomb();
             }
-            else if (operation_menu.get_cursor() == 5)
+            else if (operation_menu.get_absolute_cursor() == 5)
             {
                 game.launch_standard_bomb();
             }
-            else if (operation_menu.get_cursor() == 6)
+            else if (operation_menu.get_absolute_cursor() == 6)
             {
                 game.build_dirty_bomb();
             }
-            else if (operation_menu.get_cursor() == 7)
+            else if (operation_menu.get_absolute_cursor() == 7)
             {
                 game.launch_dirty_bomb();
             }
-            else if (operation_menu.get_cursor() == 8)
+            else if (operation_menu.get_absolute_cursor() == 8)
             {
                 game.build_hydrogen_bomb();
             }
-            else if (operation_menu.get_cursor() == 9)
+            else if (operation_menu.get_absolute_cursor() == 9)
             {
                 game.launch_hydrogen_bomb();
             }
-            else if (operation_menu.get_cursor() == 10)
+            else if (operation_menu.get_absolute_cursor() == 10)
             {
                 game.activate_iron_curtain();
             }
@@ -235,7 +236,6 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             return;
         }
     }
-
     else if (end_menu.is_activated())
     {
         switch (key)
@@ -323,6 +323,7 @@ int main(void)
 
                 if (!pause_menu.is_activated() && !tech_menu.is_activated())
                 {
+                    operation_menu.update_items();
                     game_renderer.draw();
                     game_renderer.render();
                     usleep(20000);

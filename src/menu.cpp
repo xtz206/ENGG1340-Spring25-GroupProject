@@ -46,9 +46,25 @@ OperationMenu::OperationMenu(Game &g, int lim)
     }
 }
 
+int OperationMenu::get_absolute_cursor(void) const
+{
+    if (cursor < 6)
+    {
+        return cursor;
+    }
+    int absolute_cursor;
+    for (int index = 0; index < all_items.size(); index++)
+    if (all_items.at(index) == items.at(cursor))
+    {
+        absolute_cursor = index;
+        break;
+    }
+    return absolute_cursor;
+}
+
 void OperationMenu::update_items(void)
 {
-    items.erase(items.begin() + 6);
+    items.erase(items.begin() + 6, items.end());
     if (game.en_dirty_bomb)
     {
         items.push_back(all_items.at(6));
