@@ -17,7 +17,7 @@ protected:
 public:
     Menu(const std::string &t, const std::vector<std::string> &b);
     int get_cursor(void) const { return cursor; };
-    void move_cursor(int dcursor);
+    virtual void move_cursor(int dcursor);
     bool is_activated(void) { return activated; };
     void activate(void) { activated = true; };
     void deactivate(void) { activated = false; };
@@ -32,6 +32,19 @@ class BasicMenu : public Menu
 
 public:
     BasicMenu(const std::string &t, const std::vector<std::string> &it) : Menu(t, it) {};
+};
+
+class ScrollMenu : public Menu
+{
+private:
+    int limit;
+    int offset;
+
+public:
+    ScrollMenu(const std::string &t, const std::vector<std::string> &it, int lim) : Menu(t, it), limit(lim), offset(0) {};
+    virtual void move_cursor(int dcursor) override;
+    int get_offset(void) const { return offset; };
+    int get_limit(void) const { return limit; };
 };
 
 class TechMenu : public Menu

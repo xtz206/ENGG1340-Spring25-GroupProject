@@ -243,4 +243,44 @@ void GameRenderer::draw(void)
     {
         mvwprintw(info_window, 7, 0, "Nothing Selected Now");
     }
+
+    for (int index = 0; index < menu.get_limit(); index++)
+    {
+        if (index + menu.get_offset() >= menu.get_items().size())
+        {
+            break;
+        }
+        if (index == menu.get_cursor())
+        {
+            wattron(operation_window, A_REVERSE);
+            mvwprintw(operation_window, index, 0, "%s", menu.get_item(index + menu.get_offset()).c_str());
+            wattroff(operation_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(operation_window, index, 0, "%s", menu.get_item(index + menu.get_offset()).c_str());
+        }
+    }
+
+
+    for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
+    {
+        if (index >= menu.get_items().size())
+        {
+            break;
+        }
+        if (index == menu.get_cursor())
+        {
+            wattron(operation_window, A_REVERSE);
+            mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+            wattroff(operation_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+        }
+    }
+
+
+
 }

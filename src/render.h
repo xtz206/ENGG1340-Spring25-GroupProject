@@ -52,13 +52,14 @@ class GameRenderer : public Renderer
 {
 private:
     Game &game;
+    ScrollMenu &menu;
     WINDOW *box_window;
     WINDOW *map_window;
     WINDOW *info_window;
     WINDOW *operation_window;
 
 public:
-    GameRenderer(Game &g) : game(g) {};
+    GameRenderer(Game &g, ScrollMenu &m) : game(g), menu(m) {};
 
     void init(void);
     void render(void);

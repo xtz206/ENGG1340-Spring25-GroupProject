@@ -18,6 +18,23 @@ void Menu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
+void ScrollMenu::move_cursor(int dcursor)
+{
+    if (cursor + dcursor < 0 || cursor + dcursor >= items.size())
+    {
+        return;
+    }
+    if (cursor - offset + dcursor < 0)
+    {
+        offset += dcursor;
+    }
+    else if (cursor - offset + dcursor >= limit)
+    {
+        offset += dcursor;
+    }
+    cursor += dcursor;
+}
+
 TechMenu::TechMenu(TechTree &t)
     : Menu("Technology", t.get_tech_names()), tech_tree(t)
 {

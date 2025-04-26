@@ -19,7 +19,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, ScrollMenu &operation_menu, TechMenu &tech_menu)
 {
     if (start_menu.is_activated())
     {
@@ -66,6 +66,61 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case 'd':
             game.move_cursor(Position(0, 1));
             return;
+
+        case 'j':
+            operation_menu.move_cursor(1);
+            return;
+        case 'k':
+            operation_menu.move_cursor(-1);
+            return;
+        case 'o':
+            if (operation_menu.get_cursor() == 0)
+            {
+                game.deactivate();
+                tech_menu.activate();
+            }
+            else if (operation_menu.get_cursor() == 1)
+            {
+                game.fix_city();
+            }
+            else if (operation_menu.get_cursor() == 2)
+            {
+                game.build_cruise();
+            }
+            else if (operation_menu.get_cursor() == 3)
+            {
+                game.launch_cruise();
+            }
+            else if (operation_menu.get_cursor() == 4)
+            {
+                game.build_counter_attack();
+            }
+            else if (operation_menu.get_cursor() == 5)
+            {
+                game.launch_counter_attack();
+            }
+            else if (operation_menu.get_cursor() == 6)
+            {
+                game.build_dirty_bomb();
+            }
+            else if (operation_menu.get_cursor() == 7)
+            {
+                game.launch_dirty_bomb();
+            }
+            else if (operation_menu.get_cursor() == 8)
+            {
+                game.build_hydrogen_bomb();
+            }
+            else if (operation_menu.get_cursor() == 9)
+            {
+                game.launch_hydrogen_bomb();
+            }
+            else if (operation_menu.get_cursor() == 10)
+            {
+                game.activate_iron_curtain();
+            }
+            return;
+
         case '\n':
             game.pass_turn();
             return;
@@ -205,12 +260,13 @@ int main(void)
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
+        ScrollMenu operation_menu = ScrollMenu("OPERATION", {"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD COUNTER ATTACK", "LAUNCH COUNTER ATTACK", "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"}, 4);
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
         BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu);
-        GameRenderer game_renderer = GameRenderer(game);
+        GameRenderer game_renderer = GameRenderer(game, operation_menu);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
         // TODO: add FRAME_INTERVAL macro instead of magic number
@@ -220,13 +276,13 @@ int main(void)
         while (start_menu.is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+            control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu);
 
             if (!game.is_activated())
             {
                 start_menu_renderer.draw();
                 start_menu_renderer.render();
-                usleep(10000);
+                usleep(20000);
                 continue;
             }
 
@@ -234,7 +290,7 @@ int main(void)
             while (game.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+                control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu);
                 if (game.is_game_over())
                 {
                     game.deactivate();
@@ -246,7 +302,7 @@ int main(void)
                 {
                     game_renderer.draw();
                     game_renderer.render();
-                    usleep(10000);
+                    usleep(20000);
                     continue;
                 }
                 else if (tech_menu.is_activated())
@@ -255,10 +311,10 @@ int main(void)
                     while (tech_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+                        control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu);
                         tech_menu_renderer.draw();
                         tech_menu_renderer.render();
-                        usleep(10000);
+                        usleep(20000);
                     }
                 }
                 else
@@ -267,10 +323,10 @@ int main(void)
                     while (pause_menu.is_activated())
                     {
                         key = getch();
-                        control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+                        control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu);
                         pause_menu_renderer.draw();
                         pause_menu_renderer.render();
-                        usleep(10000);
+                        usleep(20000);
                     }
                 }
 
@@ -288,10 +344,10 @@ int main(void)
             while (end_menu.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu);
+                control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
-                usleep(10000);
+                usleep(5000);
             }
 
             if (!start_menu.is_activated())
