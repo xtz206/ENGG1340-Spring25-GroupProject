@@ -795,7 +795,66 @@ void Game::finish_research(TechNode *node)
     {
         return;
     }
-    // TODO: impl enable tech var
+    if (node->name == "Enhanced Radar I")
+    {
+        en_enhanced_radar_I = true;
+    }
+    else if (node->name == "Enhanced Radar II")
+    {
+        en_enhanced_radar_II = true;
+    }
+    else if (node->name == "Enhanced Radar III")
+    {
+        en_enhanced_radar_III = true;
+    }
+    else if (node->name == "Enhanced Cruise I")
+    {
+        en_enhanced_cruise_I = true;
+    }
+    else if (node->name == "Enhanced Cruise II")
+    {
+        en_enhanced_cruise_II = true;
+    }
+    else if (node->name == "Enhanced Cruise III")
+    {
+        en_enhanced_cruise_III = true;
+    }
+    else if (node->name == "Self Defense System")
+    {
+        en_self_defense_sys = true;
+    }
+    else if (node->name == "Fortress City")
+    {
+        en_fortress_city = true;
+    }
+    else if (node->name == "Urgent Production")
+    {
+        en_urgent_production = true;
+    }
+    else if (node->name == "Evacuated Industry")
+    {
+        en_evacuated_industry = true;
+    }
+    else if (node->name == "Dirty Bomb")
+    {
+        en_dirty_bomb = true;
+    }
+    else if (node->name == "Fast Nuke")
+    {
+        en_fast_nuke = true;
+    }
+    else if (node->name == "Hydron Bomb")
+    {
+        en_hydron_bomb = true;
+    }
+    else if (node->name == "Iron Curtain")
+    {
+        en_iron_curtain = true;
+    }
+    else
+    {
+        throw std::runtime_error("Unknown tech node");
+    }
 }
 
 void Game::hit_city(City &city, int damage)
