@@ -279,6 +279,7 @@ public:
 
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
+    int get_enemy_hp(void) const { return missile_manager.hitpoint; };
 
     void move_cursor(Position dcursor);
     void pass_turn(void);

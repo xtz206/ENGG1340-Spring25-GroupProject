@@ -55,7 +55,9 @@ private:
     ScrollMenu &menu;
     WINDOW *box_window;
     WINDOW *map_window;
-    WINDOW *info_window;
+    WINDOW *general_info_window;
+    WINDOW *selected_info_window;
+    WINDOW *tech_info_window;
     WINDOW *operation_window;
 
 public:
