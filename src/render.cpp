@@ -28,7 +28,7 @@ void Renderer::debug(const std::string &str, int line)
 
 void BasicMenuRenderer::init(void)
 {
-    clear();
+    erase();
 
     box_window = subwin(stdscr, MENU_LINES + 2, MENU_COLS + 2, (LINES - MENU_LINES - 2) / 2, (COLS - MENU_COLS - 2) / 2);
     item_window = subwin(box_window, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
@@ -43,7 +43,7 @@ void BasicMenuRenderer::render(void)
 
 void BasicMenuRenderer::draw(void)
 {
-    wclear(item_window);
+    werase(item_window);
     for (size_t index = 0; index < menu.get_items().size(); index++)
     {
         if (index == menu.get_cursor())
@@ -61,7 +61,7 @@ void BasicMenuRenderer::draw(void)
 
 void TechMenuRenderer::init(void)
 {
-    clear();
+    erase();
 
     box_window = subwin(stdscr, TECH_LINES + 2, TECH_COLS + 2, (LINES - TECH_LINES - 2) / 2, (COLS - TECH_COLS - 2) / 2);
     item_window = subwin(box_window, menu.get_items().size(), TECH_COLS, (LINES - TECH_LINES) / 2, (COLS - TECH_COLS) / 2);
@@ -81,8 +81,8 @@ void TechMenuRenderer::render(void)
 
 void TechMenuRenderer::draw()
 {
-    wclear(item_window);
-    wclear(desc_window);
+    werase(item_window);
+    werase(desc_window);
 
     for (size_t index = 0; index < menu.get_items().size(); index++)
     {
@@ -107,7 +107,7 @@ void TechMenuRenderer::draw()
 
 void GameRenderer::init(void)
 {
-    clear();
+    erase();
 
     box_window = subwin(stdscr, TOTAL_LINES, TOTAL_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
     map_window = subwin(box_window, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + 1);
@@ -141,11 +141,11 @@ void GameRenderer::render(void)
 
 void GameRenderer::draw(void)
 {
-    wclear(map_window);
-    wclear(general_info_window);
-    wclear(selected_info_window);
-    wclear(tech_info_window);
-    wclear(operation_window);
+    werase(map_window);
+    werase(general_info_window);
+    werase(selected_info_window);
+    werase(tech_info_window);
+    werase(operation_window);
 
     // NOTE: draw map window
     for (int index = 0; index < game.get_background().size(); index++)
