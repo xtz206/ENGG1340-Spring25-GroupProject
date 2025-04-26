@@ -29,7 +29,7 @@ void Renderer::debug(const std::string &str, int line)
     mvwprintw(stdscr, line, 1, "%s", str.c_str());
 }
 
-void MenuRenderer::init(void)
+void BasicMenuRenderer::init(void)
 {
     clear();
 
@@ -39,12 +39,12 @@ void MenuRenderer::init(void)
     mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
 }
 
-void MenuRenderer::render(void)
+void BasicMenuRenderer::render(void)
 {
     wrefresh(menu_window);
 }
 
-void MenuRenderer::draw(void)
+void BasicMenuRenderer::draw(void)
 {
     for (size_t line = 1; line < MENU_LINES - 1; line++)
     {

@@ -4,8 +4,8 @@
 
 #include "menu.h"
 
-Menu::Menu(const std::string &t, const std::vector<std::string> &b)
-    : activated(false), title(t), items(b), cursor(0)
+Menu::Menu(const std::string &t, const std::vector<std::string> &it)
+    : activated(false), title(t), items(it), cursor(0)
 {
 }
 

@@ -584,12 +584,7 @@ void Game::move_cursor(Position dcursor)
 
 void Game::pass_turn(void)
 {
-
-    // DEBUG: don't forget to readd city hitting function
-    // DONE!
-    // TODO: remove cursor
-    //       cursor is not a good way to select city
-    //       considering use shortcut key to replace cursor in selecting city
+    // TODO: add keyboard shortcuts to select city
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 

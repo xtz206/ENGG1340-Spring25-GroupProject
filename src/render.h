@@ -17,14 +17,14 @@ public:
     void debug(const std::string &str, int line = 0);
 };
 
-class MenuRenderer : public Renderer
+class BasicMenuRenderer : public Renderer
 {
 private:
     Menu &menu;
     WINDOW *menu_window;
 
 public:
-    MenuRenderer(Menu &m) : menu(m) {};
+    BasicMenuRenderer(Menu &m) : menu(m) {};
 
     void init(void);
     void render(void);

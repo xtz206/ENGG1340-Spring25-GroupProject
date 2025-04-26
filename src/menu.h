@@ -26,6 +26,13 @@ public:
     const std::vector<std::string> &get_items(void) const { return items; };
 };
 
+class BasicMenu : public Menu
+{
+
+public:
+    BasicMenu(const std::string &t, const std::vector<std::string> &it) : Menu(t, it) {};
+};
+
 class TechMenu : public Menu
 {
 private:
