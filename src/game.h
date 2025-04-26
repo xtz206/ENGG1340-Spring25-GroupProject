@@ -148,7 +148,7 @@ private:
     int target_id;
 
 public:
-    CruiseMissile(int i, Position p, Missile &m, int d, int v,int t_id);
+    CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id);
     virtual Position get_target(void) override { return missile.get_position(); };
     virtual void move_step(void) override;
 };
@@ -215,7 +215,7 @@ class TechTree
     friend class TechMenu;
     friend class SaveDumper;
     friend class SaveLoader;
-    
+
 private:
     std::vector<TechNode *> nodes;
     std::vector<TechNode *> researched;

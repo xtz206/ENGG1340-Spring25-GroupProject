@@ -92,13 +92,12 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         case 'l':
             game.launch_cruise();
             return;
-        //DEBUG: remove this later
+        // DEBUG: remove this later
         case 'p':
             saver.save_game();
             return;
         case 'q':
             game.deactivate();
-        
         }
     }
     else if (pause_menu.is_activated())
@@ -220,8 +219,8 @@ int main(void)
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
         SaveDumper save_dumper = SaveDumper(&game);
-        
-        //DEBUG: Test Logloader
+
+        // DEBUG: Test Logloader
         SaveLoader save_loader = SaveLoader("../save/game_2025-04-26_16-50-19/");
         save_loader.load_game(game);
         // TODO: add FRAME_INTERVAL macro instead of magic number
