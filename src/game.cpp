@@ -653,19 +653,12 @@ void Game::pass_turn(void)
     tech_tree.proceed_research();
     check_research();
 
+    // NOTE: iron curtain
+    check_iron_curtain();
+
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
     turn++;
-
-    if (iron_curtain_activated)
-    {
-        iron_curtain_cnt--;
-        if (iron_curtain_cnt <= 0)
-        {
-            iron_curtain_activated = false;
-            iron_curtain_cnt = 30;
-        }
-    }
 }
 
 bool Game::is_in_range(Position p1, Position p2, int range) const
@@ -1015,6 +1008,20 @@ void Game::activate_iron_curtain(void)
     iron_curtain_activated = true;
 }
 
+void Game::check_iron_curtain(void)
+{
+    if (iron_curtain_activated)
+    {
+        iron_curtain_cnt--;
+        if (iron_curtain_cnt <= 0)
+        {
+            iron_curtain_activated = false;
+            iron_curtain_cnt = 30;
+        }
+    }
+}
+
+// TODO: add it to pass turn
 void Game::self_defense(void)
 {
     if (!en_self_defense_sys)

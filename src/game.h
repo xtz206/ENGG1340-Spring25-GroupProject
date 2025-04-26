@@ -302,9 +302,10 @@ public:
     void launch_counter_attack(void);
     void build_dirty_bomb(void);
     void launch_dirty_bomb(void);
-    void launch_hydrogen_bomb(void);
     void build_hydrogen_bomb(void);
+    void launch_hydrogen_bomb(void);
     void activate_iron_curtain(void);
+    void check_iron_curtain(void);
     void self_defense(void);
 };
 
