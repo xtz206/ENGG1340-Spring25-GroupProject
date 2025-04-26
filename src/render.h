@@ -21,7 +21,7 @@ class BasicMenuRenderer : public Renderer
 {
 private:
     Menu &menu;
-    WINDOW *menu_window;
+    WINDOW *box_window;
     WINDOW *item_window;
 
 public:
@@ -36,7 +36,7 @@ class TechMenuRenderer : public Renderer
 {
 private:
     TechMenu &menu;
-    WINDOW *menu_window;
+    WINDOW *box_window;
     WINDOW *item_window;
     WINDOW *desc_window;
 
