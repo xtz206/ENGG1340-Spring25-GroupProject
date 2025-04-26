@@ -406,25 +406,26 @@ City::City(Position p, std::string n, int hp)
 
 TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), remaining_time(0)
 {
-    TechNode *enhanced_radar_I = new TechNode("Enhanced Radar I", "Enhanced Radar can detect number of currently attacking missiles", 2000, 10, {});
-    TechNode *enhanced_radar_II = new TechNode("Enhanced Radar II", "Enhanced Radar can detect number of currently attacking missiles of each city", 5000, 30, {enhanced_radar_I});
-    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", "Enhanced Radar can detect detail of an attack missile (as you move cursor to it)", 10000, 50, {enhanced_radar_II});
+    TechNode *enhanced_radar_I = new TechNode("Enhanced Radar I", {"Detect the number of approaching attack missiles"}, 2000, 10, {});
+    TechNode *enhanced_radar_II = new TechNode("Enhanced Radar II", {"Detect number of currently targeted missiles of each city"}, 5000, 30, {enhanced_radar_I});
+    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", {"Display the detailed information of selected missiles"}, 10000, 50, {enhanced_radar_II});
 
-    TechNode *enhanced_cruise_I = new TechNode("Enhanced Cruise I", "Reduce the cost of cruise by 50%", 2000, 10, {});
-    TechNode *enhanced_cruise_II = new TechNode("Enhanced Cruise II", "Increase the speed of cruise by 50%", 5000, 30, {enhanced_cruise_I});
-    TechNode *enhanced_cruise_III = new TechNode("Enhanced Cruise III", "Can build two cruise once", 10000, 50, {enhanced_cruise_II});
+    TechNode *enhanced_cruise_I = new TechNode("Enhanced Cruise I", {"Reduce the cost of cruise by 50%"}, 2000, 10, {});
+    TechNode *enhanced_cruise_II = new TechNode("Enhanced Cruise II", {"Increase the speed of cruise by 50%"}, 5000, 30, {enhanced_cruise_I});
+    TechNode *enhanced_cruise_III = new TechNode("Enhanced Cruise III", {"Build two cruise at the same time"}, 10000, 50, {enhanced_cruise_II});
 
-    TechNode *self_defense_sys = new TechNode("Self Defense System", "Can build a self defense system to protect the city", 2000, 10, {enhanced_cruise_III, enhanced_radar_III});
+    TechNode *self_defense_sys = new TechNode("Self Defense System", {"The city can defense by itself when missiles approaches, ", "if there is missile storage"}, 2000, 10, {enhanced_cruise_III, enhanced_radar_III});
 
-    TechNode *fortress_city = new TechNode("Fortress City", "City will undertake half of damage", 2000, 10, {});
-    TechNode *urgent_production = new TechNode("Urgent Production", "Increase cities's base production by 200%", 5000, 30, {fortress_city});
-    TechNode *evacuated_industry = new TechNode("Evacuated Industry", "City may maintain base production after destroyed", 10000, 50, {urgent_production});
+    TechNode *fortress_city = new TechNode("Fortress City", {"City will undertake half of damage"}, 2000, 10, {});
+    TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
+    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile storage even after destroyed"}, 10000, 50, {urgent_production});
 
-    TechNode *dirty_bomb = new TechNode("Dirty Bomb", "Allow to launch a new counter-atk missile with 50% cost but 75% hitrate", 2000, 10, {});
-    TechNode *fast_nuke = new TechNode("Fast Nuke", "Reduce counter-atk missile build-time by 50%", 5000, 30, {dirty_bomb});
-    TechNode *hydron_bomb = new TechNode("HydronBomb", "Allow to launch a new counter-atk missile with 500% demage but 50% hitrate, and much more costly", 10000, 50, {fast_nuke});
+    // TODO: Change effects into more innovative ones
+    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-atk missile with 50% cost but 75% hit rate"}, 2000, 10, {});
+    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-atk missile build-time by 50%"}, 5000, 30, {dirty_bomb});
+    TechNode *hydron_bomb = new TechNode("HydronBomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
 
-    TechNode *iron_curtain = new TechNode("Iron Curtain", "All your cities will not get damage in next 50 turns", 2000, 10, {hydron_bomb, evacuated_industry});
+    TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydron_bomb, evacuated_industry});
 
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);

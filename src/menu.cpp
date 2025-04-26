@@ -29,7 +29,10 @@ std::vector<std::string> TechMenu::get_item_description()
     std::vector<std::string> description;
     description.push_back("Name: " + node->name);
     description.push_back("Description:");
-    description.push_back(node->description);
+    for (auto line : node->description)
+    {
+        description.push_back(line);
+    }
     description.push_back("Cost: " + std::to_string(node->cost));
     description.push_back("Time: " + std::to_string(node->time));
     description.push_back("Prerequisites:");

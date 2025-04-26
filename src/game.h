@@ -183,13 +183,13 @@ class TechNode
 
 private:
     std::string name;
-    std::string description;
+    std::vector<std::string> description;
     int cost;
     int time;
     std::vector<TechNode *> prerequisites;
 
 public:
-    TechNode(const std::string &n, const std::string &d, int c, int t, const std::vector<TechNode *> p)
+    TechNode(const std::string &n, const std::vector<std::string> &d, int c, int t, const std::vector<TechNode *> p)
         : name(n), description(d), cost(c), time(t), prerequisites(p) {};
 };
 class TechTree
@@ -290,7 +290,7 @@ public:
     Missile &select_missile(void);
     City &select_city(void);
 
-    // NOTE: production/research/fix-related functions 
+    // NOTE: production/research/fix-related functions
     void start_research(TechNode *node);
     void check_research(void);
     void finish_research(TechNode *node);
