@@ -8,107 +8,106 @@
 #include "saver.h"
 #include "game.h"
 
-void Saver::save_game_general(std::string filepath)
+void SaveDumper::save_game_general(std::string filepath)
 {
     std::string filename = filepath + "general.txt";
     std::ofstream general_log(filename);
     if (general_log.is_open())
     {
-        general_log << "turn:" << game -> get_turn() << "\n";
-        general_log << "deposit:" << game -> get_deposit() << "\n";
+        general_log << "turn:" << game->get_turn() << "\n";
+        general_log << "deposit:" << game->get_deposit() << "\n";
         general_log << "cursor_y:" << game->cursor.y << "\n";
         general_log << "cursor_x:" << game->cursor.x << "\n";
-        general_log << "counter_missile_cnt_down:" << game -> countdowns[0] << "\n";
-        general_log << "dirty_bomb_cnt_down:" << game -> countdowns[1] << "\n";
-        general_log << "hydron_bomb_cnt_down:" << game -> countdowns[2] << "\n";
-        general_log << "counter_missile_num:" << game -> attack_missile_num[0] << "\n";
-        general_log << "dirty_bomb_num:" << game -> attack_missile_num[1] << "\n";
-        general_log << "hydron_bomb_num:" << game -> attack_missile_num[2] << "\n";
-        general_log << "enemy_hp:" << game -> missile_manager.hitpoint << "\n";
-        general_log << "iron_curtain_activated:" << game -> iron_curtain_activated << "\n";
-        general_log << "enhanced_radar_I:" << game -> en_enhanced_radar_I << "\n";
-        general_log << "enhanced_radar_II:" << game -> en_enhanced_radar_II << "\n";
-        general_log << "enhanced_radar_III:" << game -> en_enhanced_radar_III << "\n";
-        general_log << "enhanced_cruise_I:" << game -> en_enhanced_cruise_I << "\n";
-        general_log << "enhanced_cruise_II:" << game -> en_enhanced_cruise_II << "\n";
-        general_log << "enhanced_cruise_III:" << game -> en_enhanced_cruise_III << "\n";
-        general_log << "fortress_city:" << game -> en_fortress_city << "\n";
-        general_log << "urgent_production:" << game -> en_urgent_production << "\n";
-        general_log << "evacuated_industry:" << game -> en_evacuated_industry << "\n";
-        general_log << "dirty_bomb:" << game -> en_dirty_bomb << "\n";
-        general_log << "fast_nuke:" << game -> en_fast_nuke << "\n";
-        general_log << "hydron_bomb:" << game -> en_hydrogen_bomb << "\n";
-        general_log << "self_defense_sys:" << game -> en_self_defense_sys << "\n";
-        general_log << "iron_curtain:"  << game -> en_iron_curtain  << "\n";
+        general_log << "counter_missile_cnt_down:" << game->countdowns[0] << "\n";
+        general_log << "dirty_bomb_cnt_down:" << game->countdowns[1] << "\n";
+        general_log << "hydrogen_bomb_cnt_down:" << game->countdowns[2] << "\n";
+        general_log << "counter_missile_num:" << game->attack_missile_num[0] << "\n";
+        general_log << "dirty_bomb_num:" << game->attack_missile_num[1] << "\n";
+        general_log << "hydrogen_bomb_num:" << game->attack_missile_num[2] << "\n";
+        general_log << "enemy_hp:" << game->missile_manager.hitpoint << "\n";
+        general_log << "iron_curtain_activated:" << game->iron_curtain_activated << "\n";
+        general_log << "enhanced_radar_I:" << game->en_enhanced_radar_I << "\n";
+        general_log << "enhanced_radar_II:" << game->en_enhanced_radar_II << "\n";
+        general_log << "enhanced_radar_III:" << game->en_enhanced_radar_III << "\n";
+        general_log << "enhanced_cruise_I:" << game->en_enhanced_cruise_I << "\n";
+        general_log << "enhanced_cruise_II:" << game->en_enhanced_cruise_II << "\n";
+        general_log << "enhanced_cruise_III:" << game->en_enhanced_cruise_III << "\n";
+        general_log << "fortress_city:" << game->en_fortress_city << "\n";
+        general_log << "urgent_production:" << game->en_urgent_production << "\n";
+        general_log << "evacuated_industry:" << game->en_evacuated_industry << "\n";
+        general_log << "dirty_bomb:" << game->en_dirty_bomb << "\n";
+        general_log << "fast_nuke:" << game->en_fast_nuke << "\n";
+        general_log << "hydrogen_bomb:" << game->en_hydrogen_bomb << "\n";
+        general_log << "self_defense_sys:" << game->en_self_defense_sys << "\n";
+        general_log << "iron_curtain:" << game->en_iron_curtain << "\n";
     }
     general_log.close();
 }
 
-void Saver::save_attack_missile(std::string filepath)
+void SaveDumper::save_attack_missile(std::string filepath)
 {
     std::string filename = filepath + "atkmissiles.txt";
     std::ofstream atkmissile_log(filename);
     if (atkmissile_log.is_open())
     {
         atkmissile_log << "id,y,x,target_y,target_x,damage,speed,is_aimed\n";
-        for (auto &missile : game -> missile_manager.get_attack_missiles())
+        for (auto &missile : game->missile_manager.get_attack_missiles())
         {
             AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
-            atkmissile_log <<missile->id<<","<<missile -> get_position().y << "," << missile -> get_position().x << "," << missile -> target.y << "," << missile -> target.x << "," << missile -> damage << "," << missile -> speed <<","<<attack_missile->is_aimed<<"\n";
+            atkmissile_log << missile->id << "," << missile->get_position().y << "," << missile->get_position().x << "," << missile->target.y << "," << missile->target.x << "," << missile->damage << "," << missile->speed << "," << attack_missile->is_aimed << "\n";
         }
     }
     atkmissile_log.close();
 }
 
-void Saver::save_cruise(std::string filepath)
+void SaveDumper::save_cruise(std::string filepath)
 {
     std::string filename = filepath + "cruise.txt";
     std::ofstream cruise_log(filename);
     if (cruise_log.is_open())
     {
         cruise_log << "id,y,x,target_id,damage,speed\n";
-            
-            
-        for (auto &missile : game -> missile_manager.get_cruise_missiles())
+
+        for (auto &missile : game->missile_manager.get_cruise_missiles())
         {
             CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
-            cruise_log << missile -> id << ","<<missile -> get_position().y << "," << missile -> get_position().x << "," << cruise_missile->target_id<< ","  << missile -> damage << "," << missile -> speed << "\n";
+            cruise_log << missile->id << "," << missile->get_position().y << "," << missile->get_position().x << "," << cruise_missile->target_id << "," << missile->damage << "," << missile->speed << "\n";
         }
     }
     cruise_log.close();
 }
 
-void Saver::save_city(std::string filepath)
+void SaveDumper::save_city(std::string filepath)
 {
     std::string filename = filepath + "cities.txt";
     std::ofstream city_log(filename);
     if (city_log.is_open())
     {
         city_log << "Name,y,x,hitpoint,base_productivity,productivity,cruise_num,countdown\n";
-        for (const auto &city : game -> cities)
+        for (const auto &city : game->cities)
         {
-            city_log << city.name << "," << city.position.y << "," << city.position.x << "," 
-            << city.hitpoint << "," << city.base_productivity << "," 
-            <<city.productivity<<","<<city.cruise_num << ","<<city.countdown << "\n";
+            city_log << city.name << "," << city.position.y << "," << city.position.x << ","
+                     << city.hitpoint << "," << city.base_productivity << ","
+                     << city.productivity << "," << city.cruise_num << "," << city.countdown << "\n";
         }
     }
     city_log.close();
 }
 
-void Saver::save_tech_tree(std::string filepath)
+void SaveDumper::save_tech_tree(std::string filepath)
 {
     std::string filename = filepath + "tech_tree.txt";
     std::ofstream tech_tree_log(filename);
     if (tech_tree_log.is_open())
     {
         tech_tree_log << "researched,";
-        if (game -> tech_tree.researched.empty())
+        if (game->tech_tree.researched.empty())
         {
             tech_tree_log << "none\n";
         }
         else
         {
-            for (auto &node : game -> tech_tree.researched)
+            for (auto &node : game->tech_tree.researched)
             {
                 if (node != game->tech_tree.researched.back())
                 {
@@ -122,13 +121,13 @@ void Saver::save_tech_tree(std::string filepath)
         }
 
         tech_tree_log << "available,";
-        if (game -> tech_tree.available.empty())
+        if (game->tech_tree.available.empty())
         {
             tech_tree_log << "none\n";
         }
         else
         {
-            for (auto &node : game -> tech_tree.available)
+            for (auto &node : game->tech_tree.available)
             {
                 if (node != game->tech_tree.available.back())
                 {
@@ -142,33 +141,33 @@ void Saver::save_tech_tree(std::string filepath)
         }
 
         tech_tree_log << "researching,";
-        if (game -> tech_tree.researching == nullptr)
+        if (game->tech_tree.researching == nullptr)
         {
             tech_tree_log << "none\n";
         }
         else
         {
-            tech_tree_log << game -> tech_tree.researching->name << "\n";
+            tech_tree_log << game->tech_tree.researching->name << "\n";
         }
 
-        tech_tree_log<< "prev_researching,";
-        if (game -> tech_tree.prev_researching == nullptr)
+        tech_tree_log << "prev_researching,";
+        if (game->tech_tree.prev_researching == nullptr)
         {
             tech_tree_log << "none\n";
         }
         else
         {
-            tech_tree_log << game -> tech_tree.prev_researching->name << "\n";
+            tech_tree_log << game->tech_tree.prev_researching->name << "\n";
         }
-        
-        tech_tree_log << "remaining_time,"<< game -> tech_tree.remaining_time << "\n"; 
+
+        tech_tree_log << "remaining_time," << game->tech_tree.remaining_time << "\n";
     }
     tech_tree_log.close();
 }
 
-void Saver::save_game(std::string index)
+void SaveDumper::save_game(std::string index)
 {
-    //check if the save folder exists, if not, create it
+    // check if the save folder exists, if not, create it
     struct stat info;
     if (stat(folderpath.c_str(), &info) != 0)
     {
@@ -207,11 +206,11 @@ void Saver::save_game(std::string index)
     save_tech_tree(sub_folderpath_by_time);
 }
 
-std::vector <City> LogLoader::load_cities()
+std::vector<City> SaveLoader::load_cities()
 {
     std::string filename = folderpath + "cities.txt";
     std::ifstream city_log(filename);
-    if(!city_log.is_open())
+    if (!city_log.is_open())
     {
         throw std::runtime_error("Cannot open cities.txt");
     }
@@ -221,7 +220,7 @@ std::vector <City> LogLoader::load_cities()
     std::string word;
     std::istringstream iss;
     std::getline(city_log, line);
-    while (getline(city_log,line))
+    while (getline(city_log, line))
     {
         words.clear();
         iss.clear();
@@ -244,23 +243,23 @@ std::vector <City> LogLoader::load_cities()
         cities.back().productivity = productivity;
         cities.back().cruise_num = cruise_num;
         cities.back().countdown = countdown;
-
     }
     city_log.close();
     return cities;
 }
 
-void LogLoader::load_game_general(Game &game) {
+void SaveLoader::load_game_general(Game &game)
+{
     std::string filename = folderpath + "general.txt";
     std::ifstream general_log(filename);
-    if(!general_log.is_open())
+    if (!general_log.is_open())
     {
         throw std::runtime_error("Cannot open general.txt");
     }
     std::string line;
     std::string word;
     std::istringstream iss;
-    while (getline(general_log,line))
+    while (getline(general_log, line))
     {
         if (line.empty())
         {
@@ -301,7 +300,7 @@ void LogLoader::load_game_general(Game &game) {
             getline(iss, word);
             game.countdowns[1] = std::stoi(word);
         }
-        else if (word == "hydron_bomb_cnt_down")
+        else if (word == "hydrogen_bomb_cnt_down")
         {
             getline(iss, word);
             game.countdowns[2] = std::stoi(word);
@@ -316,17 +315,17 @@ void LogLoader::load_game_general(Game &game) {
             getline(iss, word);
             game.attack_missile_num[1] = std::stoi(word);
         }
-        else if (word == "hydron_bomb_num")
+        else if (word == "hydrogen_bomb_num")
         {
             getline(iss, word);
             game.attack_missile_num[2] = std::stoi(word);
         }
-         else if (word == "enemy_hp")
-         {
+        else if (word == "enemy_hp")
+        {
             getline(iss, word);
-            game.missile_manager.hitpoint = std::stoi(word); 
-         }
-         else if (word == "iron_curtain_activated")
+            game.missile_manager.hitpoint = std::stoi(word);
+        }
+        else if (word == "iron_curtain_activated")
         {
             getline(iss, word);
             game.iron_curtain_activated = std::stoi(word);
@@ -379,36 +378,36 @@ void LogLoader::load_game_general(Game &game) {
         else if (word == "dirty_bomb")
         {
             getline(iss, word);
-            game.en_dirty_bomb = std::stoi(word); 
+            game.en_dirty_bomb = std::stoi(word);
         }
         else if (word == "fast_nuke")
         {
             getline(iss, word);
-            game.en_fast_nuke = std::stoi(word); 
+            game.en_fast_nuke = std::stoi(word);
         }
-        else if (word == "hydron_bomb")
+        else if (word == "hydrogen_bomb")
         {
             getline(iss, word);
-            game.en_hydrogen_bomb = std::stoi(word); 
+            game.en_hydrogen_bomb = std::stoi(word);
         }
         else if (word == "self_defense_sys")
         {
             getline(iss, word);
-            game.en_self_defense_sys = std::stoi(word); 
+            game.en_self_defense_sys = std::stoi(word);
         }
         else if (word == "iron_curtain")
         {
             getline(iss, word);
-            game.en_iron_curtain = std::stoi(word); 
+            game.en_iron_curtain = std::stoi(word);
         }
-    }       
+    }
 }
 
-void LogLoader::load_attack_missile(Game &game)
+void SaveLoader::load_attack_missile(Game &game)
 {
     std::string filename = folderpath + "atkmissiles.txt";
     std::ifstream atkmissile_log(filename);
-    if(!atkmissile_log.is_open())
+    if (!atkmissile_log.is_open())
     {
         throw std::runtime_error("Cannot open atkmissiles.txt");
     }
@@ -417,31 +416,31 @@ void LogLoader::load_attack_missile(Game &game)
     std::vector<std::string> words;
     std::istringstream iss;
     std::getline(atkmissile_log, line);
-    while (getline(atkmissile_log,line))
+    while (getline(atkmissile_log, line))
     {
         if (line.empty())
         {
             atkmissile_log.close();
             return;
         }
-        
+
         words.clear();
         iss.clear();
         iss.str(line);
-        
+
         while (getline(iss, word, ','))
         {
             words.push_back(word);
         }
-        
+
         int id = std::stoi(words[0]);
         Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
         Position target = Position(std::stoi(words[3]), std::stoi(words[4]));
         int damage = std::stoi(words[5]);
         int speed = std::stoi(words[6]);
         bool is_aimed = std::stoi(words[7]);
-        
-        //set target
+
+        // set target
         for (auto &city : game.cities)
         {
             if (city.get_position() == target)
@@ -449,17 +448,17 @@ void LogLoader::load_attack_missile(Game &game)
                 game.missile_manager.create_attack_missile(position, city, damage, speed);
             }
         }
-        //set is_aimed
+        // set is_aimed
         AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(game.missile_manager.get_attack_missiles().back());
         attack_missile->is_aimed = is_aimed;
     }
 }
 
-void LogLoader::load_cruise(Game &game)
+void SaveLoader::load_cruise(Game &game)
 {
     std::string filename = folderpath + "cruise.txt";
     std::ifstream cruise_log(filename);
-    if(!cruise_log.is_open())
+    if (!cruise_log.is_open())
     {
         throw std::runtime_error("Cannot open cruise.txt");
     }
@@ -468,35 +467,35 @@ void LogLoader::load_cruise(Game &game)
     std::vector<std::string> words;
     std::istringstream iss;
     std::getline(cruise_log, line);
-    while (getline(cruise_log,line))
+    while (getline(cruise_log, line))
     {
         if (line.empty())
         {
             cruise_log.close();
             return;
         }
-        
+
         words.clear();
         iss.clear();
         iss.str(line);
-        
+
         while (getline(iss, word, ','))
         {
             words.push_back(word);
         }
-        
+
         int id = std::stoi(words[0]);
         Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
         int target_id = std::stoi(words[3]);
         int damage = std::stoi(words[4]);
         int speed = std::stoi(words[5]);
-        
-        //set target
+
+        // set target
         for (auto &missile : game.missile_manager.get_attack_missiles())
         {
             if (missile->id == target_id)
             {
-                Missile *missile = new CruiseMissile(id, position, *missile, damage, speed ,missile->id);
+                Missile *missile = new CruiseMissile(id, position, *missile, damage, speed, missile->id);
                 game.missile_manager.missiles.push_back(missile);
                 break;
             }
@@ -504,11 +503,11 @@ void LogLoader::load_cruise(Game &game)
     }
 }
 
-void LogLoader::load_tech_tree(Game &game)
+void SaveLoader::load_tech_tree(Game &game)
 {
     std::string filename = folderpath + "tech_tree.txt";
     std::ifstream tech_tree_log(filename);
-    if(!tech_tree_log.is_open())
+    if (!tech_tree_log.is_open())
     {
         throw std::runtime_error("Cannot open tech_tree.txt");
     }
@@ -516,7 +515,7 @@ void LogLoader::load_tech_tree(Game &game)
     std::string word;
     std::vector<std::string> words;
     std::istringstream iss;
-    while (getline(tech_tree_log,line))
+    while (getline(tech_tree_log, line))
     {
         if (line.empty())
         {
@@ -527,19 +526,24 @@ void LogLoader::load_tech_tree(Game &game)
         words.clear();
         iss.clear();
         iss.str(line);
-        
+
         while (getline(iss, word, ','))
         {
             words.push_back(word);
         }
-        
-        if (words[0] == "researched") {
-            if (words[1] == "none") {
+
+        if (words[0] == "researched")
+        {
+            if (words[1] == "none")
+            {
                 continue;
             }
-            for (size_t i = 1; i < words.size(); ++i) {
-                for (auto &node : game.tech_tree.nodes) {
-                    if (node->name == words[i]) {
+            for (size_t i = 1; i < words.size(); ++i)
+            {
+                for (auto &node : game.tech_tree.nodes)
+                {
+                    if (node->name == words[i])
+                    {
                         game.tech_tree.researched.push_back(node);
                         break;
                     }
@@ -547,53 +551,67 @@ void LogLoader::load_tech_tree(Game &game)
             }
         }
 
-        if (words[0] == "available") {
-            if (words[1] == "none") {
+        if (words[0] == "available")
+        {
+            if (words[1] == "none")
+            {
                 continue;
             }
-            for (size_t i = 1; i < words.size(); ++i) {
-                for (auto &node : game.tech_tree.nodes) {
-                    if (node->name == words[i]) {
+            for (size_t i = 1; i < words.size(); ++i)
+            {
+                for (auto &node : game.tech_tree.nodes)
+                {
+                    if (node->name == words[i])
+                    {
                         game.tech_tree.available.push_back(node);
                         break;
                     }
                 }
             }
         }
-        
-        if (words[0] == "researching") {
-            if (words[1] == "none") {
+
+        if (words[0] == "researching")
+        {
+            if (words[1] == "none")
+            {
                 continue;
             }
             std::string researching_name = words[1];
-            for (auto &node : game.tech_tree.nodes) {
-                if (node->name == researching_name) {
+            for (auto &node : game.tech_tree.nodes)
+            {
+                if (node->name == researching_name)
+                {
                     game.tech_tree.researching = node;
                     break;
                 }
             }
         }
 
-        if (words[0] == "prev_researching") {
-            if (words[1] == "none") {
+        if (words[0] == "prev_researching")
+        {
+            if (words[1] == "none")
+            {
                 continue;
             }
             std::string prev_researching_name = words[1];
-            for (auto &node : game.tech_tree.nodes) {
-                if (node->name == prev_researching_name) {
+            for (auto &node : game.tech_tree.nodes)
+            {
+                if (node->name == prev_researching_name)
+                {
                     game.tech_tree.prev_researching = node;
                     break;
                 }
             }
         }
 
-        if (words[0] == "remaining_time") {
+        if (words[0] == "remaining_time")
+        {
             game.tech_tree.remaining_time = std::stoi(words[1]);
         }
-    }    
+    }
 }
 
-void LogLoader::load_game(Game &game, std::string index)
+void SaveLoader::load_game(Game &game, std::string index)
 {
     folderpath = "../save/game_" + index + "/";
     

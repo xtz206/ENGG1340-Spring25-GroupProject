@@ -20,7 +20,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, Saver &saver, LogLoader &log_loader,BasicMenu &save_menu, BasicMenu &load_menu)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, SaveDumper &saver, SaveLoader &save_loader,BasicMenu &save_menu, BasicMenu &load_menu)
 {
     if (start_menu.is_activated())
     {
@@ -99,7 +99,6 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             return;
         case 'q':
             game.deactivate();
-        
         }
     }
     else if (pause_menu.is_activated())
@@ -313,8 +312,8 @@ int main(void)
         GameRenderer game_renderer = GameRenderer(game);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
-        Saver saver = Saver(&game);
-        LogLoader log_loader = LogLoader();
+        SaveDumper save_dumper = SaveDumper(&game);
+        SaveLoader save_loader = SaveLoader();
         
 
         start_menu.activate();
@@ -322,7 +321,7 @@ int main(void)
         while (start_menu.is_activated())
         {
             key = getch();
-            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu);
 
             if (!game.is_activated() && !load_menu.is_activated())
             {
@@ -350,7 +349,7 @@ int main(void)
                 while (game.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                    control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
                     if (game.is_game_over())
                     {
                         game.deactivate();
@@ -371,7 +370,7 @@ int main(void)
                         while (tech_menu.is_activated())
                         {
                             key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
                             tech_menu_renderer.draw();
                             tech_menu_renderer.render();
                             usleep(10000);
@@ -383,7 +382,7 @@ int main(void)
                         while (pause_menu.is_activated())
                         {
                             key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                            control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
                             if (!save_menu.is_activated())
                             {
                                 pause_menu_renderer.draw();
@@ -418,7 +417,7 @@ int main(void)
             while (end_menu.is_activated())
             {
                 key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, tech_menu,saver,log_loader,save_menu,load_menu);
+                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,log_loader,save_menu,load_menu);
                 end_menu_renderer.draw();
                 end_menu_renderer.render();
                 usleep(10000);

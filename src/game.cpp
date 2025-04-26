@@ -154,7 +154,7 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v,int t_id)
+CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id)
     : Missile(i, p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
     target_id = t_id;
@@ -214,7 +214,7 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     int target_distance = inf;
     Missile *target_missile = nullptr;
     for (auto attack_missile : get_attack_missiles())
-    {   
+    {
         AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(attack_missile);
         int distance = abs(attack_missile->get_position().y - c.get_position().y) + abs(attack_missile->get_position().x - c.get_position().x);
         if (distance < target_distance && attack_missile_ptr->is_aimed == false)
@@ -229,7 +229,7 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     }
     AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(target_missile);
     attack_missile_ptr->is_aimed = true;
-    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v ,target_missile->id);
+    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v, target_missile->id);
     missiles.push_back(missile);
     return true;
 }
