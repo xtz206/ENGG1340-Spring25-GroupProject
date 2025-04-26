@@ -8,13 +8,13 @@
 #include "render.h"
 
 // TODO: make screen size variable to map size
-#define TOTAL_LINES 40
+#define TOTAL_LINES 30
 #define TOTAL_COLS 150
 #define MAP_LINES 18
 #define MAP_COLS 98
 #define INFO_LINES 6
 #define INFO_COLS 49
-#define OPERATION_LINES 19
+#define OPERATION_LINES 9
 #define OPERATION_COLS 98
 #define MENU_LINES 10
 #define MENU_COLS 40
@@ -114,7 +114,9 @@ void GameRenderer::init(void)
     general_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     selected_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES + 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     tech_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 2 + 3, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    counter_attack_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
     operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
+    
 
     box(box_window, 0, 0);
     mvwhline(box_window, MAP_LINES + 1, 1, ACS_HLINE, MAP_COLS);
@@ -129,7 +131,7 @@ void GameRenderer::init(void)
     mvwhline(box_window, INFO_LINES * 2 + 2, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
     mvwaddch(box_window, INFO_LINES * 2 + 2, MAP_COLS + 1, ACS_LTEE);
     mvwaddch(box_window, INFO_LINES * 2 + 2, TOTAL_COLS - 1, ACS_RTEE);
-    mvwhline(box_window, INFO_LINES * 3 + 3, MAP_COLS + 2, ACS_HLINE, OPERATION_COLS);
+    mvwhline(box_window, INFO_LINES * 3 + 3, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
     mvwaddch(box_window, INFO_LINES * 3 + 3, MAP_COLS + 1, ACS_LTEE);
     mvwaddch(box_window, INFO_LINES * 3 + 3, TOTAL_COLS - 1, ACS_RTEE);
 
@@ -138,6 +140,7 @@ void GameRenderer::init(void)
     mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "General");
     mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "Selected");
     mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Tech");
+    mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Counter Attack");
     mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
 }
 
@@ -147,6 +150,7 @@ void GameRenderer::render(void)
     wrefresh(general_info_window);
     wrefresh(selected_info_window);
     wrefresh(tech_info_window);
+    wrefresh(counter_attack_info_window);
     wrefresh(operation_window);
 }
 
@@ -156,6 +160,7 @@ void GameRenderer::draw(void)
     werase(general_info_window);
     werase(selected_info_window);
     werase(tech_info_window);
+    werase(counter_attack_info_window);
     werase(operation_window);
 
     // NOTE: draw map window
@@ -250,6 +255,12 @@ void GameRenderer::draw(void)
     mvwprintw(tech_info_window, 1, 0, "Researching Time: %d", game.tech_tree.researching != nullptr ? game.tech_tree.remaining_time : 0);
     mvwprintw(tech_info_window, 2, 0, "Available: %zu", game.tech_tree.available.size());
     mvwprintw(tech_info_window, 3, 0, "Researched: %zu", game.tech_tree.researched.size());
+
+    mvwprintw(counter_attack_info_window, 0, 0, "Counter Attack Storage: %d", game.attack_missile_num[0]);
+    mvwprintw(counter_attack_info_window, 1, 0, "Dirty Bomb Storage: %d", game.attack_missile_num[1]);
+    mvwprintw(counter_attack_info_window, 2, 0, "Hydrogen Bomb Storage: %d", game.attack_missile_num[2]);
+    mvwprintw(counter_attack_info_window, 3, 0, "Iron Curtain: %s", game.iron_curtain_activated ? "Activated" : "Not Activated");
+    mvwprintw(counter_attack_info_window, 4, 0, "Iron Curtain Remaining: %d", game.iron_curtain_cnt);
 
     // NOTE: draw operation window
     for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
