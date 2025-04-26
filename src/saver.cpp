@@ -14,6 +14,7 @@ void SaveDumper::save_game_general(std::string filepath)
     std::ofstream general_log(filename);
     if (general_log.is_open())
     {
+        general_log << "level:" << game->difficulty_level << "\n";
         general_log << "turn:" << game->get_turn() << "\n";
         general_log << "deposit:" << game->get_deposit() << "\n";
         general_log << "cursor_y:" << game->cursor.y << "\n";
@@ -282,7 +283,12 @@ void SaveLoader::load_game_general(Game &game)
         iss.clear();
         iss.str(line);
         getline(iss, word, ':');
-        if (word == "turn")
+        if (word == "level")
+        {
+            getline(iss, word);
+            game.set_difficulty(std::stoi(word));
+        }
+        else if (word == "turn")
         {
             getline(iss, word);
             game.turn = std::stoi(word);
