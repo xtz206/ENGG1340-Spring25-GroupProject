@@ -20,10 +20,10 @@ void SaveDumper::save_game_general(std::string filepath)
         general_log << "cursor_x:" << game->cursor.x << "\n";
         general_log << "counter_missile_cnt_down:" << game -> countdowns[0] << "\n";
         general_log << "dirty_bomb_cnt_down:" << game -> countdowns[1] << "\n";
-        general_log << "hydron_bomb_cnt_down:" << game -> countdowns[2] << "\n";
+        general_log << "hydrogen_bomb_cnt_down:" << game -> countdowns[2] << "\n";
         general_log << "counter_missile_num:" << game -> attack_missile_num[0] << "\n";
         general_log << "dirty_bomb_num:" << game -> attack_missile_num[1] << "\n";
-        general_log << "hydron_bomb_num:" << game -> attack_missile_num[2] << "\n";
+        general_log << "hydrogen_bomb_num:" << game -> attack_missile_num[2] << "\n";
         general_log << "enemy_hp:" << game -> missile_manager.hitpoint << "\n";
         general_log << "iron_curtain_activated:" << game -> iron_curtain_activated << "\n";
         general_log << "enhanced_radar_I:" << game -> en_enhanced_radar_I << "\n";
@@ -37,7 +37,7 @@ void SaveDumper::save_game_general(std::string filepath)
         general_log << "evacuated_industry:" << game -> en_evacuated_industry << "\n";
         general_log << "dirty_bomb:" << game -> en_dirty_bomb << "\n";
         general_log << "fast_nuke:" << game -> en_fast_nuke << "\n";
-        general_log << "hydron_bomb:" << game -> en_hydrogen_bomb << "\n";
+        general_log << "hydrogen_bomb:" << game -> en_hydrogen_bomb << "\n";
         general_log << "self_defense_sys:" << game -> en_self_defense_sys << "\n";
         general_log << "iron_curtain:"  << game -> en_iron_curtain  << "\n";
     }
@@ -292,7 +292,7 @@ void SaveLoader::load_game_general(Game &game) {
             getline(iss, word);
             game.countdowns[1] = std::stoi(word);
         }
-        else if (word == "hydron_bomb_cnt_down")
+        else if (word == "hydrogen_bomb_cnt_down")
         {
             getline(iss, word);
             game.countdowns[2] = std::stoi(word);
@@ -307,7 +307,7 @@ void SaveLoader::load_game_general(Game &game) {
             getline(iss, word);
             game.attack_missile_num[1] = std::stoi(word);
         }
-        else if (word == "hydron_bomb_num")
+        else if (word == "hydrogen_bomb_num")
         {
             getline(iss, word);
             game.attack_missile_num[2] = std::stoi(word);
@@ -377,7 +377,7 @@ void SaveLoader::load_game_general(Game &game) {
             getline(iss, word);
             game.en_fast_nuke = std::stoi(word); 
         }
-        else if (word == "hydron_bomb")
+        else if (word == "hydrogen_bomb")
         {
             getline(iss, word);
             game.en_hydrogen_bomb = std::stoi(word); 
