@@ -26,10 +26,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         switch (key)
         {
         case 'w':
+        case 'a':
+        case 'q':
             start_menu.move_cursor(-1);
             return;
-
         case 's':
+        case 'd':
+        case 'e':
             start_menu.move_cursor(1);
             return;
 
@@ -199,9 +202,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         switch (key)
         {
         case 'w':
+        case 'a':
+        case 'q':
             tech_menu.move_cursor(-1);
             return;
         case 's':
+        case 'd':
+        case 'e':
             tech_menu.move_cursor(1);
             return;
 
@@ -226,9 +233,13 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
         switch (key)
         {
         case 'w':
+        case 'a':
+        case 'q':
             end_menu.move_cursor(-1);
             return;
         case 's':
+        case 'd':
+        case 'e':
             end_menu.move_cursor(1);
             return;
 
