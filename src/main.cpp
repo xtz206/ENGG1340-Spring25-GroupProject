@@ -20,7 +20,7 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &end_menu, TechMenu &tech_menu, Saver &saver)
+void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu, TechMenu &tech_menu, Saver &saver)
 {
     if (start_menu.is_activated())
     {
@@ -83,6 +83,10 @@ void control(short key, Game &game, Menu &start_menu, Menu &pause_menu, Menu &en
 
         case 'f':
             game.fix_city();
+            return;
+
+        case 'b':
+            game.build_cruise();
             return;
 
         case 'l':
@@ -203,15 +207,15 @@ int main(void)
         short key;
         Loader loader = Loader();
         // TODO: store menu title and buttons in separate file instead of hardcoding
-        Menu start_menu = Menu("MISSILE COMMANDER", {"START THE GAME", "QUIT"});
-        Menu pause_menu = Menu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
-        Menu end_menu = Menu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
+        BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "QUIT"});
+        BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "QUIT"});
+        BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
 
-        MenuRenderer start_menu_renderer = MenuRenderer(start_menu);
-        MenuRenderer pause_menu_renderer = MenuRenderer(pause_menu);
-        MenuRenderer end_menu_renderer = MenuRenderer(end_menu);
+        BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
+        BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
+        BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu);
         GameRenderer game_renderer = GameRenderer(game);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 

@@ -4,8 +4,8 @@
 
 #include "menu.h"
 
-Menu::Menu(const std::string &t, const std::vector<std::string> &b)
-    : activated(false), title(t), items(b), cursor(0)
+Menu::Menu(const std::string &t, const std::vector<std::string> &it)
+    : activated(false), title(t), items(it), cursor(0)
 {
 }
 
@@ -29,13 +29,20 @@ std::vector<std::string> TechMenu::get_item_description()
     std::vector<std::string> description;
     description.push_back("Name: " + node->name);
     description.push_back("Description:");
-    description.push_back(node->description);
+    for (auto line : node->description)
+    {
+        description.push_back(line);
+    }
     description.push_back("Cost: " + std::to_string(node->cost));
     description.push_back("Time: " + std::to_string(node->time));
     description.push_back("Prerequisites:");
     for (auto prerequisite : node->prerequisites)
     {
         description.push_back(prerequisite->name);
+    }
+    if (node->prerequisites.empty())
+    {
+        description.push_back("None");
     }
     // Check if the technology is available
     if (tech_tree.researching == node)

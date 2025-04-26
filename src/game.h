@@ -49,6 +49,7 @@ private:
     int countdown;
     int base_productivity;
     int cruise_num;
+    // TODO: add to config file or make it variable to difficulty
     const int cruise_build_time = 5;
 
 public:
@@ -161,7 +162,8 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> inc_turn; // This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
+    std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
+    // TODO: fix typo
     int hitpoint;
 
 public:
@@ -170,7 +172,7 @@ public:
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
 
-    bool city_weight_check(City &c);//this checks cities weight of becoming a target
+    bool city_weight_check(City &c); // NOTE: this checks cities weight of becoming a target
     void create_attack_missile(Position p, City &c, int d, int v);
     bool create_cruise_missile(City &c, int d, int v);
     void update_missiles(void);
@@ -190,13 +192,13 @@ class TechNode
 
 private:
     std::string name;
-    std::string description;
+    std::vector<std::string> description;
     int cost;
     int time;
     std::vector<TechNode *> prerequisites;
 
 public:
-    TechNode(const std::string &n, const std::string &d, int c, int t, const std::vector<TechNode *> p)
+    TechNode(const std::string &n, const std::vector<std::string> &d, int c, int t, const std::vector<TechNode *> p)
         : name(n), description(d), cost(c), time(t), prerequisites(p) {};
 };
 class TechTree
@@ -241,15 +243,18 @@ private:
     Position cursor;
     int turn;
     int deposit;
-    std::vector<int> countdowns = {0,0,0};// 0: counter, 1: dirty, 2: hydron
-    std::vector<int> attack_missile_num = {0,0,0};// 0: counter, 1: dirty, 2: hydron
+    // TODO: fix typo
+    // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
+    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
+    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydrogen
     std::vector<City> cities;
     std::vector<std::string> background;
     MissileManager missile_manager;
     TechTree tech_tree;
 
+    // TODO: clean up and reorganize the following comments
     bool en_enhanced_radar_I = false;
-    bool en_enhanced_radar_II = false; 
+    bool en_enhanced_radar_II = false;
     bool en_enhanced_radar_III = false; // show attack missile details
 
     bool en_enhanced_cruise_I = false;   // done
@@ -262,7 +267,7 @@ private:
 
     bool en_dirty_bomb = false; // done
     bool en_fast_nuke = false;
-    bool en_hydron_bomb = false; // done
+    bool en_hydrogen_bomb = false; // done
 
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false; // done
@@ -295,22 +300,20 @@ public:
     Missile &select_missile(void);
     City &select_city(void);
 
-    // NOTE: technology and reseach related functions
+    // NOTE: production/research/fix-related functions
     void start_research(TechNode *node);
     void check_research(void);
     void finish_research(TechNode *node);
     void hit_city(City &city, int damage);
     void fix_city(void);
     void build_cruise(void);
-    void update_cruise_num(void);
     void launch_cruise(void);
     void build_counter_attack(void);
     void launch_counter_attack(void);
     void build_dirty_bomb(void);
-    void build_hydron_bomb(void);
     void launch_dirty_bomb(void);
-    void launch_hydron_bomb(void);
-    void update_counter_attack_num(void);
+    void launch_hydrogen_bomb(void);
+    void build_hydrogen_bomb(void);
     void activate_iron_curtain(void);
     void self_defense(void);
 };

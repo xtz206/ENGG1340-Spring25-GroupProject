@@ -314,7 +314,8 @@ bool MissileManager::city_weight_check(City &c)
     {
         return false;
     }
-    if (c.hitpoint > 1000) {
+    if (c.hitpoint > 1000)
+    {
         return true;
     }
     if (c.hitpoint > 700)
@@ -340,7 +341,9 @@ bool MissileManager::city_weight_check(City &c)
             return false;
         }
         return true;
-    } else {
+    }
+    else
+    {
         if (rand_factor % 2 == 0)
         {
             return false;
@@ -397,37 +400,36 @@ void MissileManager::create_attack_wave(int turn)
     }
 }
 
-City::City(Position p, std::string n, int hp) : position(p), name(n), hitpoint(hp), base_productivity(100),countdown(0), cruise_num(0)
+City::City(Position p, std::string n, int hp)
+    : position(p), name(n), hitpoint(hp), countdown(0), cruise_num(0)
 {
-    productivity = 50 + hitpoint / 10;
+    base_productivity = 50;
+    productivity = base_productivity + hitpoint / 10;
 }
 
 TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), remaining_time(0)
 {
-    TechNode *root_node = new TechNode("Root", "Root Node", 0, 0, {});
-    
-    TechNode *enhanced_radar_I = new TechNode("Enhanced Radar I", "Enhanced Radar can detect number of currently attacking missiles",2000 , 10, {root_node});
-    TechNode *enhanced_radar_II = new TechNode("Enhanced Radar II", "Enhanced Radar can detect number of currently attacking missiles of each city", 5000, 30, {enhanced_radar_I});
-    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", "Enhanced Radar can detect detail of an attack missile (as you move cursor to it)", 10000, 50, {enhanced_radar_II});
-    
-    TechNode* enhanced_cruise_I = new TechNode("Enhanced Cruise I", "Reduce the cost of cruise by 50%", 2000, 10, {root_node});
-    TechNode* enhanced_cruise_II = new TechNode("Enhanced Cruise II", "Increase the speed of cruise by 50%", 5000, 30, {enhanced_cruise_I});
-    TechNode* enhanced_cruise_III = new TechNode("Enhanced Cruise III", "Can build two cruise once", 10000, 50, {enhanced_cruise_II});
-    
-    TechNode* self_defense_sys = new TechNode("Self Defense System", "Can build a self defense system to protect the city", 2000, 10, {enhanced_cruise_III,enhanced_radar_III});
+    TechNode *enhanced_radar_I = new TechNode("Enhanced Radar I", {"Detect the number of approaching attack missiles"}, 2000, 10, {});
+    TechNode *enhanced_radar_II = new TechNode("Enhanced Radar II", {"Detect number of currently targeted missiles of each city"}, 5000, 30, {enhanced_radar_I});
+    TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", {"Display the detailed information of selected missiles"}, 10000, 50, {enhanced_radar_II});
 
-    TechNode* fortress_city = new TechNode("Fortress City", "City will undertake half of damage", 2000, 10, {root_node});
-    TechNode* urgent_production = new TechNode("Urgent Production", "Increase cities's base production by 200%", 5000, 30, {fortress_city});
-    TechNode* evacuated_industry = new TechNode("Evacuated Industry","City may maintain base production after destroyed", 10000, 50, {urgent_production});
+    TechNode *enhanced_cruise_I = new TechNode("Enhanced Cruise I", {"Reduce the cost of cruise by 50%"}, 2000, 10, {});
+    TechNode *enhanced_cruise_II = new TechNode("Enhanced Cruise II", {"Increase the speed of cruise by 50%"}, 5000, 30, {enhanced_cruise_I});
+    TechNode *enhanced_cruise_III = new TechNode("Enhanced Cruise III", {"Build two cruise at the same time"}, 10000, 50, {enhanced_cruise_II});
 
-    TechNode* dirty_bomb = new TechNode("Dirty Bomb", "Allow to launch a new counter-atk missile with 50% cost but 75% hitrate", 2000, 10, {root_node});
-    TechNode* fast_nuke = new TechNode("Fast Nuke", "Reduce counter-atk missile build-time by 50%", 5000, 30, {dirty_bomb});
-    TechNode* hydron_bomb = new TechNode("HydronBomb", "Allow to launch a new counter-atk missile with 500% demage but 50% hitrate, and much more costly", 10000, 50, {fast_nuke});
+    TechNode *self_defense_sys = new TechNode("Self Defense System", {"The city can defense by itself when missiles approaches, ", "if there is missile storage"}, 2000, 10, {enhanced_cruise_III, enhanced_radar_III});
 
-    TechNode* iron_curtain = new TechNode("Iron Curtain", "All your cities will not get damage in next 50 turns", 2000, 10, {hydron_bomb,evacuated_industry});
+    TechNode *fortress_city = new TechNode("Fortress City", {"City will undertake half of damage"}, 2000, 10, {});
+    TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
+    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile storage even after destroyed"}, 10000, 50, {urgent_production});
 
-    nodes.push_back(root_node);
-    researched.push_back(root_node);
+    // TODO: Change effects into more innovative ones
+    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-atk missile with 50% cost but 75% hit rate"}, 2000, 10, {});
+    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-atk missile build-time by 50%"}, 5000, 30, {dirty_bomb});
+    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
+
+    TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
+
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);
     nodes.push_back(enhanced_radar_III);
@@ -440,7 +442,7 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     nodes.push_back(evacuated_industry);
     nodes.push_back(dirty_bomb);
     nodes.push_back(fast_nuke);
-    nodes.push_back(hydron_bomb);
+    nodes.push_back(hydrogen_bomb);
     nodes.push_back(iron_curtain);
 }
 
@@ -504,7 +506,7 @@ bool TechTree::check_research(void)
 
 bool TechTree::check_available(TechNode *node, int deposit) const
 {
-    if (node -> name == "Root")
+    if (node->name == "Root")
     {
         return false;
     }
@@ -532,8 +534,11 @@ void TechTree::update_available(int deposit)
             {
                 available.erase(std::find(available.begin(), available.end(), node));
             }
-        } else {
-            if (check_available(node, deposit)) {
+        }
+        else
+        {
+            if (check_available(node, deposit))
+            {
                 available.push_back(node);
             }
         }
@@ -587,12 +592,7 @@ void Game::move_cursor(Position dcursor)
 
 void Game::pass_turn(void)
 {
-
-    // DEBUG: don't forget to readd city hitting function
-    // DONE!
-    // TODO: remove cursor
-    //       cursor is not a good way to select city
-    //       considering use shortcut key to replace cursor in selecting city
+    // TODO: add keyboard shortcuts to select city
     missile_manager.update_missiles();
     missile_manager.remove_missiles();
 
@@ -612,30 +612,54 @@ void Game::pass_turn(void)
     }
 
     // TODO: Economy Refactor
+
+    // NOTE: update cities production
     for (auto &city : cities)
     {
-        if (city.hitpoint <= 0)
+        if (city.hitpoint > 0)
         {
-            city.productivity = en_evacuated_industry ? city.base_productivity : 0;
-            if (city.productivity == 0)
-            {
-                city.countdown = 0;
-                continue;
-            }
+            city.productivity = city.base_productivity * (en_urgent_production ? 3 : 1) + city.hitpoint / 10;
         }
-        city.productivity = city.base_productivity*(en_urgent_production ? 3 : 1)+city.hitpoint/10;
+        else if (en_evacuated_industry)
+        {
+            city.productivity = city.base_productivity;
+        }
+        else
+        {
+            city.hitpoint = 0;
+            city.productivity = 0;
+            city.countdown = 0;
+            city.cruise_num = 0;
+        }
         deposit += city.productivity;
+
         if (city.countdown > 0)
         {
             city.countdown--;
+            if (city.countdown == 0)
+            {
+                city.cruise_num += (en_enhanced_cruise_III ? 2 : 1);
+            }
         }
     }
 
+    // NOTE: update global production
+    for (int index = 0; index < 3; index++)
+    {
+        if (countdowns[index] > 0)
+        {
+            countdowns[index]--;
+            if (countdowns[index] == 0)
+            {
+                attack_missile_num[index]++;
+            }
+        }
+    }
+
+    // NOTE: update research
     tech_tree.proceed_research();
     check_research();
-    update_cruise_num();
-    update_counter_attack_num();
-    
+
     if (turn % 40 == 0)
         missile_manager.create_attack_wave(turn);
     turn++;
@@ -692,7 +716,6 @@ bool Game::is_selected_missile(void)
     return false;
 }
 
-
 bool Game::is_selected_city(void)
 {
     for (auto &city : cities)
@@ -721,14 +744,13 @@ Missile &Game::select_missile(void)
     throw std::runtime_error("No missile selected");
 }
 
-
 City &Game::select_city(void)
 {
     if (!is_selected_city())
     {
         throw std::runtime_error("No city selected");
     }
-    
+
     for (auto &city : cities)
     {
         if (is_in_range(cursor, city.position, 1))
@@ -773,8 +795,66 @@ void Game::finish_research(TechNode *node)
     {
         return;
     }
-    // TODO: impl enable tech var 
-
+    if (node->name == "Enhanced Radar I")
+    {
+        en_enhanced_radar_I = true;
+    }
+    else if (node->name == "Enhanced Radar II")
+    {
+        en_enhanced_radar_II = true;
+    }
+    else if (node->name == "Enhanced Radar III")
+    {
+        en_enhanced_radar_III = true;
+    }
+    else if (node->name == "Enhanced Cruise I")
+    {
+        en_enhanced_cruise_I = true;
+    }
+    else if (node->name == "Enhanced Cruise II")
+    {
+        en_enhanced_cruise_II = true;
+    }
+    else if (node->name == "Enhanced Cruise III")
+    {
+        en_enhanced_cruise_III = true;
+    }
+    else if (node->name == "Self Defense System")
+    {
+        en_self_defense_sys = true;
+    }
+    else if (node->name == "Fortress City")
+    {
+        en_fortress_city = true;
+    }
+    else if (node->name == "Urgent Production")
+    {
+        en_urgent_production = true;
+    }
+    else if (node->name == "Evacuated Industry")
+    {
+        en_evacuated_industry = true;
+    }
+    else if (node->name == "Dirty Bomb")
+    {
+        en_dirty_bomb = true;
+    }
+    else if (node->name == "Fast Nuke")
+    {
+        en_fast_nuke = true;
+    }
+    else if (node->name == "Hydrogen Bomb")
+    {
+        en_hydrogen_bomb = true;
+    }
+    else if (node->name == "Iron Curtain")
+    {
+        en_iron_curtain = true;
+    }
+    else
+    {
+        throw std::runtime_error("Unknown tech node");
+    }
 }
 
 void Game::hit_city(City &city, int damage)
@@ -793,7 +873,7 @@ void Game::hit_city(City &city, int damage)
     }
     else
     {
-        city.hitpoint -= damage/(en_fortress_city ? 2 : 1);
+        city.hitpoint -= damage / (en_fortress_city ? 2 : 1);
     }
 }
 
@@ -826,28 +906,6 @@ void Game::build_cruise(void)
     city.countdown = city.cruise_build_time;
 }
 
-void Game::update_cruise_num(void)
-{
-    for (auto &city : cities)
-    {
-        if (city.hitpoint <= 0)
-        {
-            city.cruise_num = 0;
-            city.countdown = 0;
-            continue;
-        }
-        if (city.countdown > 0)
-        {
-            city.countdown--;
-            if (city.countdown == 0)
-            {
-                city.cruise_num+=(en_enhanced_cruise_III ? 2 : 1);
-            }
-        }
-    }
-}
-
-
 void Game::launch_cruise(void)
 {
     City &city = select_city();
@@ -859,12 +917,16 @@ void Game::launch_cruise(void)
     {
         return;
     }
-    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)){} // TODO: impl here
+    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
+    {
+        city.cruise_num--;
+        // TODO: city countdown when launching cruise
+    }
 }
 
 void Game::build_counter_attack(void)
 {
-    if (deposit <2000)
+    if (deposit < 2000)
     {
         return;
     }
@@ -873,7 +935,7 @@ void Game::build_counter_attack(void)
         return;
     }
     deposit -= 2000;
-    countdowns[0] = (en_fast_nuke?5:10);
+    countdowns[0] = (en_fast_nuke ? 5 : 10);
 }
 
 void Game::launch_counter_attack(void)
@@ -901,7 +963,7 @@ void Game::build_dirty_bomb(void)
 void Game::launch_dirty_bomb(void)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
-    int rand_factor = rand()%4;
+    int rand_factor = rand() % 4;
     if (rand_factor == 0)
     {
         return;
@@ -909,9 +971,9 @@ void Game::launch_dirty_bomb(void)
     missile_manager.hitpoint -= 50;
 }
 
-void Game::build_hydron_bomb(void)
+void Game::build_hydrogen_bomb(void)
 {
-    if (!en_hydron_bomb)
+    if (!en_hydrogen_bomb)
     {
         return;
     }
@@ -927,10 +989,10 @@ void Game::build_hydron_bomb(void)
     countdowns[2] = 20;
 }
 
-void Game::launch_hydron_bomb(void)
+void Game::launch_hydrogen_bomb(void)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
-    int rand_factor = rand()%2;
+    int rand_factor = rand() % 2;
     if (rand_factor == 0)
     {
         return;
@@ -938,21 +1000,6 @@ void Game::launch_hydron_bomb(void)
     missile_manager.hitpoint -= 500;
 }
 
-void Game::update_counter_attack_num(void)
-{  
-    for (int i = 0; i < 3; i++)
-    {
-        if (countdowns[i] > 0)
-        {
-            countdowns[i]--;
-            if (countdowns[i] == 0)
-            {
-                attack_missile_num[i]++;
-            }
-        }
-    }
-
-}
 void Game::activate_iron_curtain(void)
 {
     if (!en_iron_curtain)

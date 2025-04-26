@@ -29,7 +29,7 @@ void Renderer::debug(const std::string &str, int line)
     mvwprintw(stdscr, line, 1, "%s", str.c_str());
 }
 
-void MenuRenderer::init(void)
+void BasicMenuRenderer::init(void)
 {
     clear();
 
@@ -39,12 +39,12 @@ void MenuRenderer::init(void)
     mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
 }
 
-void MenuRenderer::render(void)
+void BasicMenuRenderer::render(void)
 {
     wrefresh(menu_window);
 }
 
-void MenuRenderer::draw(void)
+void BasicMenuRenderer::draw(void)
 {
     for (size_t line = 1; line < MENU_LINES - 1; line++)
     {
@@ -172,7 +172,7 @@ void GameRenderer::draw(void)
     }
 
     mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
-    mvwprintw(radar_window, 2, 1, "Researched: %zu", game.tech_tree.researched.size() - 1);
+    mvwprintw(radar_window, 2, 1, "Researched: %zu", game.tech_tree.researched.size());
     mvwprintw(radar_window, 3, 1, "Available: %zu", game.tech_tree.available.size());
 
     // NODE WINDOW
@@ -195,6 +195,7 @@ void GameRenderer::draw(void)
         mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
         mvwprintw(node_window, 3, 1, "Productivity: %d", city.productivity);
         mvwprintw(node_window, 4, 1, "Countdown: %d", city.countdown);
+        mvwprintw(node_window, 5, 1, "Missile Storage: %d", city.cruise_num);
         if (true) // DEBUG: game.en_enhanced_radar_II
         {
             int missile_count = 0;
@@ -206,7 +207,7 @@ void GameRenderer::draw(void)
                 }
             }
 
-            mvwprintw(node_window, 5, 1, "Targeted by %d Missiles", missile_count);
+            mvwprintw(node_window, 6, 1, "Targeted by %d Missiles", missile_count);
         }
     }
     else
