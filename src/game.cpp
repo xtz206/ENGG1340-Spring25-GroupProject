@@ -607,7 +607,7 @@ std::vector<std::string> Game::get_selected_info(void)
             int missile_count = 0;
             for (auto missile : missile_manager.get_attack_missiles())
             {
-                if (missile->get_position() == city.get_position())
+                if (missile->get_target() == city.get_position())
                 {
                     missile_count++;
                 }
