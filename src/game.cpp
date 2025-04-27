@@ -1408,6 +1408,10 @@ void Game::self_defense(void)
 
 void MissileManager::reset(void)
 {
+    for (auto missile : missiles)
+    {
+        delete missile;
+    }
     missiles.clear();
 }
 
