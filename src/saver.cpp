@@ -38,6 +38,7 @@ void SaveDumper::save_game_general(std::string filepath)
         general_log << "hydrogen_bomb:" << game->en_hydrogen_bomb << "\n";
         general_log << "self_defense_sys:" << game->en_self_defense_sys << "\n";
         general_log << "iron_curtain:" << game->en_iron_curtain << "\n";
+        general_log << "missile_manager_id" << game->missile_manager.id << "\n";
     }
     general_log.close();
 }
@@ -400,6 +401,11 @@ void SaveLoader::load_game_general(Game &game)
             getline(iss, word);
             game.en_iron_curtain = std::stoi(word);
         }
+        else if (word == "missile_manager_id")
+        {
+            getline(iss, word);
+            game.missile_manager.id = std::stoi(word);
+        }
     }
 }
 
@@ -445,12 +451,15 @@ void SaveLoader::load_attack_missile(Game &game)
         {
             if (city.get_position() == target)
             {
-                game.missile_manager.create_attack_missile(position, city, damage, speed);
+                game.missile_manager.create_attack_missile(position, city, damage, speed); //NOTE: this will add missile_manager's id by 1
+                game.missile_manager.id--;
             }
         }
         // set is_aimed
         AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(game.missile_manager.get_attack_missiles().back());
         attack_missile->is_aimed = is_aimed;
+        //reset id
+        game.missile_manager.missiles.back()->id = id;
     }
 }
 
@@ -495,8 +504,8 @@ void SaveLoader::load_cruise(Game &game)
         {
             if (missile->id == target_id)
             {
-                Missile *missile = new CruiseMissile(id, position, *missile, damage, speed, missile->id);
-                game.missile_manager.missiles.push_back(missile);
+                Missile *cruise_missile = new CruiseMissile(id, position, *missile, damage, speed, missile->id);
+                game.missile_manager.missiles.push_back(cruise_missile);
                 break;
             }
         }
