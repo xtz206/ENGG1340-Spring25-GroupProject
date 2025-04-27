@@ -10,7 +10,7 @@
 #define DEFEND_RADIUS 10
 
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
-    : id(i), position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
+    : id(i), position(p), target(t), is_exploded(false), damage(d), speed(v), type(tp)
 {
 }
 
@@ -108,40 +108,12 @@ void Missile::move_step(void)
         return;
 
     case MissileDirection::A:
-        if (progress == MissileProgress::EXPLODED)
-        {
-            return;
-        }
-        if (progress == MissileProgress::HIT)
-        {
-            progress = MissileProgress::EXPLODED;
-            return;
-        }
-        if (progress == MissileProgress::DESCENDING)
-        {
-            progress = MissileProgress::HIT;
-            return;
-        }
-        if (progress == MissileProgress::ARRIVED)
-        {
-            progress = MissileProgress::DESCENDING;
-            return;
-        }
-        if (progress == MissileProgress::FLYING)
-        {
-            progress = MissileProgress::ARRIVED;
-            return;
-        }
+        set_is_exploded();
         return;
 
     default:
         return;
     }
-}
-
-void Missile::collide(void)
-{
-    progress = MissileProgress::EXPLODED;
 }
 
 AttackMissile::AttackMissile(int i, Position p, City &c, int d, int v)
@@ -166,8 +138,8 @@ void CruiseMissile::move_step(void)
     Missile::move_step();
     if (get_direction() == MissileDirection::A)
     {
-        missile.collide();
-        collide();
+        missile.set_is_exploded();
+        set_is_exploded();
     }
 }
 MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
@@ -248,11 +220,10 @@ void MissileManager::update_missiles(void)
 }
 
 void MissileManager::remove_missiles(void)
-{
-   
+{   
     for (auto attack_missile : get_attack_missiles())
     {
-        if (attack_missile->get_progress() == MissileProgress::EXPLODED)
+        if (attack_missile->get_is_exploded())
         {
             for (auto &missile : get_cruise_missiles()) {
                 CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
@@ -275,18 +246,6 @@ void MissileManager::remove_missiles(void)
         }
     }
 
-    // for (auto cruise_missile : get_cruise_missiles())
-    // {
-    //     if (cruise_missile->get_progress() == MissileProgress::EXPLODED)
-    //     {
-    //         auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
-    //         if (iter != missiles.end())
-    //         {
-    //             missiles.erase(iter);
-    //         }
-    //         delete cruise_missile;
-    //     }
-    // }
 }
 #define HP_PHASE 200
 #define TURN_PHASE 100
@@ -654,7 +613,7 @@ std::vector<std::string> Game::get_selected_info(void)
     std::vector<std::string> info;
     if (is_selected_missile())
     {
-        AttackMissile &missile = static_cast<AttackMissile &>(select_missile());
+        AttackMissile &missile = dynamic_cast<AttackMissile &>(select_missile());
         info.push_back("Target: " + missile.city.name);
         info.push_back("Speed: " + std::to_string(missile.speed));
         info.push_back("Damage: " + std::to_string(missile.damage));
@@ -842,8 +801,8 @@ void Game::move_cursor(Position dcursor)
 void Game::pass_turn(void)
 {
     // TODO: add keyboard shortcuts to select city
-    missile_manager.update_missiles();
     missile_manager.remove_missiles();
+    missile_manager.update_missiles();
 
     for (auto missile : missile_manager.get_attack_missiles())
     {
@@ -851,10 +810,9 @@ void Game::pass_turn(void)
         {
             continue;
         }
-        AttackMissile *attack_missile = static_cast<AttackMissile *>(missile);
+        AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
 
-        if (attack_missile->get_progress() == MissileProgress::HIT &&
-            attack_missile->get_direction() == MissileDirection::A)
+        if (attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
         }
@@ -1162,7 +1120,7 @@ void Game::build_cruise(void)
     {
         return;
     }
-    if (city.countdown > 0) //FIX: avoid dulplicate building
+    if (city.countdown > 0) // FIXME: avoid duplicate building
     {
         return;
     }

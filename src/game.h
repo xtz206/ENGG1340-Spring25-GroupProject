@@ -66,17 +66,6 @@ enum class MissileType
     UNKNOWN
 };
 
-// TODO: add more detailed MissileProgress MissileDirection comments
-enum class MissileProgress
-{
-    EXPLODED,   // Exploded
-    HIT,        // Hit
-    DESCENDING, // Descending
-    ARRIVED,    // Arrived
-    FLYING,     // Flying
-    UNKNOWN     // Unknown
-};
-
 enum class MissileDirection
 {
     A,  // Arrived
@@ -103,8 +92,8 @@ protected:
     int id;
     Position position;
     Position target;
-    MissileProgress progress;
     MissileType type;
+    bool is_exploded;
     int damage;
     int speed;
 
@@ -113,10 +102,10 @@ public:
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
     MissileDirection get_direction(void);
-    MissileProgress get_progress(void) const { return progress; };
+    bool get_is_exploded(void) const { return is_exploded; };
+    void set_is_exploded(void) { is_exploded = true; };
     void move(void);
     virtual void move_step(void);
-    void collide(void);
 };
 
 class AttackMissile : public Missile
