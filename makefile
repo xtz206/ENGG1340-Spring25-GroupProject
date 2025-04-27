@@ -5,7 +5,7 @@ ASSETS_DIR = assets
 
 CXX = g++
 CXXFLAGS = -std=c++11 -pedantic-errors
-LDFLAGS = -lstdc++ -lncursesw
+LDFLAGS = -lncursesw
 PROG = main
 
 $(BIN_DIR)/$(PROG): $(BIN_DIR)/main.o $(BIN_DIR)/game.o $(BIN_DIR)/menu.o $(BIN_DIR)/render.o $(BIN_DIR)/loader.o

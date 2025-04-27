@@ -7,152 +7,184 @@
 #include "menu.h"
 #include "render.h"
 
+// TODO: make screen size variable to map size
 #define TOTAL_LINES 30
-#define TOTAL_COLS 140
-#define MAP_LINES 20
-#define MAP_COLS 100
-#define RADAR_LINES 10
-#define RADAR_COLS 40
-#define NODE_LINES 10
-#define NODE_COLS 40
-#define INFO_LINES 10
-#define INFO_COLS 40
-#define OPERATION_LINES 10
-#define OPERATION_COLS 100
+#define TOTAL_COLS 150
+#define MAP_LINES 18
+#define MAP_COLS 98
+#define INFO_LINES 6
+#define INFO_COLS 49
+#define OPERATION_LINES 9
+#define OPERATION_COLS 40
+#define FEEDBACK_LINES 9
+#define FEEDBACK_COLS 56
 #define MENU_LINES 10
 #define MENU_COLS 40
+#define TECH_LINES 10
+#define TECH_COLS 80
 
-void Renderer::debug(const std::string &str)
+void Renderer::debug(const std::string &str, int line)
 {
-    mvwprintw(stdscr, 0, 1, "%s", str.c_str());
+    mvwprintw(stdscr, line, 1, "%s", str.c_str());
 }
 
-void MenuRenderer::init(void)
+void BasicMenuRenderer::init(void)
 {
-    clear();
+    erase();
 
-    menu_window = subwin(stdscr, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
-    box(menu_window, 0, 0);
-
-    mvwprintw(menu_window, 0, (MENU_COLS - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
+    box_window = subwin(stdscr, MENU_LINES + 2, MENU_COLS + 2, (LINES - MENU_LINES - 2) / 2, (COLS - MENU_COLS - 2) / 2);
+    item_window = subwin(box_window, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
+    box(box_window, 0, 0);
+    mvwprintw(box_window, 0, (MENU_COLS - menu.get_title().length() + 2) / 2, "%s", menu.get_title().c_str());
 }
 
-void MenuRenderer::render(void)
+void BasicMenuRenderer::render(void)
 {
-    wrefresh(menu_window);
+    wrefresh(item_window);
 }
 
-void MenuRenderer::draw(void)
+void BasicMenuRenderer::draw(void)
 {
-    for (size_t line = 1; line < MENU_LINES - 1; line++)
-    {
-        mvwprintw(menu_window, line, 1, "%s", std::string(MENU_COLS - 2, ' ').c_str());
-    }
-
-    for (size_t index = 0; index < menu.get_buttons().size(); index++)
+    werase(item_window);
+    for (size_t index = 0; index < menu.get_items().size(); index++)
     {
         if (index == menu.get_cursor())
         {
-            wattron(menu_window, A_REVERSE);
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
-            wattroff(menu_window, A_REVERSE);
+            wattron(item_window, A_REVERSE);
+            mvwprintw(item_window, index, (MENU_COLS - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
+            wattroff(item_window, A_REVERSE);
         }
         else
         {
-            mvwprintw(menu_window, index + 1, (MENU_COLS - menu.get_buttons().at(index).length()) / 2, "%s", menu.get_buttons().at(index).c_str());
+            mvwprintw(item_window, index, (MENU_COLS - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
         }
-        if (index == menu.get_buttons().size() - 1)
+    }
+}
+
+void TechMenuRenderer::init(void)
+{
+    erase();
+
+    box_window = subwin(stdscr, TECH_LINES * 2 + 3, TECH_COLS + 2, (LINES - TECH_LINES * 2 - 2) / 2, (COLS - TECH_COLS - 2) / 2);
+    item_window = subwin(box_window, TECH_LINES, TECH_COLS, (LINES - TECH_LINES * 2 - 3) / 2 + 1, (COLS - TECH_COLS) / 2);
+    desc_window = subwin(box_window, TECH_LINES, TECH_COLS, (LINES - TECH_LINES * 2 - 3) / 2 + TECH_LINES + 2, (COLS - TECH_COLS) / 2);
+    box(box_window, 0, 0);
+    mvwprintw(box_window, 0, (TECH_COLS + 2 - menu.get_title().length()) / 2, "%s", menu.get_title().c_str());
+    mvwhline(box_window, TECH_LINES + 1, 1, ACS_HLINE, TECH_COLS);
+    mvwaddch(box_window, TECH_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, TECH_LINES + 1, TECH_COLS + 1, ACS_RTEE);
+}
+
+void TechMenuRenderer::render(void)
+{
+    wrefresh(item_window);
+    wrefresh(desc_window);
+}
+
+void TechMenuRenderer::draw()
+{
+    werase(item_window);
+    werase(desc_window);
+
+    for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
+    {
+        if (index >= menu.get_items().size())
         {
             break;
         }
+        if (index == menu.get_cursor())
+        {
+            wattron(item_window, A_REVERSE);
+            mvwprintw(item_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+            wattroff(item_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(item_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+        }
+    }
+
+    std::vector<std::string> description = menu.get_item_description();
+    for (size_t index = 0; index < description.size(); index++)
+    {
+        mvwprintw(desc_window, index, 0, "%s", description.at(index).c_str());
     }
 }
 
 void GameRenderer::init(void)
 {
-    clear();
+    erase();
 
-    map_window = subwin(stdscr, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
-    radar_window = subwin(stdscr, RADAR_LINES, RADAR_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    node_window = subwin(stdscr, NODE_LINES, NODE_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    info_window = subwin(stdscr, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + RADAR_LINES + NODE_LINES, (COLS - TOTAL_COLS) / 2 + MAP_COLS);
-    operation_window = subwin(stdscr, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES, (COLS - TOTAL_COLS) / 2);
+    box_window = subwin(stdscr, TOTAL_LINES, TOTAL_COLS, (LINES - TOTAL_LINES) / 2, (COLS - TOTAL_COLS) / 2);
+    map_window = subwin(box_window, MAP_LINES, MAP_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + 1);
+    general_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + 1, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    selected_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES + 2, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    tech_info_window = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 2 + 3, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    super_weapon_info = subwin(box_window, INFO_LINES, INFO_COLS, (LINES - TOTAL_LINES) / 2 + INFO_LINES * 3 + 4, (COLS - TOTAL_COLS) / 2 + MAP_COLS + 2);
+    operation_window = subwin(box_window, OPERATION_LINES, OPERATION_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + 1);
+    feedback_window = subwin(box_window, FEEDBACK_LINES, FEEDBACK_COLS, (LINES - TOTAL_LINES) / 2 + MAP_LINES + 2, (COLS - TOTAL_COLS) / 2 + OPERATION_COLS + 3);
 
-    box(map_window, 0, 0);
-    box(radar_window, 0, 0);
-    box(node_window, 0, 0);
-    box(info_window, 0, 0);
-    box(operation_window, 0, 0);
+    box(box_window, 0, 0);
+    mvwhline(box_window, MAP_LINES + 1, 1, ACS_HLINE, MAP_COLS);
+    mvwvline(box_window, 1, MAP_COLS + 1, ACS_VLINE, TOTAL_LINES - 2);
 
-    // TODO: store title in separate file instead of hardcoding
-    mvwprintw(map_window, 0, 2, "Map");
-    mvwprintw(radar_window, 0, 2, "Radar");
-    mvwprintw(node_window, 0, 2, "Node");
-    mvwprintw(info_window, 0, 2, "Info");
-    mvwprintw(operation_window, 0, 2, "Operation");
+    mvwaddch(box_window, 0, MAP_COLS + 1, ACS_TTEE);
+    mvwaddch(box_window, TOTAL_LINES - 1, MAP_COLS + 1, ACS_BTEE);
 
-    // TODO: store button text in separate file instead of hardcoding
-    mvwprintw(operation_window, 1, 1, "W/A/S/D: CURSOR MOVING");
-    mvwprintw(operation_window, 2, 1, "ENTER: PASS TURN");
-    mvwprintw(operation_window, 3, 1, "ESC: PAUSE");
-    mvwprintw(operation_window, 4, 1, "F: FIX");
-    mvwprintw(operation_window, 5, 1, "L: LAUNCH");
-    mvwprintw(operation_window, 6, 1, "Q: QUIT");
+    mvwaddch(box_window, MAP_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, MAP_LINES + 1, MAP_COLS + 1, ACS_RTEE);
+
+    mvwvline(box_window, MAP_LINES + 2, OPERATION_COLS + 2, ACS_VLINE, OPERATION_LINES);
+    mvwaddch(box_window, MAP_LINES + 1, OPERATION_COLS + 2, ACS_TTEE);
+    mvwaddch(box_window, TOTAL_LINES - 1, OPERATION_COLS + 2, ACS_BTEE);
+
+    mvwhline(box_window, INFO_LINES + 1, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
+    mvwaddch(box_window, INFO_LINES + 1, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES + 1, TOTAL_COLS - 1, ACS_RTEE);
+
+    mvwhline(box_window, INFO_LINES * 2 + 2, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
+    mvwaddch(box_window, INFO_LINES * 2 + 2, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES * 2 + 2, TOTAL_COLS - 1, ACS_RTEE);
+
+    mvwhline(box_window, INFO_LINES * 3 + 3, MAP_COLS + 2, ACS_HLINE, INFO_COLS);
+    mvwaddch(box_window, INFO_LINES * 3 + 3, MAP_COLS + 1, ACS_LTEE);
+    mvwaddch(box_window, INFO_LINES * 3 + 3, TOTAL_COLS - 1, ACS_RTEE);
+
+    // mvwprintw(box_window, 0, (TOTAL_COLS - 2 - 2) / 2, "Missile Command");
+    mvwprintw(box_window, 0, 2, "Map");
+    mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "General");
+    mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "City & Missile");
+    mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Technology & Research");
+    mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Super Weapon");
+    mvwprintw(box_window, MAP_LINES + 1, 2, "Operation");
+    mvwprintw(box_window, MAP_LINES + 1, 2 + OPERATION_COLS + 2, "Feedback");
 }
 
 void GameRenderer::render(void)
 {
     wrefresh(map_window);
-    wrefresh(radar_window);
-    wrefresh(node_window);
-    wrefresh(info_window);
+    wrefresh(general_info_window);
+    wrefresh(selected_info_window);
+    wrefresh(tech_info_window);
+    wrefresh(super_weapon_info);
     wrefresh(operation_window);
+    wrefresh(feedback_window);
 }
 
 void GameRenderer::draw(void)
 {
-    // RADAR WINDOW
-    for (size_t line = 1; line < RADAR_LINES - 1; line++)
-    {
-        mvwprintw(radar_window, line, 1, "%s", std::string(RADAR_COLS - 2, ' ').c_str());
-    }
+    werase(map_window);
+    werase(general_info_window);
+    werase(selected_info_window);
+    werase(tech_info_window);
+    werase(super_weapon_info);
+    werase(operation_window);
+    werase(feedback_window);
 
-    mvwprintw(radar_window, 1, 1, "Missile Num: %zu", game.get_missiles().size());
-
-    // NODE WINDOW
-    for (size_t line = 1; line < NODE_LINES - 1; line++)
+    // NOTE: draw map window
+    for (int index = 0; index < game.get_background().size(); index++)
     {
-        mvwprintw(node_window, line, 1, "%s", std::string(NODE_COLS - 2, ' ').c_str());
-    }
-    
-    City &city = game.select_city();
-    if (city.is_valid())
-    {
-        mvwprintw(node_window, 1, 1, "Name: %s", city.name.c_str());
-        mvwprintw(node_window, 2, 1, "Hitpoint: %d", city.hitpoint);
-        mvwprintw(node_window, 3, 1, "Deposit: %d", city.deposit);
-        mvwprintw(node_window, 4, 1, "Productivity: %d", city.productivity);
-        mvwprintw(node_window, 5, 1, "Countdown: %d", city.countdown);
-    }
-    else
-    {
-        mvwprintw(node_window, 1, 1, "No City Selected");
-    }
-
-    // INFO WINDOW
-    for (size_t line = 1; line < INFO_LINES - 1; line++)
-    {
-        mvwprintw(info_window, line, 1, "%s", std::string(INFO_COLS - 2, ' ').c_str());
-    }
-
-    mvwprintw(info_window, 1, 1, "Turn: %d", game.get_turn());
-    mvwprintw(info_window, 2, 1, "Total Deposit: %d", game.get_total_deposit());
-    mvwprintw(info_window, 3, 1, "Total Productivity: %d", game.get_total_productivity());
-
-    // MAP WINDOW
-    for (size_t line = 0; line < game.get_background().size(); line++)
-    {
-        mvwprintw(map_window, line + 1, 1, "%s", game.get_background().at(line).c_str());
+        mvwprintw(map_window, index, 0, "%s", game.get_background().at(index).c_str());
     }
 
     for (auto missile : game.get_missiles())
@@ -201,8 +233,61 @@ void GameRenderer::draw(void)
         default:
             break;
         }
-        mvwprintw(map_window, missile->get_position().y + 1, missile->get_position().x + 1, "%s", direction.c_str());
+        mvwprintw(map_window, missile->get_position().y, missile->get_position().x, "%s", direction.c_str());
     }
 
-    mvwprintw(map_window, game.get_cursor().y + 1, game.get_cursor().x + 1, "X");
+    mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
+
+    // NOTE: draw info windows
+    std::vector<std::string> info;
+    info = game.get_general_info();
+    for (size_t index = 0; index < info.size(); index++)
+    {
+        mvwprintw(general_info_window, index, 0, "%s", info.at(index).c_str());
+    }
+    info = game.get_selected_info();
+    for (size_t index = 0; index < info.size(); index++)
+    {
+        mvwprintw(selected_info_window, index, 0, "%s", info.at(index).c_str());
+    }
+    info = game.get_tech_info();
+    for (size_t index = 0; index < info.size(); index++)
+    {
+        mvwprintw(tech_info_window, index, 0, "%s", info.at(index).c_str());
+    }
+    info = game.get_super_weapon_info();
+    for (size_t index = 0; index < info.size(); index++)
+    {
+        mvwprintw(super_weapon_info, index, 0, "%s", info.at(index).c_str());
+    }
+
+    // NOTE: draw operation window
+    for (int index = menu.get_offset(); index < menu.get_offset() + menu.get_limit(); index++)
+    {
+        if (index >= menu.get_items().size())
+        {
+            break;
+        }
+        if (index == menu.get_cursor())
+        {
+            wattron(operation_window, A_REVERSE);
+            mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+            wattroff(operation_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(operation_window, index - menu.get_offset(), 0, "%s", menu.get_item(index).c_str());
+        }
+    }
+
+    // NOTE: draw feedback window
+    for (size_t index = 0; index < game.get_feedback_info().size(); index++)
+    {
+        mvwprintw(feedback_window, index, 0, "%s", game.get_feedback_info().at(index).c_str());
+    }
+    if (game.is_game_over())
+    {
+        mvwprintw(feedback_window, 0, 0, "Game Over");
+        mvwprintw(feedback_window, 1, 0, "Press any key to exit");
+    }
 }
