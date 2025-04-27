@@ -347,24 +347,24 @@ void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu
             {
                 save_loader.load_game(game,"1");
                 load_menu.deactivate();
-                start_menu.activate();
+                game.activate();
             }
             else if (load_menu.get_cursor() == 1)
             {
                 save_loader.load_game(game,"2");
                 load_menu.deactivate();
-                start_menu.activate();
+                game.activate();
             }
             else if (load_menu.get_cursor() == 2)
             {
                 save_loader.load_game(game,"3");
                 load_menu.deactivate();
-                start_menu.activate();
+                game.activate();
             }
             else if (load_menu.get_cursor() == 3)
             {
                 load_menu.deactivate();
-                start_menu.activate();
+                game.activate();
             }
             return;
 
@@ -454,14 +454,11 @@ int main(void)
 
             if (!game.is_activated() && !load_menu.is_activated() && !level_menu.is_activated())
             {
-                start_menu_renderer.draw();
-                start_menu_renderer.render();
-                usleep(20000);
-                continue;
-            }
-
-            if (start_menu.is_activated())
-            {
+                if (!start_menu.is_activated())
+                {
+                    start_menu.activate();
+                    start_menu_renderer.init();
+                }
                 start_menu_renderer.draw();
                 start_menu_renderer.render();
                 usleep(20000);
@@ -474,7 +471,7 @@ int main(void)
                 while (load_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, tech_menu,save_dumper,save_loader,save_menu,load_menu,level_menu);
+                    control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu,level_menu);
                     load_menu_renderer.draw();
                     load_menu_renderer.render();
                     usleep(10000);
@@ -487,7 +484,7 @@ int main(void)
                 while (level_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu,level_menu);
+                    control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu,level_menu);
                     level_menu_renderer.draw();
                     level_menu_renderer.render();
                     usleep(10000);
@@ -546,7 +543,7 @@ int main(void)
                             while (save_menu.is_activated())
                             {
                                 key = getch();
-                                control(key, game, start_menu, pause_menu, end_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu,level_menu);
+                                control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper,save_loader,save_menu,load_menu,level_menu);
                                 save_menu_renderer.draw();
                                 save_menu_renderer.render();
                                 usleep(10000);
@@ -575,11 +572,11 @@ int main(void)
                 usleep(5000);
             }
 
-            if (!start_menu.is_activated())
-            {
-                start_menu_renderer.init();
-                continue;
-            }
+            // if (!start_menu.is_activated())
+            // {
+            //     start_menu_renderer.init();
+            //     continue;
+            // }
         }
 
         endwin();
