@@ -290,7 +290,7 @@ void MissileManager::remove_missiles(void)
 }
 #define HP_PHASE 200
 #define TURN_PHASE 100
-int MissileManager::get_process_level(int turn)
+int MissileManager::get_process_level(int turn, int hitpoint)
 {
     int HP_factor = hitpoint / HP_PHASE;
     int turn_factor = turn / TURN_PHASE;
@@ -305,9 +305,9 @@ int MissileManager::get_process_level(int turn)
     return (HP_factor + turn_factor) / 2;
 }
 
-int MissileManager::generate_random(int turn)
+int MissileManager::generate_random(int turn, int hitpoint)
 {
-    int randFactor = get_process_level(turn);
+    int randFactor = get_process_level(turn, hitpoint);
     std::vector<double> weights = {1.0, 1.0, 1.0, 1.0, 1.0};
     weights[0] += (randFactor == 0) ? 1.0 : 0.0;
     weights[1] += (randFactor == 1) ? 1.0 : 0.0;
@@ -367,15 +367,15 @@ bool MissileManager::city_weight_check(City &c)
     return false;
 }
 
-void MissileManager::create_attack_wave(int turn,int difficulty_level)
+void MissileManager::create_attack_wave(int turn, int hitpoint,int difficulty_level)
 {
     std::random_device rng;
     int num = turn / inc_turn[difficulty_level-1] + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
-        int speed = speed_list[generate_random(turn)];
-        int damage = damage_list[generate_random(turn)];
+        int speed = speed_list.at(generate_random(turn, hitpoint));
+        int damage = damage_list.at(generate_random(turn, hitpoint));
 
         // randomly select a city
         std::uniform_int_distribution<> targetDist(0, cities.size() - 1);
@@ -415,7 +415,7 @@ void MissileManager::create_attack_wave(int turn,int difficulty_level)
 }
 
 City::City(Position p, std::string n, int hp)
-    : position(p), name(n), hitpoint(hp), countdown(0), cruise_num(0)
+    : position(p), name(n), hitpoint(hp), countdown(0), cruise_storage(0)
 {
     base_productivity = 50;
     productivity = base_productivity + hitpoint / 10;
@@ -435,12 +435,12 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
 
     TechNode *fortress_city = new TechNode("Fortress City", {"City will undertake half of damage"}, 2000, 10, {});
     TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
-    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile storage even after destroyed"}, 10000, 50, {urgent_production});
+    TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile", "storage even after destroyed"}, 10000, 50, {urgent_production});
 
     // TODO: Change effects into more innovative ones
-    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-atk missile with 50% cost but 75% hit rate"}, 2000, 10, {});
-    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-atk missile build-time by 50%"}, 5000, 30, {dirty_bomb});
-    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-atk missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
+    TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-attack missile", "with 50% cost but 75% hit rate"}, 2000, 10, {});
+    TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-attack missile build-time by 50%"}, 5000, 30, {dirty_bomb});
+    TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-attack missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
 
     TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
 
@@ -520,10 +520,6 @@ bool TechTree::check_research(void)
 
 bool TechTree::check_available(TechNode *node, int deposit) const
 {
-    if (node->name == "Root")
-    {
-        return false;
-    }
     if (node->cost > deposit)
     {
         return false;
@@ -560,8 +556,8 @@ void TechTree::update_available(int deposit)
 }
 
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
-    : activated(false), size(s), cities(cts), background(bg), missile_manager(cities),
-      tech_tree()
+    : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
+      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
 {
     cursor = cities[0].position;
     turn = 0;
@@ -577,7 +573,7 @@ void Game::set_difficulty(int lv)
         case 1:
         {
             difficulty_level = 1;
-            missile_manager.hitpoint = 1000;
+            enemy_hitpoint = 1000;
             std::vector<int> sl = {1, 1, 1, 2, 2};
             std::vector<int> dmg = {100, 100, 100, 150, 200};
             missile_manager.speed_list = sl;
@@ -589,8 +585,7 @@ void Game::set_difficulty(int lv)
         {
 
             difficulty_level = 2;
-            missile_manager.hitpoint = 2000;
-            missile_manager.hitpoint = 1000;
+            enemy_hitpoint = 2000;
             std::vector<int> sl = {1, 1, 2, 2, 3};
             std::vector<int> dmg = {100, 100, 200, 200, 200};
             missile_manager.speed_list = sl;
@@ -601,7 +596,7 @@ void Game::set_difficulty(int lv)
         case 3:
         {
             difficulty_level = 3;
-            missile_manager.hitpoint = 3000;
+            enemy_hitpoint = 3000;
             std::vector<int> sl = {1, 2, 2, 3, 3};
             std::vector<int> dmg = {150, 150, 200, 200, 300};
             missile_manager.speed_list = sl;
@@ -612,8 +607,7 @@ void Game::set_difficulty(int lv)
         default:
         {
             difficulty_level = 1;
-            missile_manager.hitpoint = 1000;
-            missile_manager.hitpoint = 1000;
+            enemy_hitpoint = 1000;
             std::vector<int> sl = {1, 1, 2, 2, 3};
             std::vector<int> dmg = {100, 100, 100, 150, 200};
             missile_manager.speed_list = sl;
@@ -622,6 +616,199 @@ void Game::set_difficulty(int lv)
         }
     }
 
+}
+std::vector<std::string> Game::get_general_info(void)
+{
+    std::vector<std::string> info;
+    info.push_back("Turn: " + std::to_string(turn));
+    info.push_back("Deposit: " + std::to_string(deposit));
+    info.push_back("Productivity: " + std::to_string(get_productivity()));
+    info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
+    if (true) // DEBUG: en_self_defense_sys
+    {
+        info.push_back("Self Defense System: ON");
+    }
+    if (true) // DEBUG: en_enhanced_radar_I
+    {
+
+        int missile_count = missile_manager.get_attack_missiles().size();
+        if (missile_count == 0)
+        {
+            info.push_back("No Missiles Approaching");
+        }
+        else if (missile_count < 5)
+        {
+            info.push_back(std::to_string(missile_count) + " Missile Approaching");
+        }
+        else
+        {
+            info.push_back(std::to_string(missile_count) + " Missiles Approaching !!!");
+        }
+    }
+
+    return info;
+}
+
+std::vector<std::string> Game::get_selected_info(void)
+{
+    std::vector<std::string> info;
+    if (is_selected_missile())
+    {
+        AttackMissile &missile = static_cast<AttackMissile &>(select_missile());
+        info.push_back("Target: " + missile.city.name);
+        info.push_back("Speed: " + std::to_string(missile.speed));
+        info.push_back("Damage: " + std::to_string(missile.damage));
+    }
+    else if (is_selected_city())
+    {
+        City &city = select_city();
+        info.push_back("Name: " + city.name);
+        info.push_back("Hitpoint: " + std::to_string(city.hitpoint));
+        info.push_back("Productivity: " + std::to_string(city.productivity));
+        info.push_back("Countdown: " + std::to_string(city.countdown));
+        info.push_back("Cruise Storage: " + std::to_string(city.cruise_storage));
+        if (true) // DEBUG: en_enhanced_radar_II
+        {
+
+            int missile_count = 0;
+            for (auto missile : missile_manager.get_attack_missiles())
+            {
+                if (missile->get_target() == city.get_position())
+                {
+                    missile_count++;
+                }
+            }
+
+            if (missile_count == 0)
+            {
+                info.push_back("No missiles targeting the city");
+            }
+            else if (missile_count < 3)
+            {
+                info.push_back(std::to_string(missile_count) + " approaching the city");
+            }
+            else
+            {
+                info.push_back(std::to_string(missile_count) + " Missiles Approaching !!!");
+            }
+        }
+    }
+    else
+    {
+        info.push_back("Nothing Selected Now");
+    }
+    return info;
+}
+
+std::vector<std::string> Game::get_tech_info(void) const
+{
+    std::vector<std::string> info;
+    if (tech_tree.researching != nullptr)
+    {
+        info.push_back("Researching: " + tech_tree.researching->name);
+        info.push_back("Remaining Time: " + std::to_string(tech_tree.remaining_time));
+    }
+    else
+    {
+        info.push_back("Not Researching");
+        info.push_back("");
+    }
+
+    info.push_back("Available: " + std::to_string(tech_tree.available.size()));
+    info.push_back("Researched: " + std::to_string(tech_tree.researched.size()));
+
+    return info;
+}
+
+std::vector<std::string> Game::get_super_weapon_info(void) const
+{
+    std::vector<std::string> info;
+    if (standard_bomb_counter > 0)
+    {
+        info.push_back("Standard Bomb Build Requires: " + std::to_string(standard_bomb_counter));
+    }
+    else if (standard_bomb_counter == 0)
+    {
+        info.push_back("Standard Bomb Ready");
+    }
+    else
+    {
+        info.push_back("Standard Bomb Not Built");
+    }
+
+    if (true) // DEBUG: en_dirty_bomb
+    {
+        if (dirty_bomb_counter > 0)
+        {
+            info.push_back("Dirty Bomb Build Requires: " + std::to_string(dirty_bomb_counter));
+        }
+        else if (dirty_bomb_counter == 0)
+        {
+            info.push_back("Dirty Bomb Ready");
+        }
+        else
+        {
+            info.push_back("Dirty Bomb Not Built");
+        }
+    }
+
+    if (true) // DEBUG: en_hydrogen_bomb
+    {
+        if (hydrogen_bomb_counter > 0)
+        {
+            info.push_back("Hydrogen Bomb Build Requires: " + std::to_string(hydrogen_bomb_counter));
+        }
+        else if (hydrogen_bomb_counter == 0)
+        {
+            info.push_back("Hydrogen Bomb Ready");
+        }
+        else
+        {
+            info.push_back("Hydrogen Bomb Not Built");
+        }
+    }
+
+    if (true) // DEBUG: en_iron_curtain
+    {
+        if (iron_curtain_activated)
+        {
+            info.push_back("Iron Curtain Activated");
+            info.push_back("Remaining Time: " + std::to_string(iron_curtain_cnt));
+        }
+        else
+        {
+            info.push_back("Iron Curtain Not Activated");
+        }
+    }
+
+    return info;
+}
+
+std::vector<std::string> Game::get_feedback_info(void) const
+{
+    std::vector<std::string> info;
+    if (feedbacks.empty())
+    {
+        return info;
+    }
+    for (int index = 0; index < 9; index++)
+    {
+        if (index >= feedbacks.size())
+        {
+            break;
+        }
+        info.push_back(feedbacks.at(feedbacks.size() - 1 - index));
+    }
+    return info;
+}
+
+void Game::insert_feedback(const std::string &feedback)
+{
+    feedbacks.push_back(feedback);
+    if (feedbacks.size() > 15)
+    {
+        feedbacks.erase(feedbacks.begin(), feedbacks.begin() + 5);
+    }
 }
 
 int Game::get_productivity(void) const
@@ -674,6 +861,7 @@ void Game::pass_turn(void)
     }
 
     // TODO: Economy Refactor
+    // TODO: economy parameter tuning
 
     // NOTE: update cities production
     for (auto &city : cities)
@@ -691,7 +879,7 @@ void Game::pass_turn(void)
             city.hitpoint = 0;
             city.productivity = 0;
             city.countdown = 0;
-            city.cruise_num = 0;
+            city.cruise_storage = 0;
         }
         deposit += city.productivity;
 
@@ -700,41 +888,40 @@ void Game::pass_turn(void)
             city.countdown--;
             if (city.countdown == 0)
             {
-                city.cruise_num += (en_enhanced_cruise_III ? 2 : 1);
+                insert_feedback(city.name + "Cruise Missile Built");
+                city.cruise_storage += (en_enhanced_cruise_III ? 2 : 1);
             }
         }
     }
 
     // NOTE: update global production
-    for (int index = 0; index < 3; index++)
+    if (standard_bomb_counter > 0)
     {
-        if (countdowns[index] > 0)
-        {
-            countdowns[index]--;
-            if (countdowns[index] == 0)
-            {
-                attack_missile_num[index]++;
-            }
-        }
+        standard_bomb_counter--;
+    }
+    if (dirty_bomb_counter > 0)
+    {
+        dirty_bomb_counter--;
+    }
+    if (hydrogen_bomb_counter > 0)
+    {
+        hydrogen_bomb_counter--;
     }
 
     // NOTE: update research
     tech_tree.proceed_research();
     check_research();
 
-    if (turn % 40 == 0)
-        missile_manager.create_attack_wave(turn, difficulty_level);
-    turn++;
+    // NOTE: iron curtain & self defense system
+    check_iron_curtain();
+    self_defense();
 
-    if (iron_curtain_activated)
+    if (turn % 40 == 0)
     {
-        iron_curtain_cnt--;
-        if (iron_curtain_cnt <= 0)
-        {
-            iron_curtain_activated = false;
-            iron_curtain_cnt = 30;
-        }
+        missile_manager.create_attack_wave(turn, difficulty_level, enemy_hitpoint);
+        insert_feedback("New Attack Missile Wave Approaching");
     }
+    turn++;
 }
 
 bool Game::is_in_range(Position p1, Position p2, int range) const
@@ -752,7 +939,7 @@ bool Game::is_in_range(Position p1, Position p2, int range) const
 
 bool Game::is_game_over(void) const
 {
-    if (missile_manager.hitpoint <= 0)
+    if (enemy_hitpoint <= 0)
     {
         return true;
     }
@@ -770,6 +957,7 @@ bool Game::is_selected_missile(void)
 {
     for (auto &missile : missile_manager.get_attack_missiles())
     {
+        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1))
         {
             return true;
@@ -782,6 +970,7 @@ bool Game::is_selected_city(void)
 {
     for (auto &city : cities)
     {
+        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1))
         {
             return true;
@@ -798,6 +987,7 @@ Missile &Game::select_missile(void)
     }
     for (auto &missile : missile_manager.get_attack_missiles())
     {
+        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1))
         {
             return *missile;
@@ -815,6 +1005,7 @@ City &Game::select_city(void)
 
     for (auto &city : cities)
     {
+        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1))
         {
             return city;
@@ -846,6 +1037,7 @@ void Game::check_research(void)
 {
     if (tech_tree.check_research())
     {
+        insert_feedback(tech_tree.prev_researching->name + " Research Finished");
         finish_research(tech_tree.prev_researching);
     }
     tech_tree.update_available(deposit);
@@ -927,6 +1119,7 @@ void Game::hit_city(City &city, int damage)
     }
     if (iron_curtain_activated)
     {
+        insert_feedback("Iron Curtain Activated, Damage to " + city.name + " is reduced to 0");
         return;
     }
     if (!city.hitpoint - damage < 0)
@@ -941,16 +1134,29 @@ void Game::hit_city(City &city, int damage)
 
 void Game::fix_city(void)
 {
+    if (!is_selected_city())
+    {
+        insert_feedback("Please select a city before fixing");
+        return;
+    }
     City &city = select_city();
-    if (city.is_valid())
+    if (!city.is_valid())
     {
         return;
     }
+    // TODO: city countdown when fixing
+    // TODO: deposit cost when fixing
+    insert_feedback("City Fixed, Hitpoint +100");
     city.hitpoint += 100;
 }
 
 void Game::build_cruise(void)
 {
+    if (!is_selected_city())
+    {
+        insert_feedback("Please select a city before building cruise");
+        return;
+    }
     City &city = select_city();
     if (!city.is_valid())
     {
@@ -962,10 +1168,12 @@ void Game::build_cruise(void)
     }
     if (deposit < 200 && !en_enhanced_radar_I)
     {
+        insert_feedback("Deposit not enough to build cruise");
         return;
     }
     if (deposit < 100)
     {
+        insert_feedback("Deposit not enough to build cruise");
         return;
     }
     deposit -= en_enhanced_cruise_I ? 100 : 200;
@@ -974,114 +1182,210 @@ void Game::build_cruise(void)
 
 void Game::launch_cruise(void)
 {
+    if (!is_selected_city())
+    {
+        insert_feedback("Please select a city before launching cruise");
+        return;
+    }
     City &city = select_city();
     if (!city.is_valid())
     {
         return;
     }
-    if (city.cruise_num <= 0)
+    if (city.cruise_storage <= 0)
     {
+        insert_feedback("No cruise missile in storage, please build first");
         return;
     }
-    if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
+    if (!missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
     {
-        city.cruise_num--;
-        // TODO: city countdown when launching cruise
+        insert_feedback("No attack missile in range");
+        return;
     }
+    // TODO: city countdown when launching cruise
+    insert_feedback("Cruise Missile Launched");
+    city.cruise_storage--;
 }
 
-void Game::build_counter_attack(void)
+void Game::build_standard_bomb(void)
 {
-    if (deposit < 2000)
+    if (standard_bomb_counter == 0)
     {
+        insert_feedback("Standard Bomb Already Built");
         return;
     }
-    if (countdowns[0] > 0)
+    if (standard_bomb_counter > 0)
     {
+        insert_feedback("Standard Bomb Already Building");
         return;
     }
+    if (deposit < 3000)
+    {
+        insert_feedback("Deposit not enough to build standard bomb");
+        return;
+    }
+
+    insert_feedback("Standard Bomb Building Started");
     deposit -= 2000;
-    countdowns[0] = (en_fast_nuke ? 5 : 10);
+    standard_bomb_counter = (en_fast_nuke ? 5 : 10);
 }
 
-void Game::launch_counter_attack(void)
+void Game::launch_standard_bomb(void)
 {
-    missile_manager.hitpoint -= 50;
+    if (standard_bomb_counter == -1)
+    {
+        insert_feedback("Standard Bomb Not Built");
+        return;
+    }
+    if (standard_bomb_counter > 0)
+    {
+        insert_feedback("Standard Bomb Not Ready");
+        return;
+    }
+
+    insert_feedback("Standard Bomb Hit, Enemy Hitpoint Reduced by 50");
+    standard_bomb_counter = -1;
+    enemy_hitpoint -= 50;
 }
 
 void Game::build_dirty_bomb(void)
 {
     if (!en_dirty_bomb)
     {
+        insert_feedback("Dirty Bomb Not Researched");
         return;
     }
-    if (deposit < 1000)
+    if (dirty_bomb_counter == 0)
     {
+        insert_feedback("Dirty Bomb Already Built");
         return;
     }
-    if (countdowns[1] > 0)
+    if (dirty_bomb_counter > 0)
     {
+        insert_feedback("Dirty Bomb Already Building");
         return;
     }
+    if (deposit < 2000)
+    {
+        insert_feedback("Deposit not enough to build dirty bomb");
+        return;
+    }
+
+    insert_feedback("Dirty Bomb Building Started");
     deposit -= 1000;
-    countdowns[1] = 10;
+    dirty_bomb_counter = 10;
 }
+
 void Game::launch_dirty_bomb(void)
 {
+    if (dirty_bomb_counter == -1)
+    {
+        insert_feedback("Dirty Bomb Not Built");
+        return;
+    }
+    if (dirty_bomb_counter > 0)
+    {
+        insert_feedback("Dirty Bomb Not Ready");
+        return;
+    }
+    dirty_bomb_counter = -1;
+
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand() % 4;
     if (rand_factor == 0)
     {
+        insert_feedback("Dirty Bomb Missed");
         return;
     }
-    missile_manager.hitpoint -= 50;
+    insert_feedback("Dirty Bomb Hit, Enemy Hitpoint Reduced by 50");
+    enemy_hitpoint -= 50;
 }
 
 void Game::build_hydrogen_bomb(void)
 {
     if (!en_hydrogen_bomb)
     {
+        insert_feedback("Hydrogen Bomb Not Researched");
         return;
     }
-    if (deposit < 5000)
+    if (hydrogen_bomb_counter == 0)
     {
+        insert_feedback("Hydrogen Bomb Already Ready");
         return;
     }
-    if (countdowns[2] > 0)
+    if (hydrogen_bomb_counter > 0)
     {
+        insert_feedback("Hydrogen Bomb Already Building");
+        return;
+    }
+    if (deposit < 6000)
+    {
+        insert_feedback("Deposit not enough to build hydrogen bomb");
         return;
     }
     deposit -= 5000;
-    countdowns[2] = 20;
+    hydrogen_bomb_counter = 20;
 }
 
 void Game::launch_hydrogen_bomb(void)
 {
+    if (hydrogen_bomb_counter == -1)
+    {
+        insert_feedback("Hydrogen Bomb Not Built");
+        return;
+    }
+    if (hydrogen_bomb_counter > 0)
+    {
+        insert_feedback("Hydrogen Bomb Not Ready");
+        return;
+    }
+    hydrogen_bomb_counter = -1;
+
     srand(static_cast<unsigned int>(time(nullptr)));
     int rand_factor = rand() % 2;
     if (rand_factor == 0)
     {
+        insert_feedback("Hydrogen Bomb Missed");
         return;
     }
-    missile_manager.hitpoint -= 500;
+    insert_feedback("Hydrogen Bomb Hit, Enemy Hitpoint Reduced by 500");
+    enemy_hitpoint -= 500;
 }
 
 void Game::activate_iron_curtain(void)
 {
     if (!en_iron_curtain)
     {
+        insert_feedback("Iron Curtain Not Researched");
         return;
     }
     if (iron_curtain_activated)
     {
+        insert_feedback("Iron Curtain Already Activated");
         return;
     }
     if (deposit < 10000)
     {
+        insert_feedback("Deposit not enough to activate iron curtain");
         return;
     }
+    insert_feedback("Iron Curtain Activated");
     deposit -= 10000;
     iron_curtain_activated = true;
+    iron_curtain_cnt = 30;
+}
+
+void Game::check_iron_curtain(void)
+{
+    if (iron_curtain_activated)
+    {
+        iron_curtain_cnt--;
+        if (iron_curtain_cnt <= 0)
+        {
+            insert_feedback("Iron Curtain Deactivated");
+            iron_curtain_activated = false;
+        }
+    }
 }
 
 void Game::self_defense(void)
@@ -1094,13 +1398,9 @@ void Game::self_defense(void)
     {
         for (auto missile : missile_manager.get_attack_missiles())
         {
-            if (deposit < 1000)
-            {
-                return;
-            }
             if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2))
             {
-                deposit -= en_enhanced_cruise_I ? 100 : 200;
+                insert_feedback("Self Defense System Activated, Cruise Missile Launched");
             }
         }
     }

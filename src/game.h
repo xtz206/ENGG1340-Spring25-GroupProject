@@ -49,7 +49,7 @@ private:
     int productivity;
     int countdown;
     int base_productivity;
-    int cruise_num;
+    int cruise_storage;
     // TODO: add to config file or make it variable to difficulty
     const int cruise_build_time = 5;
 
@@ -169,7 +169,9 @@ private:
     std::vector<int> damage_list;
     std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
     // TODO: fix typo
-    int hitpoint;
+
+    int generate_random(int turn, int hitpoint);
+    int get_process_level(int turn, int hitpoint);
 
 public:
     MissileManager(std::vector<City> &cts);
@@ -183,9 +185,7 @@ public:
     void update_missiles(void);
     void remove_missiles(void);
 
-    int generate_random(int turn);
-    int get_process_level(int turn);
-    void create_attack_wave(int turn,int difficulty_level);
+    void create_attack_wave(int turn,int difficulty_level, int hitpoint);
 };
 
 class TechNode
@@ -247,6 +247,7 @@ class Game
     friend class GameRenderer;
     friend class SaveDumper;
     friend class SaveLoader;
+    friend class OperationMenu;
 
 private:
     bool activated;
@@ -255,12 +256,14 @@ private:
     int turn;
     int deposit;
     int difficulty_level;
-    // TODO: fix typo
-    // TODO: rename 'countdowns' and 'attack_missile_num' to something more meaningful
-    std::vector<int> countdowns = {0, 0, 0};         // 0: counter, 1: dirty, 2: hydrogen
-    std::vector<int> attack_missile_num = {0, 0, 0}; // 0: counter, 1: dirty, 2: hydrogen
+    int enemy_hitpoint;
+    // NOTE: -1 means not built yet, 0 means built, otherwise means building (remaining time)
+    int standard_bomb_counter = -1;
+    int dirty_bomb_counter = -1;
+    int hydrogen_bomb_counter = -1;
     std::vector<City> cities;
     std::vector<std::string> background;
+    std::vector<std::string> feedbacks;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -284,7 +287,7 @@ private:
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false; // done
     bool iron_curtain_activated = false;
-    int iron_curtain_cnt = 30;
+    int iron_curtain_cnt = 0;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
@@ -297,14 +300,22 @@ public:
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
+    const std::vector<std::string> &get_feedbacks(void) const { return feedbacks; };
     MissileManager &get_missile_manager(void) { return missile_manager; };
     TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
-
+    std::vector<std::string> get_general_info(void);
+    std::vector<std::string> get_selected_info(void);
+    std::vector<std::string> get_tech_info(void) const;
+    std::vector<std::string> get_super_weapon_info(void) const;
+    std::vector<std::string> get_feedback_info(void) const;
+    void insert_feedback(const std::string &feedback);
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
+    int get_enemy_hp(void) const { return enemy_hitpoint; };
 
+    // NOTE: cursor/position-related functions
     void move_cursor(Position dcursor);
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
@@ -323,13 +334,14 @@ public:
     void fix_city(void);
     void build_cruise(void);
     void launch_cruise(void);
-    void build_counter_attack(void);
-    void launch_counter_attack(void);
+    void build_standard_bomb(void);
+    void launch_standard_bomb(void);
     void build_dirty_bomb(void);
     void launch_dirty_bomb(void);
-    void launch_hydrogen_bomb(void);
     void build_hydrogen_bomb(void);
+    void launch_hydrogen_bomb(void);
     void activate_iron_curtain(void);
+    void check_iron_curtain(void);
     void self_defense(void);
 };
 

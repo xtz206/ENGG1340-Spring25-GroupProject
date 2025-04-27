@@ -18,13 +18,82 @@ void Menu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
-TechMenu::TechMenu(TechTree &t)
-    : Menu("Technology", t.get_tech_names()), tech_tree(t)
+void ScrollMenu::move_cursor(int dcursor)
 {
+    if (cursor + dcursor < 0 || cursor + dcursor >= items.size())
+    {
+        return;
+    }
+    if (cursor - offset + dcursor < 0)
+    {
+        offset += dcursor;
+    }
+    else if (cursor - offset + dcursor >= limit)
+    {
+        offset += dcursor;
+    }
+    cursor += dcursor;
+}
+
+OperationMenu::OperationMenu(Game &g, int lim)
+    : ScrollMenu("Operation", {}, lim), game(g),
+      all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
+                 "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"})
+{
+    for (int index = 0; index < 6; index++)
+    {
+        items.push_back(all_items.at(index));
+    }
+}
+
+int OperationMenu::get_absolute_cursor(void) const
+{
+    if (cursor < 6)
+    {
+        return cursor;
+    }
+    int absolute_cursor;
+    for (int index = 0; index < all_items.size(); index++)
+    if (all_items.at(index) == items.at(cursor))
+    {
+        absolute_cursor = index;
+        break;
+    }
+    return absolute_cursor;
+}
+
+void OperationMenu::update_items(void)
+{
+    items.erase(items.begin() + 6, items.end());
+    if (game.en_dirty_bomb)
+    {
+        items.push_back(all_items.at(6));
+        items.push_back(all_items.at(7));
+    }
+    if (game.en_hydrogen_bomb)
+    {
+        items.push_back(all_items.at(8));
+        items.push_back(all_items.at(9));
+    }
+    if (game.en_iron_curtain)
+    {
+        items.push_back(all_items.at(10));
+    }
+}
+
+TechMenu::TechMenu(TechTree &t)
+    : ScrollMenu("Technology", t.get_tech_names(), 10), tech_tree(t)
+{
+    items.insert(items.begin(), "Return to Game");
 }
 
 std::vector<std::string> TechMenu::get_item_description()
 {
+    if (cursor == 0)
+    {
+        return {};
+    }
+
     TechNode *node = get_tech_node();
     std::vector<std::string> description;
     description.push_back("Name: " + node->name);
