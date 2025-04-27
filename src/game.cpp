@@ -918,7 +918,7 @@ void Game::pass_turn(void)
 
     if (turn % 40 == 0)
     {
-        missile_manager.create_attack_wave(turn, difficulty_level, enemy_hitpoint);
+        missile_manager.create_attack_wave(turn, enemy_hitpoint, difficulty_level);
         insert_feedback("New Attack Missile Wave Approaching");
     }
     turn++;

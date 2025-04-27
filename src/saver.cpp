@@ -19,13 +19,10 @@ void SaveDumper::save_game_general(std::string filepath)
         general_log << "deposit:" << game->get_deposit() << "\n";
         general_log << "cursor_y:" << game->cursor.y << "\n";
         general_log << "cursor_x:" << game->cursor.x << "\n";
-        general_log << "counter_missile_cnt_down:" << game->countdowns[0] << "\n";
-        general_log << "dirty_bomb_cnt_down:" << game->countdowns[1] << "\n";
-        general_log << "hydrogen_bomb_cnt_down:" << game->countdowns[2] << "\n";
-        general_log << "counter_missile_num:" << game->attack_missile_num[0] << "\n";
-        general_log << "dirty_bomb_num:" << game->attack_missile_num[1] << "\n";
-        general_log << "hydrogen_bomb_num:" << game->attack_missile_num[2] << "\n";
-        general_log << "enemy_hp:" << game->missile_manager.hitpoint << "\n";
+        general_log << "standard_bomb_counter:" << game->standard_bomb_counter << "\n";
+        general_log << "dirty_bomb_counter:" << game->dirty_bomb_counter<< "\n";
+        general_log << "hydrogen_bomb_counter:" << game->hydrogen_bomb_counter<< "\n";
+        general_log << "enemy_hitpoint:" << game->enemy_hitpoint << "\n";
         general_log << "iron_curtain_activated:" << game->iron_curtain_activated << "\n";
         general_log << "enhanced_radar_I:" << game->en_enhanced_radar_I << "\n";
         general_log << "enhanced_radar_II:" << game->en_enhanced_radar_II << "\n";
@@ -84,12 +81,12 @@ void SaveDumper::save_city(std::string filepath)
     std::ofstream city_log(filename);
     if (city_log.is_open())
     {
-        city_log << "Name,y,x,hitpoint,base_productivity,productivity,cruise_num,countdown\n";
+        city_log << "Name,y,x,hitpoint,base_productivity,productivity,cruise_storage,countdown\n";
         for (const auto &city : game->cities)
         {
             city_log << city.name << "," << city.position.y << "," << city.position.x << ","
                      << city.hitpoint << "," << city.base_productivity << ","
-                     << city.productivity << "," << city.cruise_num << "," << city.countdown << "\n";
+                     << city.productivity << "," << city.cruise_storage << "," << city.countdown << "\n";
         }
     }
     city_log.close();
@@ -254,7 +251,7 @@ std::vector<City> SaveLoader::load_cities()
         cities.push_back(City(position, name, hitpoint));
         cities.back().base_productivity = base_productivity;
         cities.back().productivity = productivity;
-        cities.back().cruise_num = cruise_num;
+        cities.back().cruise_storage = cruise_num;
         cities.back().countdown = countdown;
     }
     city_log.close();
@@ -308,40 +305,25 @@ void SaveLoader::load_game_general(Game &game)
             getline(iss, word);
             game.cursor.x = std::stoi(word);
         }
-        else if (word == "counter_missile_cnt_down")
+        else if (word == "standard_bomb_counter")
         {
             getline(iss, word);
-            game.countdowns[0] = std::stoi(word);
+            game.standard_bomb_counter = std::stoi(word);
         }
-        else if (word == "dirty_bomb_cnt_down")
+        else if (word == "dirty_bomb_counter")
         {
             getline(iss, word);
-            game.countdowns[1] = std::stoi(word);
+            game.dirty_bomb_counter = std::stoi(word);
         }
-        else if (word == "hydrogen_bomb_cnt_down")
+        else if (word == "hydrogen_bomb_counter")
         {
             getline(iss, word);
-            game.countdowns[2] = std::stoi(word);
+            game.hydrogen_bomb_counter = std::stoi(word);
         }
-        else if (word == "counter_missile_num")
+        else if (word == "enemy_hitpoint")
         {
             getline(iss, word);
-            game.attack_missile_num[0] = std::stoi(word);
-        }
-        else if (word == "dirty_bomb_num")
-        {
-            getline(iss, word);
-            game.attack_missile_num[1] = std::stoi(word);
-        }
-        else if (word == "hydrogen_bomb_num")
-        {
-            getline(iss, word);
-            game.attack_missile_num[2] = std::stoi(word);
-        }
-        else if (word == "enemy_hp")
-        {
-            getline(iss, word);
-            game.missile_manager.hitpoint = std::stoi(word);
+            game.enemy_hitpoint = std::stoi(word);
         }
         else if (word == "iron_curtain_activated")
         {
