@@ -627,6 +627,7 @@ bool SaveLoader::load_game(Game &game, std::string index)
         return false;
     }
     
+    game.reset();
     load_game_general(game);
     game.cities = load_cities();
     load_attack_missile(game);

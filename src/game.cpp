@@ -1405,3 +1405,34 @@ void Game::self_defense(void)
         }
     }
 }
+
+void MissileManager::reset(void)
+{
+    missiles.clear();
+}
+
+void TechTree::reset(void)
+{
+    researching = nullptr;
+    prev_researching = nullptr;
+    remaining_time = 0;
+    researched.clear();
+    available.clear();
+}
+
+void Game::reset(void)
+{
+    activated = false;
+    turn = 0;
+    deposit = 0;
+    enemy_hitpoint = 0;
+    cities.clear();
+    missile_manager.reset();
+    tech_tree.reset();
+    feedbacks.clear();
+    standard_bomb_counter = -1;
+    dirty_bomb_counter = -1;
+    hydrogen_bomb_counter = -1;
+    iron_curtain_activated = false;
+    difficulty_level = 1;
+}

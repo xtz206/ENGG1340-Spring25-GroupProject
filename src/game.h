@@ -186,6 +186,8 @@ public:
     void remove_missiles(void);
 
     void create_attack_wave(int turn,int difficulty_level, int hitpoint);
+
+    void reset(void);
 };
 
 class TechNode
@@ -237,6 +239,8 @@ public:
     bool is_researched(TechNode *node) const { return std::find(researched.begin(), researched.end(), node) != researched.end(); };
     bool is_available(TechNode *node) const { return std::find(available.begin(), available.end(), node) != available.end(); };
     void update_available(int deposit);
+
+    void reset(void);
 
 private:
     bool check_available(TechNode *node, int deposit) const;
@@ -343,6 +347,8 @@ public:
     void activate_iron_curtain(void);
     void check_iron_curtain(void);
     void self_defense(void);
+
+    void reset(void);
 };
 
 #endif
