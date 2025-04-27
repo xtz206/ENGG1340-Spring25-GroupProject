@@ -50,7 +50,6 @@ private:
     int countdown;
     int base_productivity;
     int cruise_storage;
-    // TODO: add to config file or make it variable to difficulty
     const int cruise_build_time = 5;
 
 public:
@@ -156,9 +155,8 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
-    // TODO: fix typo
-
+    // NOTE: controls how missile num in a wave increases by turn
+    std::vector<int> inc_turn;
     int generate_random(int turn, int hitpoint);
     int get_process_level(int turn, int hitpoint);
 
@@ -174,7 +172,7 @@ public:
     void update_missiles(void);
     void remove_missiles(void);
 
-    void create_attack_wave(int turn,int difficulty_level, int hitpoint);
+    void create_attack_wave(int turn, int difficulty_level, int hitpoint);
 
     void reset(void);
 };
@@ -260,32 +258,31 @@ private:
     MissileManager missile_manager;
     TechTree tech_tree;
 
-    // TODO: clean up and reorganize the following comments
+
+    // NOTE: technology researched flags
     bool en_enhanced_radar_I = false;
     bool en_enhanced_radar_II = false;
-    bool en_enhanced_radar_III = false; // show attack missile details
-
-    bool en_enhanced_cruise_I = false;   // done
-    bool en_enhanced_cruise_II = false;  // done
-    bool en_enhanced_cruise_III = false; // done
-
-    bool en_fortress_city = false;      // done
-    bool en_urgent_production = false;  // done
-    bool en_evacuated_industry = false; // done
-
-    bool en_dirty_bomb = false; // done
+    bool en_enhanced_radar_III = false;
+    bool en_enhanced_cruise_I = false;
+    bool en_enhanced_cruise_II = false;
+    bool en_enhanced_cruise_III = false;
+    bool en_fortress_city = false;
+    bool en_urgent_production = false;
+    bool en_evacuated_industry = false;
+    bool en_dirty_bomb = false;
     bool en_fast_nuke = false;
-    bool en_hydrogen_bomb = false; // done
-
+    bool en_hydrogen_bomb = false;
     bool en_self_defense_sys = false;
-    bool en_iron_curtain = false; // done
+    bool en_iron_curtain = false;
+
+    // NOTE: iron curtain activation and countdown
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 0;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
-    //NOTE: set difficulty and params used by missile_manager
-    void set_difficulty (int lv);
+    // NOTE: set difficulty and params used by missile_manager
+    void set_difficulty(int lv);
 
     bool is_activated(void) { return activated; };
     void activate(void) { activated = true; };

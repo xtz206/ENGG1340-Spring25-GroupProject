@@ -329,7 +329,7 @@ bool MissileManager::city_weight_check(City &c)
 void MissileManager::create_attack_wave(int turn, int hitpoint,int difficulty_level)
 {
     std::random_device rng;
-    int num = turn / inc_turn[difficulty_level-1] + 5;
+    int num = turn / inc_turn.at(difficulty_level - 1) + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
@@ -396,7 +396,7 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
     TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile", "storage even after destroyed"}, 10000, 50, {urgent_production});
 
-    // TODO: Change effects into more innovative ones
+    // TODO: change effects into more innovative ones
     TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-attack missile", "with 50% cost but 75% hit rate"}, 2000, 10, {});
     TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-attack missile build-time by 50%"}, 5000, 30, {dirty_bomb});
     TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-attack missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
@@ -818,7 +818,6 @@ void Game::pass_turn(void)
         }
     }
 
-    // TODO: Economy Refactor
     // TODO: economy parameter tuning
 
     // NOTE: update cities production
