@@ -819,7 +819,6 @@ void Game::pass_turn(void)
     }
 
     // TODO: economy parameter tuning
-
     // NOTE: update cities production
     for (auto &city : cities)
     {
@@ -1119,8 +1118,9 @@ void Game::build_cruise(void)
     {
         return;
     }
-    if (city.countdown > 0) // FIXME: avoid duplicate building
+    if (city.countdown > 0)
     {
+        insert_feedback("Cruise in building");
         return;
     }
     if (deposit < 200 && !en_enhanced_radar_I)
