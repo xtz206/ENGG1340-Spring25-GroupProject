@@ -83,7 +83,7 @@ int main(void)
                             start_menu.deactivate();
                             level_menu.activate();
                         }
-                        else if (start_menu.get_item() == "LOAD")
+                        else if (start_menu.get_item() == "LOAD GAME")
                         {
                             start_menu.deactivate();
                             load_menu.activate();
