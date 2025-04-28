@@ -55,10 +55,7 @@ private:
     std::vector<std::string> all_items;
 
 public:
-    OperationMenu(Game &g, int lim);
-    int get_absolute_cursor(void) const;
-    const std::string& get_absolute_item(void) const {return all_items.at(get_absolute_cursor());};
-    const std::string& get_absolute_item(int index) const {return all_items.at(index);};
+    OperationMenu(Game &g);
     void update_items(void);
 };
 
@@ -68,7 +65,8 @@ private:
     TechTree &tech_tree;
 
 public:
-    TechMenu(TechTree &t);
+    TechMenu(TechTree &t, const std::string &msg);
+    bool check_tech_node(void) const { return cursor > 0 && cursor <= tech_tree.nodes.size(); };
     TechNode *get_tech_node(void) const { return tech_tree.nodes.at(cursor - 1); };
     std::vector<std::string> get_item_description(void);
 };

@@ -35,8 +35,8 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
-OperationMenu::OperationMenu(Game &g, int lim)
-    : ScrollMenu("Operation", {}, lim), game(g),
+OperationMenu::OperationMenu(Game &g)
+    : ScrollMenu("Operation", {}, 9), game(g),
       all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
                  "BUILD DIRTY BOMB", "LAUNCH DIRTY BOMB", "BUILD HYDROGEN BOMB", "LAUNCH HYDROGEN BOMB", "ACTIVATE IRON CURTAIN"})
 {
@@ -44,22 +44,6 @@ OperationMenu::OperationMenu(Game &g, int lim)
     {
         items.push_back(all_items.at(index));
     }
-}
-
-int OperationMenu::get_absolute_cursor(void) const
-{
-    if (cursor < 6)
-    {
-        return cursor;
-    }
-    int absolute_cursor;
-    for (int index = 0; index < all_items.size(); index++)
-    if (all_items.at(index) == items.at(cursor))
-    {
-        absolute_cursor = index;
-        break;
-    }
-    return absolute_cursor;
 }
 
 void OperationMenu::update_items(void)
@@ -81,10 +65,10 @@ void OperationMenu::update_items(void)
     }
 }
 
-TechMenu::TechMenu(TechTree &t)
+TechMenu::TechMenu(TechTree &t, const std::string &msg)
     : ScrollMenu("Technology", t.get_tech_names(), 10), tech_tree(t)
 {
-    items.insert(items.begin(), "Return to Game");
+    items.insert(items.begin(), msg);
 }
 
 std::vector<std::string> TechMenu::get_item_description()
