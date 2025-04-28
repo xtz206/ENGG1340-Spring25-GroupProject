@@ -20,399 +20,6 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
-// TODO: divide control to their own while loop
-void control(short key, Game &game, BasicMenu &start_menu, BasicMenu &pause_menu, BasicMenu &end_menu,
-             OperationMenu &operation_menu, TechMenu &tech_menu, SaveDumper &saver, SaveLoader &save_loader, BasicMenu &save_menu, BasicMenu &load_menu, BasicMenu &level_menu)
-{
-    if (start_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-        case 'a':
-        case 'q':
-            start_menu.move_cursor(-1);
-            return;
-        case 's':
-        case 'd':
-        case 'e':
-            start_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (start_menu.get_cursor() == 0)
-            {
-                start_menu.deactivate();
-                level_menu.activate();
-            }
-            else if (start_menu.get_cursor() == 1)
-            {
-                start_menu.deactivate();
-                load_menu.activate();
-            }
-            else if (start_menu.get_cursor() == 2)
-            {
-                start_menu.deactivate();
-            }
-            return;
-
-        case '\033':
-            start_menu.deactivate();
-            return;
-        }
-    }
-    else if (game.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-            game.move_cursor(Position(-1, 0));
-            return;
-        case 's':
-            game.move_cursor(Position(1, 0));
-            return;
-        case 'a':
-            game.move_cursor(Position(0, -1));
-            return;
-        case 'd':
-            game.move_cursor(Position(0, 1));
-            return;
-
-        case 'q':
-            operation_menu.move_cursor(-1);
-            return;
-        case 'e':
-            operation_menu.move_cursor(1);
-            return;
-        case '\n':
-            if (operation_menu.get_absolute_cursor() == 0)
-            {
-                game.deactivate();
-                tech_menu.activate();
-            }
-            else if (operation_menu.get_absolute_cursor() == 1)
-            {
-                game.fix_city();
-            }
-            else if (operation_menu.get_absolute_cursor() == 2)
-            {
-                game.build_cruise();
-            }
-            else if (operation_menu.get_absolute_cursor() == 3)
-            {
-                game.launch_cruise();
-            }
-            else if (operation_menu.get_absolute_cursor() == 4)
-            {
-                game.build_standard_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 5)
-            {
-                game.launch_standard_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 6)
-            {
-                game.build_dirty_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 7)
-            {
-                game.launch_dirty_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 8)
-            {
-                game.build_hydrogen_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 9)
-            {
-                game.launch_hydrogen_bomb();
-            }
-            else if (operation_menu.get_absolute_cursor() == 10)
-            {
-                game.activate_iron_curtain();
-            }
-            return;
-
-        case ' ':
-            game.pass_turn();
-            return;
-
-        case 'p':
-            game.deactivate();
-            pause_menu.activate();
-            return;
-
-        case 'r':
-            game.deactivate();
-            tech_menu.activate();
-            return;
-
-        case 'f':
-            game.fix_city();
-            return;
-
-        case 'b':
-            game.build_cruise();
-            return;
-
-        case 'l':
-            game.launch_cruise();
-            return;
-
-        case '\033':
-            game.deactivate();
-        }
-    }
-    else if (pause_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-        case 'a':
-        case 'q':
-            pause_menu.move_cursor(-1);
-            return;
-        case 's':
-        case 'd':
-        case 'e':
-            pause_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (pause_menu.get_cursor() == 0)
-            {
-                pause_menu.deactivate();
-                game.activate();
-            }
-            else if (pause_menu.get_cursor() == 1)
-            {
-                pause_menu.deactivate();
-                game.deactivate();
-                start_menu.activate();
-            }
-            else if (pause_menu.get_cursor() == 2)
-            {
-                pause_menu.deactivate();
-                save_menu.activate();
-            }
-            else if (pause_menu.get_cursor() == 3)
-            {
-                pause_menu.deactivate();
-            }
-            return;
-
-        case 'p':
-            pause_menu.deactivate();
-            game.activate();
-            return;
-
-        case '\033':
-            pause_menu.deactivate();
-            return;
-        }
-    }
-    else if (tech_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-        case 'a':
-        case 'q':
-            tech_menu.move_cursor(-1);
-            return;
-        case 's':
-        case 'd':
-        case 'e':
-            tech_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (tech_menu.get_cursor() == 0)
-            {
-                tech_menu.deactivate();
-                game.activate();
-            }
-            else
-            {
-                game.start_research(tech_menu.get_tech_node());
-                game.check_research();
-            }
-            return;
-
-        case 'r':
-            tech_menu.deactivate();
-            game.activate();
-            return;
-
-        case '\033':
-            tech_menu.deactivate();
-            return;
-        }
-    }
-    else if (end_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-        case 'a':
-        case 'q':
-            end_menu.move_cursor(-1);
-            return;
-        case 's':
-        case 'd':
-        case 'e':
-            end_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (end_menu.get_cursor() == 1)
-            {
-                end_menu.deactivate();
-                start_menu.activate();
-            }
-            else if (end_menu.get_cursor() == 2)
-            {
-                end_menu.deactivate();
-            }
-            return;
-
-        case '\033':
-            end_menu.deactivate();
-            return;
-        }
-    }
-    else if (save_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-            save_menu.move_cursor(-1);
-            return;
-        case 's':
-            save_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            // TODO: add a hint page to ask user to confirm when rewrite savings
-            if (save_menu.get_cursor() == 0)
-            {
-                if (!saver.save_game("1"))
-                {
-                    saver.save_game("1", true);
-                }
-                save_menu.deactivate();
-                pause_menu.activate();
-            }
-            else if (save_menu.get_cursor() == 1)
-            {
-                if (!saver.save_game("2"))
-                {
-                    saver.save_game("2", true);
-                }
-                save_menu.deactivate();
-                pause_menu.activate();
-            }
-            else if (save_menu.get_cursor() == 2)
-            {
-                if (!saver.save_game("3"))
-                {
-                    saver.save_game("3", true);
-                }
-                save_menu.deactivate();
-                pause_menu.activate();
-            }
-            else if (save_menu.get_cursor() == 3)
-            {
-                save_menu.deactivate();
-                pause_menu.activate();
-            }
-            return;
-
-        case 'q':
-            save_menu.deactivate();
-            return;
-        }
-    }
-    else if (load_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-            load_menu.move_cursor(-1);
-            return;
-        case 's':
-            load_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (load_menu.get_cursor() == 0)
-            {
-                save_loader.load_game(game, "1");
-                load_menu.deactivate();
-                game.activate();
-            }
-            else if (load_menu.get_cursor() == 1)
-            {
-                save_loader.load_game(game, "2");
-                load_menu.deactivate();
-                game.activate();
-            }
-            else if (load_menu.get_cursor() == 2)
-            {
-                save_loader.load_game(game, "3");
-                load_menu.deactivate();
-                game.activate();
-            }
-            else if (load_menu.get_cursor() == 3)
-            {
-                load_menu.deactivate();
-                game.activate();
-            }
-            return;
-
-        case 'q':
-            load_menu.deactivate();
-            return;
-        }
-    }
-    else if (level_menu.is_activated())
-    {
-        switch (key)
-        {
-        case 'w':
-            level_menu.move_cursor(-1);
-            return;
-        case 's':
-            level_menu.move_cursor(1);
-            return;
-
-        case '\n':
-            if (level_menu.get_cursor() == 0)
-            {
-                game.set_difficulty(1);
-                level_menu.deactivate();
-                game.activate();
-            }
-            else if (level_menu.get_cursor() == 1)
-            {
-                game.set_difficulty(2);
-                level_menu.deactivate();
-                game.activate();
-            }
-            else if (level_menu.get_cursor() == 2)
-            {
-                game.set_difficulty(3);
-                level_menu.deactivate();
-                game.activate();
-            }
-            return;
-
-        case 'q':
-            level_menu.deactivate();
-            return;
-        }
-    }
-}
-
 int main(void)
 {
     try
@@ -446,57 +53,205 @@ int main(void)
 
         start_menu.activate();
         start_menu_renderer.init();
-        while (start_menu.is_activated())
+
+        while (true)
         {
-            key = getch();
-            control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-
-            if (!game.is_activated() && !load_menu.is_activated() && !level_menu.is_activated())
+            if (start_menu.is_activated())
             {
-                if (!start_menu.is_activated())
-                {
-                    start_menu.activate();
-                    start_menu_renderer.init();
-                }
-                start_menu_renderer.draw();
-                start_menu_renderer.render();
-                usleep(20000);
-                continue;
-            }
-
-            if (load_menu.is_activated())
-            {
-                load_menu_renderer.init();
-                while (load_menu.is_activated())
+                start_menu_renderer.init();
+                while (start_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-                    load_menu_renderer.draw();
-                    load_menu_renderer.render();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        start_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        start_menu.move_cursor(1);
+                        break;
+
+                    case '\n':
+                        if (start_menu.get_cursor() == 0)
+                        {
+                            start_menu.deactivate();
+                            level_menu.activate();
+                        }
+                        else if (start_menu.get_cursor() == 1)
+                        {
+                            start_menu.deactivate();
+                            load_menu.activate();
+                        }
+                        else if (start_menu.get_cursor() == 2)
+                        {
+                            start_menu.deactivate();
+                        }
+                        break;
+
+                    case '\033':
+                        start_menu.deactivate();
+                        break;
+                    }
+                    start_menu_renderer.draw();
+                    start_menu_renderer.render();
                     usleep(10000);
                 }
             }
-
-            if (level_menu.is_activated())
+            else if (level_menu.is_activated())
             {
                 level_menu_renderer.init();
                 while (level_menu.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        level_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        level_menu.move_cursor(1);
+                        break;
+
+                    case '\n':
+                        if (level_menu.get_cursor() == 0)
+                        {
+                            game.set_difficulty(1);
+                            level_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (level_menu.get_cursor() == 1)
+                        {
+                            game.set_difficulty(2);
+                            level_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (level_menu.get_cursor() == 2)
+                        {
+                            game.set_difficulty(3);
+                            level_menu.deactivate();
+                            game.activate();
+                        }
+                        break;
+
+                    case '\033':
+                        level_menu.deactivate();
+                        break;
+                    }
                     level_menu_renderer.draw();
                     level_menu_renderer.render();
                     usleep(10000);
                 }
             }
-
-            if (game.is_activated())
+            else if (game.is_activated())
             {
                 game_renderer.init();
                 while (game.is_activated())
                 {
                     key = getch();
-                    control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
+                    switch (key)
+                    {
+                    case 'w':
+                        game.move_cursor(Position(-1, 0));
+                        break;
+                    case 's':
+                        game.move_cursor(Position(1, 0));
+                        break;
+                    case 'a':
+                        game.move_cursor(Position(0, -1));
+                        break;
+                    case 'd':
+                        game.move_cursor(Position(0, 1));
+                        break;
+
+                    case 'q':
+                        operation_menu.move_cursor(-1);
+                        break;
+                    case 'e':
+                        operation_menu.move_cursor(1);
+                        break;
+
+                    case '\n':
+                        if (operation_menu.get_absolute_cursor() == 0)
+                        {
+                            game.deactivate();
+                            tech_menu.activate();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 1)
+                        {
+                            game.fix_city();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 2)
+                        {
+                            game.build_cruise();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 3)
+                        {
+                            game.launch_cruise();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 4)
+                        {
+                            game.build_standard_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 5)
+                        {
+                            game.launch_standard_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 6)
+                        {
+                            game.build_dirty_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 7)
+                        {
+                            game.launch_dirty_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 8)
+                        {
+                            game.build_hydrogen_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 9)
+                        {
+                            game.launch_hydrogen_bomb();
+                        }
+                        else if (operation_menu.get_absolute_cursor() == 10)
+                        {
+                            game.activate_iron_curtain();
+                        }
+                        break;
+
+                    case ' ':
+                        game.pass_turn();
+                        break;
+                    case 'p':
+                        game.deactivate();
+                        pause_menu.activate();
+                        break;
+                    case 'r':
+                        game.deactivate();
+                        tech_menu.activate();
+                        break;
+                    case 'f':
+                        game.fix_city();
+                        break;
+                    case 'b':
+                        game.build_cruise();
+                        break;
+                    case 'l':
+                        game.launch_cruise();
+                        break;
+
+                    case '\033':
+                        game.deactivate();
+                        break;
+                    }
+
                     if (game.is_game_over())
                     {
                         game.deactivate();
@@ -504,77 +259,270 @@ int main(void)
                         break;
                     }
 
-                    if (!pause_menu.is_activated() && !tech_menu.is_activated())
-                    {
-                        operation_menu.update_items();
-                        game_renderer.draw();
-                        game_renderer.render();
-                        usleep(20000);
-                        continue;
-                    }
-                    else if (tech_menu.is_activated())
-                    {
-                        tech_menu_renderer.init();
-                        while (tech_menu.is_activated())
-                        {
-                            key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-                            tech_menu_renderer.draw();
-                            tech_menu_renderer.render();
-                            usleep(20000);
-                        }
-                    }
-                    else
-                    {
-                        pause_menu_renderer.init();
-                        while (pause_menu.is_activated())
-                        {
-                            key = getch();
-                            control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-                            if (!save_menu.is_activated())
-                            {
-                                pause_menu_renderer.draw();
-                                pause_menu_renderer.render();
-                                usleep(20000);
-                                continue;
-                            }
-                            save_menu_renderer.init();
-                            while (save_menu.is_activated())
-                            {
-                                key = getch();
-                                control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-                                save_menu_renderer.draw();
-                                save_menu_renderer.render();
-                                usleep(10000);
-                            }
-                        }
-                    }
-
-                    if (game.is_activated())
-                        game_renderer.init();
+                    operation_menu.update_items();
+                    game_renderer.draw();
+                    game_renderer.render();
+                    usleep(10000);
                 }
             }
-            if (!end_menu.is_activated())
+            else if (pause_menu.is_activated())
             {
-                start_menu_renderer.init();
-                continue;
-            }
+                pause_menu_renderer.init();
+                while (pause_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        pause_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        pause_menu.move_cursor(1);
+                        break;
 
-            end_menu_renderer.init();
-            while (end_menu.is_activated())
+                    case '\n':
+                        if (pause_menu.get_cursor() == 0)
+                        {
+                            pause_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (pause_menu.get_cursor() == 1)
+                        {
+                            pause_menu.deactivate();
+                            game.deactivate();
+                            start_menu.activate();
+                        }
+                        else if (pause_menu.get_cursor() == 2)
+                        {
+                            pause_menu.deactivate();
+                            save_menu.activate();
+                        }
+                        else if (pause_menu.get_cursor() == 3)
+                        {
+                            pause_menu.deactivate();
+                        }
+                        break;
+
+                    case 'p':
+                        pause_menu.deactivate();
+                        game.activate();
+                        break;
+
+                    case '\033':
+                        pause_menu.deactivate();
+                        break;
+                    }
+
+                    pause_menu_renderer.draw();
+                    pause_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (tech_menu.is_activated())
             {
-                key = getch();
-                control(key, game, start_menu, pause_menu, end_menu, operation_menu, tech_menu, save_dumper, save_loader, save_menu, load_menu, level_menu);
-                end_menu_renderer.draw();
-                end_menu_renderer.render();
-                usleep(5000);
-            }
+                tech_menu_renderer.init();
+                while (tech_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        tech_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        tech_menu.move_cursor(1);
+                        break;
 
-            // if (!start_menu.is_activated())
-            // {
-            //     start_menu_renderer.init();
-            //     continue;
-            // }
+                    case '\n':
+                        if (tech_menu.get_cursor() == 0)
+                        {
+                            tech_menu.deactivate();
+                            game.activate();
+                        }
+                        else
+                        {
+                            game.start_research(tech_menu.get_tech_node());
+                            game.check_research();
+                        }
+                        break;
+
+                    case 'r':
+                        tech_menu.deactivate();
+                        game.activate();
+                        break;
+
+                    case '\033':
+                        tech_menu.deactivate();
+                        break;
+                    }
+                    tech_menu_renderer.draw();
+                    tech_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (save_menu.is_activated())
+            {
+                save_menu_renderer.init();
+                while (save_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        save_menu.move_cursor(-1);
+                        break;
+
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        save_menu.move_cursor(1);
+                        break;
+
+                    case '\n':
+                        // TODO: overwrite warning prompt
+                        if (save_menu.get_cursor() == 0)
+                        {
+                            if (!save_dumper.save_game("1"))
+                            {
+                                save_dumper.save_game("1", true);
+                            }
+                            save_menu.deactivate();
+                            pause_menu.activate();
+                        }
+                        else if (save_menu.get_cursor() == 1)
+                        {
+                            if (!save_dumper.save_game("2"))
+                            {
+                                save_dumper.save_game("2", true);
+                            }
+                            save_menu.deactivate();
+                            pause_menu.activate();
+                        }
+                        else if (save_menu.get_cursor() == 2)
+                        {
+                            if (!save_dumper.save_game("3"))
+                            {
+                                save_dumper.save_game("3", true);
+                            }
+                            save_menu.deactivate();
+                            pause_menu.activate();
+                        }
+                        else if (save_menu.get_cursor() == 3)
+                        {
+                            save_menu.deactivate();
+                            pause_menu.activate();
+                        }
+                    }
+                    save_menu_renderer.draw();
+                    save_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (load_menu.is_activated())
+            {
+                load_menu_renderer.init();
+                while (load_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        load_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        load_menu.move_cursor(1);
+                        break;
+                    case '\n':
+                        // TODO: empty save slot warning prompt
+                        if (load_menu.get_cursor() == 0)
+                        {
+                            save_loader.load_game(game, "1");
+                            load_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (load_menu.get_cursor() == 1)
+                        {
+                            save_loader.load_game(game, "2");
+                            load_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (load_menu.get_cursor() == 2)
+                        {
+                            save_loader.load_game(game, "3");
+                            load_menu.deactivate();
+                            game.activate();
+                        }
+                        else if (load_menu.get_cursor() == 3)
+                        {
+                            load_menu.deactivate();
+                            game.activate();
+                        }
+                    }
+                    load_menu_renderer.draw();
+                    load_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (end_menu.is_activated())
+            {
+                end_menu_renderer.init();
+                while (end_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                    case 'a':
+                    case 'q':
+                        end_menu.move_cursor(-1);
+                        break;
+                    case 's':
+                    case 'd':
+                    case 'e':
+                        end_menu.move_cursor(1);
+                        break;
+
+                    case '\n':
+                        if (end_menu.get_cursor() == 0)
+                        {
+                            end_menu.deactivate();
+                            start_menu.activate();
+                        }
+                        else if (end_menu.get_cursor() == 1)
+                        {
+                            end_menu.deactivate();
+                            start_menu.activate();
+                        }
+                        else if (end_menu.get_cursor() == 2)
+                        {
+                            end_menu.deactivate();
+                        }
+                        break;
+                    }
+
+                    end_menu_renderer.draw();
+                    end_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else
+            {
+                break;
+            }
         }
 
         endwin();
