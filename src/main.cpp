@@ -34,7 +34,8 @@ int main(void)
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE      GAME", "QUIT"});
         BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
         BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN"});
-        BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); // DEBUG: the 'DEBUG' button is just for testing, remove later
+        // DEBUG: the 'DEBUG' button is just for testing, remove later
+        BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"}); 
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game, 9);
         TechMenu tech_menu = TechMenu(game.get_tech_tree());
@@ -251,14 +252,12 @@ int main(void)
                         game.deactivate();
                         break;
                     }
-
                     if (game.is_game_over())
                     {
                         game.deactivate();
                         end_menu.activate();
                         break;
                     }
-
                     operation_menu.update_items();
                     game_renderer.draw();
                     game_renderer.render();
@@ -316,7 +315,6 @@ int main(void)
                         pause_menu.deactivate();
                         break;
                     }
-
                     pause_menu_renderer.draw();
                     pause_menu_renderer.render();
                     usleep(10000);
@@ -513,7 +511,6 @@ int main(void)
                         }
                         break;
                     }
-
                     end_menu_renderer.draw();
                     end_menu_renderer.render();
                     usleep(10000);
