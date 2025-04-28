@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include "saver.h"
 
 #define inf 0x3f3f3f3f
 
@@ -38,6 +39,8 @@ class City
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     Position position;
@@ -47,11 +50,9 @@ private:
     int countdown;
     int base_productivity;
     int cruise_storage;
-    // TODO: add to config file or make it variable to difficulty
-    const int cruise_build_time = 5;
 
 public:
-    City(Position p, std::string n, int hp);
+    City(Position p, const std::string &n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
 };
@@ -61,17 +62,6 @@ enum class MissileType
     ATTACK,
     CRUISE,
     UNKNOWN
-};
-
-// TODO: add more detailed MissileProgress MissileDirection comments
-enum class MissileProgress
-{
-    EXPLODED,   // Exploded
-    HIT,        // Hit
-    DESCENDING, // Descending
-    ARRIVED,    // Arrived
-    FLYING,     // Flying
-    UNKNOWN     // Unknown
 };
 
 enum class MissileDirection
@@ -93,13 +83,15 @@ class Missile
     friend class Game;
     friend class GameRenderer;
     friend class MissileManager;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 protected:
     int id;
     Position position;
     Position target;
-    MissileProgress progress;
     MissileType type;
+    bool is_exploded;
     int damage;
     int speed;
 
@@ -108,19 +100,23 @@ public:
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
     MissileDirection get_direction(void);
-    MissileProgress get_progress(void) const { return progress; };
+    bool get_is_exploded(void) const { return is_exploded; };
+    void set_is_exploded(void) { is_exploded = true; };
     void move(void);
     virtual void move_step(void);
-    void collide(void);
 };
 
 class AttackMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class MissileManager;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     City &city;
+    bool is_aimed = false;
 
 public:
     AttackMissile(int i, Position p, City &c, int d, int v);
@@ -132,12 +128,15 @@ class CruiseMissile : public Missile
 {
     friend class Game;
     friend class GameRenderer;
+    friend class MissileManager;
+    friend class SaveDumper;
 
 private:
     Missile &missile;
+    int target_id;
 
 public:
-    CruiseMissile(int i, Position p, Missile &m, int d, int v);
+    CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id);
     virtual Position get_target(void) override { return missile.get_position(); };
     virtual void move_step(void) override;
 };
@@ -146,6 +145,8 @@ class MissileManager
 {
     friend class Game;
     friend class GameRenderer;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     int id;
@@ -153,9 +154,8 @@ private:
     std::vector<Missile *> missiles;
     std::vector<int> speed_list;
     std::vector<int> damage_list;
-    std::vector<int> inc_turn; // NOTE: This controls how missile num increments by turn, a vector is left for diffrent level of difficulty
-    // TODO: fix typo
-
+    // NOTE: controls how missile num in a wave increases by turn
+    std::vector<int> inc_turn;
     int generate_random(int turn, int hitpoint);
     int get_process_level(int turn, int hitpoint);
 
@@ -171,7 +171,9 @@ public:
     void update_missiles(void);
     void remove_missiles(void);
 
-    void create_attack_wave(int turn, int hitpoint);
+    void create_attack_wave(int turn, int difficulty_level, int hitpoint);
+
+    void reset(void);
 };
 
 class TechNode
@@ -180,6 +182,8 @@ class TechNode
     friend class GameRenderer;
     friend class TechTree;
     friend class TechMenu;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     std::string name;
@@ -192,11 +196,14 @@ public:
     TechNode(const std::string &n, const std::vector<std::string> &d, int c, int t, const std::vector<TechNode *> p)
         : name(n), description(d), cost(c), time(t), prerequisites(p) {};
 };
+
 class TechTree
 {
     friend class Game;
     friend class GameRenderer;
     friend class TechMenu;
+    friend class SaveDumper;
+    friend class SaveLoader;
 
 private:
     std::vector<TechNode *> nodes;
@@ -219,6 +226,8 @@ public:
     bool is_available(TechNode *node) const { return std::find(available.begin(), available.end(), node) != available.end(); };
     void update_available(int deposit);
 
+    void reset(void);
+
 private:
     bool check_available(TechNode *node, int deposit) const;
 };
@@ -226,6 +235,8 @@ private:
 class Game
 {
     friend class GameRenderer;
+    friend class SaveDumper;
+    friend class SaveLoader;
     friend class OperationMenu;
 
 private:
@@ -234,6 +245,7 @@ private:
     Position cursor;
     int turn;
     int deposit;
+    int difficulty_level;
     int enemy_hitpoint;
     // NOTE: -1 means not built yet, 0 means built, otherwise means building (remaining time)
     int standard_bomb_counter = -1;
@@ -245,30 +257,31 @@ private:
     MissileManager missile_manager;
     TechTree tech_tree;
 
-    // TODO: clean up and reorganize the following comments
+    // NOTE: technology researched flags
     bool en_enhanced_radar_I = false;
     bool en_enhanced_radar_II = false;
-    bool en_enhanced_radar_III = false; // show attack missile details
-
-    bool en_enhanced_cruise_I = false;   // done
-    bool en_enhanced_cruise_II = false;  // done
-    bool en_enhanced_cruise_III = false; // done
-
-    bool en_fortress_city = false;      // done
-    bool en_urgent_production = false;  // done
-    bool en_evacuated_industry = false; // done
-
-    bool en_dirty_bomb = false; // done
+    bool en_enhanced_radar_III = false;
+    bool en_enhanced_cruise_I = false;
+    bool en_enhanced_cruise_II = false;
+    bool en_enhanced_cruise_III = false;
+    bool en_fortress_city = false;
+    bool en_urgent_production = false;
+    bool en_evacuated_industry = false;
+    bool en_dirty_bomb = false;
     bool en_fast_nuke = false;
-    bool en_hydrogen_bomb = false; // done
-
+    bool en_hydrogen_bomb = false;
     bool en_self_defense_sys = false;
-    bool en_iron_curtain = false; // done
+    bool en_iron_curtain = false;
+
+    // NOTE: iron curtain activation and countdown
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 0;
 
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
+    // NOTE: set difficulty and params used by missile_manager
+    void set_difficulty(int lv);
+
     bool is_activated(void) { return activated; };
     void activate(void) { activated = true; };
     void deactivate(void) { activated = false; };
@@ -318,6 +331,8 @@ public:
     void activate_iron_curtain(void);
     void check_iron_curtain(void);
     void self_defense(void);
+
+    void reset(void);
 };
 
 #endif

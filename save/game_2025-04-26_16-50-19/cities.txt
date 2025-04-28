@@ -1,0 +1,6 @@
+Name,y,x,hitpoint,base_productivity,productivity,cruise_num,countdown
+Shanghai,9,61,100,50,60,0,0
+Suzhou,8,52,100,50,60,3,0
+Hangzhou,15,47,100,50,60,2,0
+Nanjing,3,32,100,50,60,1,0
+Hefei,5,14,0,50,0,0,0

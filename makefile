@@ -8,11 +8,11 @@ CXXFLAGS = -std=c++11 -pedantic-errors
 LDFLAGS = -lncursesw
 PROG = main
 
-$(BIN_DIR)/$(PROG): $(BIN_DIR)/main.o $(BIN_DIR)/game.o $(BIN_DIR)/menu.o $(BIN_DIR)/render.o $(BIN_DIR)/loader.o
+$(BIN_DIR)/$(PROG): $(BIN_DIR)/main.o $(BIN_DIR)/game.o $(BIN_DIR)/menu.o $(BIN_DIR)/render.o $(BIN_DIR)/loader.o $(BIN_DIR)/saver.o
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(BIN_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/game.h $(SRC_DIR)/render.h $(SRC_DIR)/loader.h
+$(BIN_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/game.h $(SRC_DIR)/render.h $(SRC_DIR)/loader.h $(SRC_DIR)/saver.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -29,6 +29,10 @@ $(BIN_DIR)/render.o: $(SRC_DIR)/render.cpp $(SRC_DIR)/render.h $(SRC_DIR)/game.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN_DIR)/loader.o: $(SRC_DIR)/loader.cpp $(SRC_DIR)/loader.h
+	@mkdir -p bin
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BIN_DIR)/saver.o: $(SRC_DIR)/saver.cpp $(SRC_DIR)/saver.h $(SRC_DIR)/game.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

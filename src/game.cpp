@@ -4,13 +4,15 @@
 #include <random>
 #include <fstream>
 #include <ctime>
-
 #include "game.h"
+#include "saver.h"
 
+// TODO: move macro to a separate header file
 #define DEFEND_RADIUS 10
+#define CRUISE_BUILD_TIME 5
 
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
-    : id(i), position(p), target(t), progress(MissileProgress::FLYING), damage(d), speed(v), type(tp)
+    : id(i), position(p), target(t), is_exploded(false), damage(d), speed(v), type(tp)
 {
 }
 
@@ -108,40 +110,12 @@ void Missile::move_step(void)
         return;
 
     case MissileDirection::A:
-        if (progress == MissileProgress::EXPLODED)
-        {
-            return;
-        }
-        if (progress == MissileProgress::HIT)
-        {
-            progress = MissileProgress::EXPLODED;
-            return;
-        }
-        if (progress == MissileProgress::DESCENDING)
-        {
-            progress = MissileProgress::HIT;
-            return;
-        }
-        if (progress == MissileProgress::ARRIVED)
-        {
-            progress = MissileProgress::DESCENDING;
-            return;
-        }
-        if (progress == MissileProgress::FLYING)
-        {
-            progress = MissileProgress::ARRIVED;
-            return;
-        }
+        set_is_exploded();
         return;
 
     default:
         return;
     }
-}
-
-void Missile::collide(void)
-{
-    progress = MissileProgress::EXPLODED;
 }
 
 AttackMissile::AttackMissile(int i, Position p, City &c, int d, int v)
@@ -154,9 +128,10 @@ void AttackMissile::move_step(void)
     Missile::move_step();
 }
 
-CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v)
+CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id)
     : Missile(i, p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
+    target_id = t_id;
 }
 
 void CruiseMissile::move_step(void)
@@ -165,10 +140,11 @@ void CruiseMissile::move_step(void)
     Missile::move_step();
     if (get_direction() == MissileDirection::A)
     {
-        missile.collide();
-        collide();
+        missile.set_is_exploded();
+        set_is_exploded();
     }
 }
+
 MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
 
 std::vector<Missile *> MissileManager::get_missiles(void)
@@ -214,8 +190,9 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     Missile *target_missile = nullptr;
     for (auto attack_missile : get_attack_missiles())
     {
+        AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(attack_missile);
         int distance = abs(attack_missile->get_position().y - c.get_position().y) + abs(attack_missile->get_position().x - c.get_position().x);
-        if (distance < target_distance)
+        if (distance < target_distance && attack_missile_ptr->is_aimed == false)
         {
             target_distance = distance;
             target_missile = attack_missile;
@@ -225,7 +202,9 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
     {
         return false;
     }
-    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v);
+    AttackMissile *attack_missile_ptr = dynamic_cast<AttackMissile *>(target_missile);
+    attack_missile_ptr->is_aimed = true;
+    Missile *missile = new CruiseMissile(id++, c.get_position(), *target_missile, d, v, target_missile->id);
     missiles.push_back(missile);
     return true;
 }
@@ -245,23 +224,23 @@ void MissileManager::update_missiles(void)
 
 void MissileManager::remove_missiles(void)
 {
-    for (auto cruise_missile : get_cruise_missiles())
-    {
-        if (cruise_missile->get_progress() == MissileProgress::EXPLODED)
-        {
-            auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
-            if (iter != missiles.end())
-            {
-                missiles.erase(iter);
-            }
-            delete cruise_missile;
-        }
-    }
-
     for (auto attack_missile : get_attack_missiles())
     {
-        if (attack_missile->get_progress() == MissileProgress::EXPLODED)
+        if (attack_missile->get_is_exploded())
         {
+            for (auto &missile : get_cruise_missiles())
+            {
+                CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
+                if (cruise_missile->target_id == attack_missile->id)
+                {
+                    auto iter = std::find(missiles.begin(), missiles.end(), cruise_missile);
+                    if (iter != missiles.end())
+                    {
+                        missiles.erase(iter);
+                    }
+                    delete cruise_missile;
+                }
+            }
             auto iter = std::find(missiles.begin(), missiles.end(), attack_missile);
             if (iter != missiles.end())
             {
@@ -350,10 +329,10 @@ bool MissileManager::city_weight_check(City &c)
     return false;
 }
 
-void MissileManager::create_attack_wave(int turn, int hitpoint)
+void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_level)
 {
     std::random_device rng;
-    int num = turn / inc_turn[0] + 5;
+    int num = turn / inc_turn.at(difficulty_level - 1) + 5;
     for (int i = 0; i < num; i++)
     {
         // randomly generate speed and damage
@@ -397,7 +376,7 @@ void MissileManager::create_attack_wave(int turn, int hitpoint)
     }
 }
 
-City::City(Position p, std::string n, int hp)
+City::City(Position p, const std::string &n, int hp)
     : position(p), name(n), hitpoint(hp), countdown(0), cruise_storage(0)
 {
     base_productivity = 50;
@@ -420,7 +399,7 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
     TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile", "storage even after destroyed"}, 10000, 50, {urgent_production});
 
-    // TODO: Change effects into more innovative ones
+    // TODO: change effects into more innovative ones
     TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-attack missile", "with 50% cost but 75% hit rate"}, 2000, 10, {});
     TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-attack missile build-time by 50%"}, 5000, 30, {dirty_bomb});
     TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-attack missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
@@ -542,15 +521,60 @@ Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
       enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
 {
-    // DEBUG: just for testing, remove later
-    std::vector<int> sl = {1, 2, 3, 4, 5};
-    std::vector<int> dmg = {100, 150, 200, 250, 300};
-    std::vector<int> inc_turn = {50, 30, 10};
-    missile_manager.speed_list = sl;
-    missile_manager.damage_list = dmg;
-    missile_manager.inc_turn = inc_turn;
+    missile_manager.inc_turn = {50, 30, 20};
+    set_difficulty(1);
 }
 
+void Game::set_difficulty(int lv)
+{
+    switch (lv)
+    {
+    case 1:
+    {
+        difficulty_level = 1;
+        enemy_hitpoint = 1000;
+        std::vector<int> sl = {1, 1, 1, 2, 2};
+        std::vector<int> dmg = {100, 100, 100, 150, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 2000;
+        break;
+    }
+    case 2:
+    {
+
+        difficulty_level = 2;
+        enemy_hitpoint = 2000;
+        std::vector<int> sl = {1, 1, 2, 2, 3};
+        std::vector<int> dmg = {100, 100, 200, 200, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 1000;
+        break;
+    }
+    case 3:
+    {
+        difficulty_level = 3;
+        enemy_hitpoint = 3000;
+        std::vector<int> sl = {1, 2, 2, 3, 3};
+        std::vector<int> dmg = {150, 150, 200, 200, 300};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 500;
+        break;
+    }
+    default:
+    {
+        difficulty_level = 1;
+        enemy_hitpoint = 1000;
+        std::vector<int> sl = {1, 1, 2, 2, 3};
+        std::vector<int> dmg = {100, 100, 100, 150, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        break;
+    }
+    }
+}
 std::vector<std::string> Game::get_general_info(void)
 {
     std::vector<std::string> info;
@@ -588,7 +612,7 @@ std::vector<std::string> Game::get_selected_info(void)
     std::vector<std::string> info;
     if (is_selected_missile())
     {
-        AttackMissile &missile = static_cast<AttackMissile &>(select_missile());
+        AttackMissile &missile = dynamic_cast<AttackMissile &>(select_missile());
         info.push_back("Target: " + missile.city.name);
         info.push_back("Speed: " + std::to_string(missile.speed));
         info.push_back("Damage: " + std::to_string(missile.damage));
@@ -776,8 +800,8 @@ void Game::move_cursor(Position dcursor)
 void Game::pass_turn(void)
 {
     // TODO: add keyboard shortcuts to select city
-    missile_manager.update_missiles();
     missile_manager.remove_missiles();
+    missile_manager.update_missiles();
 
     for (auto missile : missile_manager.get_attack_missiles())
     {
@@ -785,18 +809,15 @@ void Game::pass_turn(void)
         {
             continue;
         }
-        AttackMissile *attack_missile = static_cast<AttackMissile *>(missile);
+        AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
 
-        if (attack_missile->get_progress() == MissileProgress::HIT &&
-            attack_missile->get_direction() == MissileDirection::A)
+        if (attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
         }
     }
 
-    // TODO: Economy Refactor
     // TODO: economy parameter tuning
-
     // NOTE: update cities production
     for (auto &city : cities)
     {
@@ -852,7 +873,7 @@ void Game::pass_turn(void)
 
     if (turn % 40 == 0)
     {
-        missile_manager.create_attack_wave(turn, enemy_hitpoint);
+        missile_manager.create_attack_wave(turn, enemy_hitpoint, difficulty_level);
         insert_feedback("New Attack Missile Wave Approaching");
     }
     turn++;
@@ -1096,6 +1117,11 @@ void Game::build_cruise(void)
     {
         return;
     }
+    if (city.countdown > 0)
+    {
+        insert_feedback("Cruise in building");
+        return;
+    }
     if (deposit < 200 && !en_enhanced_radar_I)
     {
         insert_feedback("Deposit not enough to build cruise");
@@ -1107,7 +1133,7 @@ void Game::build_cruise(void)
         return;
     }
     deposit -= en_enhanced_cruise_I ? 100 : 200;
-    city.countdown = city.cruise_build_time;
+    city.countdown = CRUISE_BUILD_TIME;
 }
 
 void Game::launch_cruise(void)
@@ -1334,4 +1360,39 @@ void Game::self_defense(void)
             }
         }
     }
+}
+
+void MissileManager::reset(void)
+{
+    for (auto missile : missiles)
+    {
+        delete missile;
+    }
+    missiles.clear();
+}
+
+void TechTree::reset(void)
+{
+    researching = nullptr;
+    prev_researching = nullptr;
+    remaining_time = 0;
+    researched.clear();
+    available.clear();
+}
+
+void Game::reset(void)
+{
+    activated = false;
+    turn = 0;
+    deposit = 0;
+    enemy_hitpoint = 0;
+    cities.clear();
+    missile_manager.reset();
+    tech_tree.reset();
+    feedbacks.clear();
+    standard_bomb_counter = -1;
+    dirty_bomb_counter = -1;
+    hydrogen_bomb_counter = -1;
+    iron_curtain_activated = false;
+    difficulty_level = 1;
 }

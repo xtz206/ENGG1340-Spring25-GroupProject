@@ -193,11 +193,11 @@ void GameRenderer::draw(void)
         {
             continue;
         }
-        if (missile->get_progress() == MissileProgress::EXPLODED)
+        if (missile->get_is_exploded())
         {
             continue;
         }
-        std::string direction = "";
+        std::string direction;
         switch (missile->get_direction())
         {
         case MissileDirection::A:
