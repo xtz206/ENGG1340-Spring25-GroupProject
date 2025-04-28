@@ -406,6 +406,8 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
 
     TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
 
+    // TODO: add more techs
+
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);
     nodes.push_back(enhanced_radar_III);

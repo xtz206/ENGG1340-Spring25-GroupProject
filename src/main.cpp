@@ -30,6 +30,7 @@ int main(void)
         Loader loader = Loader();
         // TODO: store menu title and buttons in separate file instead of hardcoding
         // TODO: button name localization
+        //       replace the strings with a vector<string> or map<string, string> or macro
         BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
