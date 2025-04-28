@@ -7,7 +7,9 @@
 #include "game.h"
 #include "saver.h"
 
+// TODO: move macro to a separate header file
 #define DEFEND_RADIUS 10
+#define CRUISE_BUILD_TIME 5
 
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
     : id(i), position(p), target(t), is_exploded(false), damage(d), speed(v), type(tp)
@@ -221,12 +223,13 @@ void MissileManager::update_missiles(void)
 }
 
 void MissileManager::remove_missiles(void)
-{   
+{
     for (auto attack_missile : get_attack_missiles())
     {
         if (attack_missile->get_is_exploded())
         {
-            for (auto &missile : get_cruise_missiles()) {
+            for (auto &missile : get_cruise_missiles())
+            {
                 CruiseMissile *cruise_missile = dynamic_cast<CruiseMissile *>(missile);
                 if (cruise_missile->target_id == attack_missile->id)
                 {
@@ -246,7 +249,6 @@ void MissileManager::remove_missiles(void)
             delete attack_missile;
         }
     }
-
 }
 #define HP_PHASE 200
 #define TURN_PHASE 100
@@ -327,7 +329,7 @@ bool MissileManager::city_weight_check(City &c)
     return false;
 }
 
-void MissileManager::create_attack_wave(int turn, int hitpoint,int difficulty_level)
+void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_level)
 {
     std::random_device rng;
     int num = turn / inc_turn.at(difficulty_level - 1) + 5;
@@ -374,7 +376,7 @@ void MissileManager::create_attack_wave(int turn, int hitpoint,int difficulty_le
     }
 }
 
-City::City(Position p, std::string n, int hp)
+City::City(Position p, const std::string &n, int hp)
     : position(p), name(n), hitpoint(hp), countdown(0), cruise_storage(0)
 {
     base_productivity = 50;
@@ -527,52 +529,51 @@ void Game::set_difficulty(int lv)
 {
     switch (lv)
     {
-        case 1:
-        {
-            difficulty_level = 1;
-            enemy_hitpoint = 1000;
-            std::vector<int> sl = {1, 1, 1, 2, 2};
-            std::vector<int> dmg = {100, 100, 100, 150, 200};
-            missile_manager.speed_list = sl;
-            missile_manager.damage_list = dmg;
-            deposit = 2000;
-            break;
-        }
-        case 2:
-        {
-
-            difficulty_level = 2;
-            enemy_hitpoint = 2000;
-            std::vector<int> sl = {1, 1, 2, 2, 3};
-            std::vector<int> dmg = {100, 100, 200, 200, 200};
-            missile_manager.speed_list = sl;
-            missile_manager.damage_list = dmg;
-            deposit = 1000;
-            break;
-        }
-        case 3:
-        {
-            difficulty_level = 3;
-            enemy_hitpoint = 3000;
-            std::vector<int> sl = {1, 2, 2, 3, 3};
-            std::vector<int> dmg = {150, 150, 200, 200, 300};
-            missile_manager.speed_list = sl;
-            missile_manager.damage_list = dmg;
-            deposit = 500;
-            break;
-        }
-        default:
-        {
-            difficulty_level = 1;
-            enemy_hitpoint = 1000;
-            std::vector<int> sl = {1, 1, 2, 2, 3};
-            std::vector<int> dmg = {100, 100, 100, 150, 200};
-            missile_manager.speed_list = sl;
-            missile_manager.damage_list = dmg;
-            break;
-        }
+    case 1:
+    {
+        difficulty_level = 1;
+        enemy_hitpoint = 1000;
+        std::vector<int> sl = {1, 1, 1, 2, 2};
+        std::vector<int> dmg = {100, 100, 100, 150, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 2000;
+        break;
     }
+    case 2:
+    {
 
+        difficulty_level = 2;
+        enemy_hitpoint = 2000;
+        std::vector<int> sl = {1, 1, 2, 2, 3};
+        std::vector<int> dmg = {100, 100, 200, 200, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 1000;
+        break;
+    }
+    case 3:
+    {
+        difficulty_level = 3;
+        enemy_hitpoint = 3000;
+        std::vector<int> sl = {1, 2, 2, 3, 3};
+        std::vector<int> dmg = {150, 150, 200, 200, 300};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        deposit = 500;
+        break;
+    }
+    default:
+    {
+        difficulty_level = 1;
+        enemy_hitpoint = 1000;
+        std::vector<int> sl = {1, 1, 2, 2, 3};
+        std::vector<int> dmg = {100, 100, 100, 150, 200};
+        missile_manager.speed_list = sl;
+        missile_manager.damage_list = dmg;
+        break;
+    }
+    }
 }
 std::vector<std::string> Game::get_general_info(void)
 {
@@ -1132,7 +1133,7 @@ void Game::build_cruise(void)
         return;
     }
     deposit -= en_enhanced_cruise_I ? 100 : 200;
-    city.countdown = city.cruise_build_time;
+    city.countdown = CRUISE_BUILD_TIME;
 }
 
 void Game::launch_cruise(void)

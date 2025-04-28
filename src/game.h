@@ -50,10 +50,9 @@ private:
     int countdown;
     int base_productivity;
     int cruise_storage;
-    const int cruise_build_time = 5;
 
 public:
-    City(Position p, std::string n, int hp);
+    City(Position p, const std::string &n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
 };
@@ -257,7 +256,6 @@ private:
     std::vector<std::string> feedbacks;
     MissileManager missile_manager;
     TechTree tech_tree;
-
 
     // NOTE: technology researched flags
     bool en_enhanced_radar_I = false;
