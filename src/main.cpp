@@ -49,8 +49,8 @@ int main(void)
         GameRenderer game_renderer = GameRenderer(game, operation_menu);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
-        SaveDumper save_dumper = SaveDumper(&game);
-        SaveLoader save_loader = SaveLoader();
+        SaveDumper save_dumper = SaveDumper(game);
+        SaveLoader save_loader = SaveLoader(game);
 
         start_menu.activate();
         start_menu_renderer.init();
@@ -448,19 +448,19 @@ int main(void)
                         // TODO: empty save slot warning prompt
                         if (load_menu.get_cursor() == 0)
                         {
-                            save_loader.load_game(game, "1");
+                            save_loader.load_game("1");
                             load_menu.deactivate();
                             game.activate();
                         }
                         else if (load_menu.get_cursor() == 1)
                         {
-                            save_loader.load_game(game, "2");
+                            save_loader.load_game("2");
                             load_menu.deactivate();
                             game.activate();
                         }
                         else if (load_menu.get_cursor() == 2)
                         {
-                            save_loader.load_game(game, "3");
+                            save_loader.load_game("3");
                             load_menu.deactivate();
                             game.activate();
                         }

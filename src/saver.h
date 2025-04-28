@@ -9,11 +9,11 @@ class City;
 
 class SaveDumper
 {
-    Game *game;
+    Game &game;
     std::string folderpath = "../save/";
 
 public:
-    SaveDumper(Game *game) : game(game) {}
+    SaveDumper(Game &g) : game(g) {}
     bool save_game(std::string index, bool if_cover = false);
     void save_game_general(std::string filepath);
     void save_attack_missile(std::string filepath);
@@ -24,16 +24,18 @@ public:
 
 class SaveLoader
 {
+    Game &game;
+    // TODO: rename variable
     std::string dft_folderpath = "../save/";
     std::string folderpath;
 
 public:
-    SaveLoader() : folderpath(dft_folderpath){};
-    std::vector<City> load_cities();
-    void load_game_general(Game &game);
-    void load_attack_missile(Game &game);
-    void load_cruise(Game &game);
-    void load_tech_tree(Game &game);
-    bool load_game(Game &game, std::string index);
+    SaveLoader(Game &g) : game(g), folderpath(dft_folderpath) {};
+    void load_cities();
+    void load_general();
+    void load_attack_missile();
+    void load_cruise();
+    void load_tech_tree();
+    bool load_game(const std::string &index);
 };
 #endif
