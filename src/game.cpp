@@ -145,7 +145,7 @@ void CruiseMissile::move_step(void)
     }
 }
 
-MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
+MissileManager::MissileManager(Game &g,std::vector<City> &cts) : game(g),id(0), cities(cts) {}
 
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
@@ -219,6 +219,9 @@ void MissileManager::update_missiles(void)
     for (auto cruise_missile : get_cruise_missiles())
     {
         cruise_missile->move();
+        if (cruise_missile->get_is_exploded()) {
+            game.add_score(50); 
+        }
     }
 }
 
@@ -521,7 +524,7 @@ void TechTree::update_available(int deposit)
 
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
-      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
+      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(*this,cities), tech_tree()
 {
     missile_manager.inc_turn = {50, 30, 20};
     set_difficulty(1);
@@ -583,6 +586,7 @@ std::vector<std::string> Game::get_general_info(void)
     info.push_back("Turn: " + std::to_string(turn));
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
+    info.push_back("Score: " + std::to_string(score));
     info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
     if (true) // DEBUG: en_self_defense_sys
     {

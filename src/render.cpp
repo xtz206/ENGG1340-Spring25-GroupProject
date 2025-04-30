@@ -6,6 +6,7 @@
 #include "game.h"
 #include "menu.h"
 #include "render.h"
+#define INFO_LINES 7
 
 // TODO: make screen size variable to map size
 #define TOTAL_LINES 30
@@ -245,6 +246,8 @@ void GameRenderer::draw(void)
     {
         mvwprintw(general_info_window, index, 0, "%s", info.at(index).c_str());
     }
+    int next_line = info.size();
+    mvwprintw(general_info_window, next_line, 0, "Score: %d", game.get_score());
     info = game.get_selected_info();
     for (size_t index = 0; index < info.size(); index++)
     {

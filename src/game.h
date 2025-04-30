@@ -149,6 +149,7 @@ class MissileManager
     friend class SaveLoader;
 
 private:
+    Game &game;
     int id;
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
@@ -160,7 +161,7 @@ private:
     int get_process_level(int turn, int hitpoint);
 
 public:
-    MissileManager(std::vector<City> &cts);
+    MissileManager(Game &g,std::vector<City> &cts);
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
@@ -277,6 +278,8 @@ private:
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 0;
 
+    int score = 0;
+
 public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
@@ -333,6 +336,9 @@ public:
     void self_defense(void);
 
     void reset(void);
+
+    int get_score() const { return score; }
+    void add_score(int value) { score += value; }
 };
 
 #endif
