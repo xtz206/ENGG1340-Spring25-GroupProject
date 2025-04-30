@@ -48,10 +48,10 @@
 ### Others
 
 - [x] Levels of game
-- [ ] Basic Text Tutorial (i.e. how to play, keyboard shortcuts and actions)
-- [ ] **Try** Animated Tutorial
+- [x] Basic Text Tutorial (i.e. how to play, keyboard shortcuts and actions)
 - [ ] Restart Button at pause menu and end menu
 - [ ] Change another map
+- [ ] overwrite/empty warning when saving/loading
 
 ---
 
@@ -66,7 +66,7 @@
 
 ## Refactor
 
-- [ ] Refactor Game/Menu activation operations
+- [x] Refactor Game/Menu activation operations
 
 ---
 
