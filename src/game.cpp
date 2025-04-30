@@ -16,6 +16,12 @@ Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
 {
 }
 
+/**
+ * @brief Determines the direction of the missile based on its current position and target position.
+ *
+ * @return MissileDirection: The direction of the missile relative to the target position.
+ * 
+ */
 MissileDirection Missile::get_direction(void)
 {
     if (target.y == position.y)
@@ -184,6 +190,17 @@ void MissileManager::create_attack_missile(Position p, City &c, int d, int v)
     missiles.push_back(missile);
 }
 
+/**
+ * @brief Creates a cruise missile to intercept an attack missile targeting a city.
+ * 
+ * @param c The city where the missile takes off.
+ * @param d The damage the cruise missile can inflict.
+ * @param v The velocity of the cruise missile.
+ * 
+ * @return true If a cruise missile is successfully created and assigned to a target.
+ * @return false If no suitable target is found or the target is out of the defense radius.
+ * 
+ */
 bool MissileManager::create_cruise_missile(City &c, int d, int v)
 {
     int target_distance = inf;
