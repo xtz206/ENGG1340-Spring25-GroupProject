@@ -46,6 +46,8 @@ class City
 private:
     Position position;
     std::string name;
+    int hp;
+    int max_hp;
     int hitpoint;
     int productivity;
     int countdown;
@@ -53,6 +55,13 @@ private:
     int cruise_storage;
 
 public:
+    std::string get_info() const {
+        return name + " HP: " + std::to_string(hp) + "/" + std::to_string(max_hp);
+    }
+
+    Position get_position() const {
+        return position;
+    }
     City(Position p, const std::string &n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -249,6 +258,8 @@ class Game
     friend class OperationMenu;
 
 private:
+    std::vector<City> cities;
+    int selected_city_index = -1;
     bool activated;
     Size size;
     Position cursor;
@@ -290,6 +301,26 @@ private:
     int score = 0;
 
 public:
+    bool select_city_by_number(int number) {
+        if(number <= 0 || number > cities.size()) {
+            return false; 
+        }
+    
+        selected_city_index = number - 1; 
+        cursor = cities[selected_city_index].get_position();
+        return true;
+    }
+
+
+    int get_selectable_city_count() const {
+        return cities.size();
+    }
+
+
+    std::string get_selected_city_info() const {
+        if(selected_city_index == -1) return "No city selected";
+        return cities[selected_city_index].get_info();
+    }
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);

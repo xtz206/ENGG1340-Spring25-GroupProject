@@ -228,6 +228,17 @@ int main(void)
                             game.activate_iron_curtain();
                         }
                         break;
+                        case (key >= '1' && key <= '9') {
+                            int num = key - '0'; 
+                            if(game.select_city_by_number(num)) {
+                                feedback.add("city chosen " + std::to_string(num));
+                            } else {
+                                feedback.add("invald choice: currently only " 
+                                    + std::to_string(game.get_selectable_city_count())
+                                    + " cities");
+                            }
+                            return;
+                        }
 
                     case ' ':
                         game.pass_turn();

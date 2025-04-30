@@ -252,6 +252,18 @@ void GameRenderer::draw(void)
             break;
         }
         mvwprintw(map_window, missile->get_position().y, missile->get_position().x, "%s", direction.c_str());
+        mvwprintw(operation_window, 0, 0, "quick choice:");
+        mvwprintw(operation_window, 1, 2, "[1-%d] choose the city", 
+            std::min(9, game.get_selectable_city_count()));
+            std::vector<std::string> info = {
+                "current choice: " + game.get_selected_city_info(),
+                "coordinate: (" + std::to_string(game.get_cursor().x) + 
+                "," + std::to_string(game.get_cursor().y) + ")"
+            };
+            
+            for(size_t i = 0; i < info.size(); ++i) {
+                mvwprintw(selected_info_window, i, 0, "%s", info[i].c_str());
+    
     }
 
     mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
