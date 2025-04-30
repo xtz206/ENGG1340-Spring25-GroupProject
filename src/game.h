@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "saver.h"
+#include <deque>
 
 #define inf 0x3f3f3f3f
 
@@ -233,6 +234,13 @@ private:
     bool check_available(TechNode *node, int deposit) const;
 };
 
+struct CasualtyReport {
+    std::string city_name;
+    int damage;
+    int remaining_hp;
+    int turn;
+};
+
 class Game
 {
     friend class GameRenderer;
@@ -255,6 +263,7 @@ private:
     std::vector<City> cities;
     std::vector<std::string> background;
     std::vector<std::string> feedbacks;
+    std::deque<CasualtyReport> casualty_reports;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -339,6 +348,12 @@ public:
 
     int get_score() const { return score; }
     void add_score(int value) { score += value; }
+
+    void add_casualty_report(const std::string &name, int dmg, int hp) {
+        casualty_reports.push_front({name, dmg, hp, turn});
+        if (casualty_reports.size() > 5) casualty_reports.pop_back(); 
+    }
+    const auto& get_casualty_reports() const { return casualty_reports; }
 };
 
 #endif

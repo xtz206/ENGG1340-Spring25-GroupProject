@@ -1085,11 +1085,15 @@ void Game::hit_city(City &city, int damage)
     }
     if (!city.hitpoint - damage < 0)
     {
+        damage=city.hitpoint;
         city.hitpoint = 0;
+        add_casualty_report(city.name, damage, city.hitpoint);
     }
     else
     {
         city.hitpoint -= damage / (en_fortress_city ? 2 : 1);
+        damage=damage / (en_fortress_city ? 2 : 1);
+        add_casualty_report(city.name, damage, city.hitpoint);
     }
 }
 

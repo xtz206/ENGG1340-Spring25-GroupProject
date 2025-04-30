@@ -181,6 +181,23 @@ void GameRenderer::draw(void)
     werase(super_weapon_info);
     werase(operation_window);
     werase(feedback_window);
+    int line = 0;
+
+    for (const auto &feedback : game.get_feedback_info()) {
+        mvwprintw(feedback_window, line++, 1, "%s", feedback.c_str());
+        if (line >= FEEDBACK_LINES - 1) break;
+    }
+
+    for (const auto &report : game.get_casualty_reports()) {
+        mvwprintw(feedback_window, line++, 1, "[T%d] %s: -%d (HP %d)",
+                  report.turn, report.city_name.c_str(), report.damage, report.remaining_hp);
+        if (line >= FEEDBACK_LINES - 1) break;
+    }
+
+    if (game.is_game_over()) {
+        mvwprintw(feedback_window, line++, 1, "Game Over");
+        mvwprintw(feedback_window, line++, 1, "Press any key to exit");
+    }
 
     // NOTE: draw map window
     for (int index = 0; index < game.get_background().size(); index++)
