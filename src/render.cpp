@@ -79,7 +79,7 @@ void TutorialMenuRenderer::render(void)
 void TutorialMenuRenderer::draw(void)
 {
     werase(item_window);
-    const std::vector<std::string> &page = menu.get_content();
+    const std::vector<std::string> &page = menu.get_page();
     for (size_t index = 0; index < page.size(); index++)
     {
         mvwprintw(item_window, index, 0, "%s", page.at(index).c_str());
