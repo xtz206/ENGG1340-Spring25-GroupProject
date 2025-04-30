@@ -1081,10 +1081,6 @@ void Game::finish_research(TechNode *node)
 
 void Game::hit_city(City &city, int damage)
 {
-    if (!city.is_valid())
-    {
-        return;
-    }
     if (iron_curtain_activated)
     {
         insert_feedback("Iron Curtain Activated, Damage to " + city.name + " is reduced to 0");
@@ -1112,10 +1108,6 @@ void Game::fix_city(void)
         return;
     }
     City &city = select_city();
-    if (!city.is_valid())
-    {
-        return;
-    }
     // TODO: city countdown when fixing
     // TODO: deposit cost when fixing
     insert_feedback("City Fixed, Hitpoint +100");
@@ -1130,10 +1122,6 @@ void Game::build_cruise(void)
         return;
     }
     City &city = select_city();
-    if (!city.is_valid())
-    {
-        return;
-    }
     if (city.countdown > 0)
     {
         insert_feedback("Cruise in building");
@@ -1161,10 +1149,6 @@ void Game::launch_cruise(void)
         return;
     }
     City &city = select_city();
-    if (!city.is_valid())
-    {
-        return;
-    }
     if (city.cruise_storage <= 0)
     {
         insert_feedback("No cruise missile in storage, please build first");

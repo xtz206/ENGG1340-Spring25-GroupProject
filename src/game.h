@@ -30,7 +30,6 @@ public:
 public:
     Position() : y(0), x(0) {}
     Position(int ny, int nx) : y(ny), x(nx) {}
-    bool is_valid(void) const { return y < inf || x < inf; };
     bool operator==(const Position &p) const { return y == p.y && x == p.x; };
 };
 typedef Position Size;
@@ -55,7 +54,6 @@ private:
 public:
     City(Position p, const std::string &n, int hp);
     Position get_position(void) const { return position; };
-    bool is_valid(void) const { return position.is_valid() && name != ""; };
 };
 
 enum class MissileType
