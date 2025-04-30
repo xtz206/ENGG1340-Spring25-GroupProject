@@ -583,6 +583,7 @@ std::vector<std::string> Game::get_general_info(void)
     info.push_back("Turn: " + std::to_string(turn));
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
+    info.push_back("Score: " + std::to_string(score));
     info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
     if (true) // DEBUG: en_self_defense_sys
     {
@@ -799,6 +800,15 @@ void Game::move_cursor(Position dcursor)
     cursor.x += dcursor.x;
 }
 
+void Game::move_cursor_to_city(int index)
+{
+    if (index < 0 || index >= cities.size())
+    {
+        return;
+    }
+    cursor = cities.at(index).get_position();
+}
+
 void Game::pass_turn(void)
 {
     // TODO: add keyboard shortcuts to select city
@@ -816,6 +826,7 @@ void Game::pass_turn(void)
         if (attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
+            insert_feedback(attack_missile->city.name + " Hit by Attack Missile!!!");
         }
     }
 
@@ -1081,11 +1092,15 @@ void Game::hit_city(City &city, int damage)
     }
     if (!city.hitpoint - damage < 0)
     {
+        damage = city.hitpoint;
         city.hitpoint = 0;
+        add_casualty_report(city.name, damage, city.hitpoint);
     }
     else
     {
         city.hitpoint -= damage / (en_fortress_city ? 2 : 1);
+        damage = damage / (en_fortress_city ? 2 : 1);
+        add_casualty_report(city.name, damage, city.hitpoint);
     }
 }
 

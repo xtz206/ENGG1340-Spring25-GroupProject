@@ -117,3 +117,30 @@ std::vector<std::string> TechMenu::get_item_description()
 
     return description;
 }
+
+TutorialMenu::TutorialMenu(const std::vector<std::vector<std::string>> &content)
+    : BasicMenu("TUTORIAL", {"Next Page", "Previous Page", "Return"}), pages(content)
+{
+}
+
+void TutorialMenu::next_page(void)
+{
+    if (current_page < pages.size() - 1)
+        current_page++;
+}
+
+void TutorialMenu::prev_page(void)
+{
+    if (current_page > 0)
+        current_page--;
+}
+
+const std::vector<std::string> &TutorialMenu::get_content() const
+{
+    return pages[current_page];
+}
+
+std::string TutorialMenu::get_page_info() const
+{
+    return std::to_string(current_page + 1) + "/" + std::to_string(pages.size());
+}

@@ -12,7 +12,7 @@
 #define TOTAL_COLS 150
 #define MAP_LINES 18
 #define MAP_COLS 98
-#define INFO_LINES 6
+#define INFO_LINES 7
 #define INFO_COLS 49
 #define OPERATION_LINES 9
 #define OPERATION_COLS 40
@@ -59,6 +59,33 @@ void BasicMenuRenderer::draw(void)
             mvwprintw(item_window, index, (MENU_COLS - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
         }
     }
+}
+
+void TutorialMenuRenderer::init(void)
+{
+    erase();
+    
+    box_window = subwin(stdscr, MENU_LINES + 2, MENU_COLS + 2, (LINES - MENU_LINES - 2) / 2, (COLS - MENU_COLS - 2) / 2);
+    item_window = subwin(box_window, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
+    box(box_window, 0, 0);
+    mvwprintw(box_window, 0, (MENU_COLS - menu.get_title().length() + 2) / 2, "%s", menu.get_title().c_str());
+}
+
+void TutorialMenuRenderer::render(void)
+{
+    wrefresh(item_window);
+}
+
+void TutorialMenuRenderer::draw(void)
+{
+    werase(item_window);
+    const std::vector<std::string> &page = menu.get_content();
+    for (size_t index = 0; index < page.size(); index++)
+    {
+        mvwprintw(item_window, index, 0, "%s", page.at(index).c_str());
+    }
+    std::string page_info = menu.get_page_info();
+    mvwprintw(item_window, MENU_LINES - 1, (MENU_COLS - page_info.length()) / 2, "%s", page_info.c_str());
 }
 
 void TechMenuRenderer::init(void)
@@ -235,7 +262,6 @@ void GameRenderer::draw(void)
         }
         mvwprintw(map_window, missile->get_position().y, missile->get_position().x, "%s", direction.c_str());
     }
-
     mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
 
     // NOTE: draw info windows
@@ -245,6 +271,8 @@ void GameRenderer::draw(void)
     {
         mvwprintw(general_info_window, index, 0, "%s", info.at(index).c_str());
     }
+    int next_line = info.size();
+    mvwprintw(general_info_window, next_line, 0, "Score: %d", game.get_score());
     info = game.get_selected_info();
     for (size_t index = 0; index < info.size(); index++)
     {
@@ -284,10 +312,5 @@ void GameRenderer::draw(void)
     for (size_t index = 0; index < game.get_feedback_info().size(); index++)
     {
         mvwprintw(feedback_window, index, 0, "%s", game.get_feedback_info().at(index).c_str());
-    }
-    if (game.is_game_over())
-    {
-        mvwprintw(feedback_window, 0, 0, "Game Over");
-        mvwprintw(feedback_window, 1, 0, "Press any key to exit");
     }
 }

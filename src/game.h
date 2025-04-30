@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include "saver.h"
+#include <deque>
 
 #define inf 0x3f3f3f3f
 
@@ -232,6 +233,13 @@ private:
     bool check_available(TechNode *node, int deposit) const;
 };
 
+struct CasualtyReport {
+    std::string city_name;
+    int damage;
+    int remaining_hp;
+    int turn;
+};
+
 class Game
 {
     friend class GameRenderer;
@@ -254,6 +262,7 @@ private:
     std::vector<City> cities;
     std::vector<std::string> background;
     std::vector<std::string> feedbacks;
+    std::deque<CasualtyReport> casualty_reports;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -277,7 +286,11 @@ private:
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 0;
 
+    int score = 0;
+
 public:
+    
+
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);
@@ -305,6 +318,7 @@ public:
 
     // NOTE: cursor/position-related functions
     void move_cursor(Position dcursor);
+    void move_cursor_to_city(int index);
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
@@ -333,6 +347,15 @@ public:
     void self_defense(void);
 
     void reset(void);
+
+    int get_score() const { return score; }
+    void add_score(int value) { score += value; }
+
+    void add_casualty_report(const std::string &name, int dmg, int hp) {
+        casualty_reports.push_front({name, dmg, hp, turn});
+        if (casualty_reports.size() > 5) casualty_reports.pop_back(); 
+    }
+    const std::deque<CasualtyReport>& get_casualty_reports() const { return casualty_reports; }
 };
 
 #endif

@@ -31,7 +31,7 @@ int main(void)
         // TODO: store menu title and buttons in separate file instead of hardcoding
         // TODO: button name localization
         //       replace the strings with a vector<string> or map<string, string> or macro
-        BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "QUIT"});
+        BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
@@ -41,9 +41,23 @@ int main(void)
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
+        TutorialMenu tutorial_menu = TutorialMenu({{
+                                                       "===== Controls =====",
+                                                       "W/A/S/D  - Move Cursor",
+                                                       "Tab      - Switch Cities",
+                                                       "Enter    - Pass Turn",
+                                                       "F        - Repair City",
+                                                       "L        - Launch Missile",
+                                                       "R        - Research Tech",
+                                                       "ESC      - Pause/Open Menu",
+                                                   },
+                                                   {"===== Objectives =====",
+                                                    "Protect cities from missiles!",
+                                                    "Use research to unlock defenses."}});
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);
+        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu);
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
         BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu);
         BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu);
@@ -88,6 +102,11 @@ int main(void)
                         {
                             start_menu.deactivate();
                             load_menu.activate();
+                        }
+                        else if (start_menu.get_item() == "TUTORIAL")
+                        {
+                            start_menu.deactivate();
+                            tutorial_menu.activate();
                         }
                         else if (start_menu.get_item() == "QUIT")
                         {
@@ -153,6 +172,52 @@ int main(void)
                     usleep(10000);
                 }
             }
+            else if (tutorial_menu.is_activated())
+            {
+                tutorial_menu_renderer.init();
+                while (tutorial_menu.is_activated())
+                {
+                    key = getch();
+                    switch (key)
+                    {
+                    case 'w':
+                        tutorial_menu.move_cursor(-1);
+                        break;
+                    case 'a':
+                    case 'q':
+                        tutorial_menu.prev_page();
+                        break;
+                    case 's':
+                        tutorial_menu.move_cursor(1);
+                        break;
+                    case 'd':
+                    case 'e':
+                        tutorial_menu.next_page();
+                        break;
+
+                    case '\n':
+                        if (tutorial_menu.get_item() == "RETURN TO MENU")
+                        {
+                            tutorial_menu.deactivate();
+                            start_menu.activate();
+                        }
+                        break;
+
+                    case 'p':
+                        tutorial_menu.deactivate();
+                        pause_menu.activate();
+                        break;
+
+                    case '\033':
+                        tutorial_menu.deactivate();
+                        break;
+                    }
+                    tutorial_menu_renderer.draw();
+                    tutorial_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+
             else if (game.is_activated())
             {
                 game_renderer.init();
@@ -227,6 +292,37 @@ int main(void)
                         {
                             game.activate_iron_curtain();
                         }
+                        break;
+
+                    case '1':
+                        game.move_cursor_to_city(0);
+                        break;
+                    case '2':
+                        game.move_cursor_to_city(1);
+                        break;
+                    case '3':
+                        game.move_cursor_to_city(2);
+                        break;
+                    case '4':
+                        game.move_cursor_to_city(3);
+                        break;
+                    case '5':
+                        game.move_cursor_to_city(4);
+                        break;
+                    case '6':
+                        game.move_cursor_to_city(5);
+                        break;
+                    case '7':
+                        game.move_cursor_to_city(6);
+                        break;
+                    case '8':
+                        game.move_cursor_to_city(7);
+                        break;
+                    case '9':
+                        game.move_cursor_to_city(8);
+                        break;
+                    case '0':
+                        game.move_cursor_to_city(9);
                         break;
 
                     case ' ':

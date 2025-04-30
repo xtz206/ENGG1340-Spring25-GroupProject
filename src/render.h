@@ -32,6 +32,21 @@ public:
     void draw(void);
 };
 
+class TutorialMenuRenderer : public Renderer
+{
+private:
+    TutorialMenu &menu;
+    WINDOW *box_window;
+    WINDOW *item_window;
+
+public:
+    TutorialMenuRenderer(TutorialMenu &m) : menu(m) {};
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
 class TechMenuRenderer : public Renderer
 {
 private:

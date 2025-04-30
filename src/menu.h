@@ -70,4 +70,18 @@ public:
     TechNode *get_tech_node(void) const { return tech_tree.nodes.at(cursor - 1); };
     std::vector<std::string> get_item_description(void);
 };
+
+class TutorialMenu : public BasicMenu
+{
+    std::vector<std::vector<std::string>> pages;
+    int current_page = 0;
+
+public:
+    TutorialMenu(const std::vector<std::vector<std::string>> &content);
+    void prev_page(void);
+    void next_page(void);
+    const std::vector<std::string> &get_content() const;
+    std::string get_page_info() const;
+};
+
 #endif
