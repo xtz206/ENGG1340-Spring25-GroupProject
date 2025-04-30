@@ -118,8 +118,12 @@ std::vector<std::string> TechMenu::get_item_description()
     return description;
 }
 
-TutorialMenu::TutorialMenu(const std::vector<std::vector<std::string>> &ps)
-    : BasicMenu("TUTORIAL", {"Next Page", "Prev Page", "Return"}), pages(ps)
+TutorialMenu::TutorialMenu(void)
+    : BasicMenu("TUTORIAL", {"NEXT PAGE", "PREV PAGE", "RETURN TO MENU"}), page_index(0),
+      pages({{"W/A/S/D          Move Cursor", "Q             Prev Operation", "E             Next Operation",
+              "SPACE              Next Turn", "ENTER       Select Operation", "ESC                Quit Game",
+              "P                 Pause Game", "R            Technology Menu", "F                   Fix City",
+              "B               Build Cruise", "L              Launch Cruise"}})
 {
 }
 
@@ -135,10 +139,6 @@ void TutorialMenu::prev_page(void)
         page_index--;
 }
 
-const std::vector<std::string> &TutorialMenu::get_page() const
-{
-    return pages.at(page_index);
-}
 
 std::string TutorialMenu::get_page_info() const
 {

@@ -37,6 +37,7 @@ class TutorialMenuRenderer : public Renderer
 private:
     TutorialMenu &menu;
     WINDOW *box_window;
+    WINDOW *page_window;
     WINDOW *item_window;
 
 public:

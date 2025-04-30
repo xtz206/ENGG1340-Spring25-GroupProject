@@ -70,13 +70,13 @@ public:
 class TutorialMenu : public BasicMenu
 {
     std::vector<std::vector<std::string>> pages;
-    int page_index = 0;
+    int page_index;
 
 public:
-    TutorialMenu(const std::vector<std::vector<std::string>> &ps);
+    TutorialMenu(void);
     void prev_page(void);
     void next_page(void);
-    const std::vector<std::string> &get_page() const;
+    const std::vector<std::string> &get_page() const { return pages.at(page_index); };
     std::string get_page_info() const;
 };
 

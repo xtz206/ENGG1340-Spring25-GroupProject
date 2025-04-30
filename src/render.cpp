@@ -18,6 +18,8 @@
 #define OPERATION_COLS 40
 #define FEEDBACK_LINES 9
 #define FEEDBACK_COLS 56
+#define TUTORIAL_LINES 20
+#define TUTORIAL_COLS 40
 #define MENU_LINES 10
 #define MENU_COLS 40
 #define TECH_LINES 10
@@ -64,28 +66,60 @@ void BasicMenuRenderer::draw(void)
 void TutorialMenuRenderer::init(void)
 {
     erase();
-    
-    box_window = subwin(stdscr, MENU_LINES + 2, MENU_COLS + 2, (LINES - MENU_LINES - 2) / 2, (COLS - MENU_COLS - 2) / 2);
-    item_window = subwin(box_window, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
+
+    box_window = subwin(stdscr, TUTORIAL_LINES + MENU_LINES + 3, TUTORIAL_COLS + 2, (LINES - TUTORIAL_LINES - MENU_LINES - 3) / 2, (COLS - TUTORIAL_COLS - 2) / 2);
+    page_window = subwin(box_window, TUTORIAL_LINES, TUTORIAL_COLS, (LINES - TUTORIAL_LINES - MENU_LINES - 3) / 2 + 1, (COLS - TUTORIAL_COLS) / 2);
+    item_window = subwin(box_window, MENU_LINES, TUTORIAL_COLS, (LINES - TUTORIAL_LINES - MENU_LINES - 3) / 2 + TUTORIAL_LINES + 2, (COLS - TUTORIAL_COLS) / 2);
+
     box(box_window, 0, 0);
-    mvwprintw(box_window, 0, (MENU_COLS - menu.get_title().length() + 2) / 2, "%s", menu.get_title().c_str());
+    mvwhline(box_window, TUTORIAL_LINES + 1, 1, ACS_HLINE, TUTORIAL_COLS);
+    mvwaddch(box_window, TUTORIAL_LINES + 1, 0, ACS_LTEE);
+    mvwaddch(box_window, TUTORIAL_LINES + 1, TUTORIAL_COLS + 1, ACS_RTEE);
+    mvwprintw(box_window, 0, (TUTORIAL_COLS - menu.get_title().length() + 2) / 2, "%s", menu.get_title().c_str());
 }
 
 void TutorialMenuRenderer::render(void)
 {
+    wrefresh(page_window);
     wrefresh(item_window);
 }
 
 void TutorialMenuRenderer::draw(void)
 {
+    werase(page_window);
     werase(item_window);
     const std::vector<std::string> &page = menu.get_page();
+
     for (size_t index = 0; index < page.size(); index++)
     {
-        mvwprintw(item_window, index, 0, "%s", page.at(index).c_str());
+        if (index >= TUTORIAL_LINES)
+        {
+            break;
+        }
+        mvwprintw(page_window, index, (TUTORIAL_COLS - page.at(index).length()) / 2, "%s", page.at(index).c_str());
     }
+
+    for (size_t index = 0; index < menu.get_items().size(); index++)
+    {
+        if (index + 1 >= MENU_LINES)
+        {
+            break;
+        }
+
+        if (menu.get_cursor() == index)
+        {
+            wattron(item_window, A_REVERSE);
+            mvwprintw(item_window, index, (MENU_COLS - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
+            wattroff(item_window, A_REVERSE);
+        }
+        else
+        {
+            mvwprintw(item_window, index, (MENU_COLS - menu.get_item(index).length()) / 2, "%s", menu.get_item(index).c_str());
+        }
+    }
+
     std::string page_info = menu.get_page_info();
-    mvwprintw(item_window, MENU_LINES - 1, (MENU_COLS - page_info.length()) / 2, "%s", page_info.c_str());
+    mvwprintw(item_window, MENU_LINES - 1, (TUTORIAL_COLS - page_info.length()) / 2, "%s", page_info.c_str());
 }
 
 void TechMenuRenderer::init(void)

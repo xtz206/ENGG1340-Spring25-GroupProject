@@ -56,19 +56,7 @@ int main(void)
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
-        TutorialMenu tutorial_menu = TutorialMenu({{
-                                                       "===== Controls =====",
-                                                       "W/A/S/D  - Move Cursor",
-                                                       "Tab      - Switch Cities",
-                                                       "Enter    - Pass Turn",
-                                                       "F        - Repair City",
-                                                       "L        - Launch Missile",
-                                                       "R        - Research Tech",
-                                                       "ESC      - Pause/Open Menu",
-                                                   },
-                                                   {"===== Objectives =====",
-                                                    "Protect cities from missiles!",
-                                                    "Use research to unlock defenses."}});
+        TutorialMenu tutorial_menu = TutorialMenu();
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);
@@ -205,6 +193,14 @@ int main(void)
                         if (tutorial_menu.get_item() == "RETURN TO MENU")
                         {
                             stage = Stage::START_MENU;
+                        }
+                        else if (tutorial_menu.get_item() == "NEXT PAGE")
+                        {
+                            tutorial_menu.next_page();
+                        }
+                        else if (tutorial_menu.get_item() == "PREV PAGE")
+                        {
+                            tutorial_menu.prev_page();
                         }
                         break;
 
