@@ -118,28 +118,29 @@ std::vector<std::string> TechMenu::get_item_description()
     return description;
 }
 
-class TutorialMenu : public BasicMenu {
-    std::vector<std::vector<std::string>> pages;
-    int current_page = 0;
-    
-public:
-    TutorialMenu(const std::vector<std::vector<std::string>>& content) 
-        : BasicMenu("TUTORIAL", {"Next Page", "Previous Page", "Return"}), 
-          pages(content) {}
+TutorialMenu::TutorialMenu(const std::vector<std::vector<std::string>> &content)
+    : BasicMenu("TUTORIAL", {"Next Page", "Previous Page", "Return"}), pages(content)
+{
+}
 
-    void next_page() {
-        if(current_page < pages.size()-1) current_page++;
-    }
+void TutorialMenu::next_page(void)
+{
+    if (current_page < pages.size() - 1)
+        current_page++;
+}
 
-    void prev_page() {
-        if(current_page > 0) current_page--;
-    }
+void TutorialMenu::prev_page(void)
+{
+    if (current_page > 0)
+        current_page--;
+}
 
-    const std::vector<std::string>& get_content() const {
-        return pages[current_page];
-    }
+const std::vector<std::string> &TutorialMenu::get_content() const
+{
+    return pages[current_page];
+}
 
-    std::string get_page_info() const {
-        return std::to_string(current_page+1) + "/" + std::to_string(pages.size());
-    }
-};
+std::string TutorialMenu::get_page_info() const
+{
+    return std::to_string(current_page + 1) + "/" + std::to_string(pages.size());
+}
