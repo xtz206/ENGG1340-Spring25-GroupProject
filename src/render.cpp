@@ -61,6 +61,33 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
+void TutorialMenuRenderer::init(void)
+{
+    erase();
+    
+    box_window = subwin(stdscr, MENU_LINES + 2, MENU_COLS + 2, (LINES - MENU_LINES - 2) / 2, (COLS - MENU_COLS - 2) / 2);
+    item_window = subwin(box_window, MENU_LINES, MENU_COLS, (LINES - MENU_LINES) / 2, (COLS - MENU_COLS) / 2);
+    box(box_window, 0, 0);
+    mvwprintw(box_window, 0, (MENU_COLS - menu.get_title().length() + 2) / 2, "%s", menu.get_title().c_str());
+}
+
+void TutorialMenuRenderer::render(void)
+{
+    wrefresh(item_window);
+}
+
+void TutorialMenuRenderer::draw(void)
+{
+    werase(item_window);
+    const std::vector<std::string> &page = menu.get_content();
+    for (size_t index = 0; index < page.size(); index++)
+    {
+        mvwprintw(item_window, index, 0, "%s", page.at(index).c_str());
+    }
+    std::string page_info = menu.get_page_info();
+    mvwprintw(item_window, MENU_LINES - 1, (MENU_COLS - page_info.length()) / 2, "%s", page_info.c_str());
+}
+
 void TechMenuRenderer::init(void)
 {
     erase();
