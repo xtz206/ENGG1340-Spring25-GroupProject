@@ -41,6 +41,19 @@ int main(void)
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
+        TutorialMenu tutorial_menu = TutorialMenu({
+            {"===== Controls =====",
+            "W/A/S/D  - Move Cursor",
+            "Tab      - Switch Cities",
+            "Enter    - Pass Turn",
+            "F        - Repair City",
+            "L        - Launch Missile",
+            "R        - Research Tech",
+            "ESC      - Pause/Open Menu",},
+            {"===== Objectives =====",
+            "Protect cities from missiles!",
+            "Use research to unlock defenses."}
+        });
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);

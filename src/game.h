@@ -46,8 +46,6 @@ class City
 private:
     Position position;
     std::string name;
-    int hp;
-    int max_hp;
     int hitpoint;
     int productivity;
     int countdown;
@@ -55,13 +53,6 @@ private:
     int cruise_storage;
 
 public:
-    std::string get_info() const {
-        return name + " HP: " + std::to_string(hp) + "/" + std::to_string(max_hp);
-    }
-
-    Position get_position() const {
-        return position;
-    }
     City(Position p, const std::string &n, int hp);
     Position get_position(void) const { return position; };
     bool is_valid(void) const { return position.is_valid() && name != ""; };
@@ -159,7 +150,6 @@ class MissileManager
     friend class SaveLoader;
 
 private:
-    Game &game;
     int id;
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
@@ -171,7 +161,7 @@ private:
     int get_process_level(int turn, int hitpoint);
 
 public:
-    MissileManager(Game &g,std::vector<City> &cts);
+    MissileManager(std::vector<City> &cts);
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
@@ -258,8 +248,6 @@ class Game
     friend class OperationMenu;
 
 private:
-    std::vector<City> cities;
-    int selected_city_index = -1;
     bool activated;
     Size size;
     Position cursor;
@@ -367,7 +355,7 @@ public:
         casualty_reports.push_front({name, dmg, hp, turn});
         if (casualty_reports.size() > 5) casualty_reports.pop_back(); 
     }
-    const auto& get_casualty_reports() const { return casualty_reports; }
+    const std::deque<CasualtyReport>& get_casualty_reports() const { return casualty_reports; }
 };
 
 #endif

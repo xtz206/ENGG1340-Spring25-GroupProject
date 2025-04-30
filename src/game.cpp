@@ -826,6 +826,7 @@ void Game::pass_turn(void)
         if (attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
+            insert_feedback(attack_missile->city.name + " Hit by Attack Missile!!!");
         }
     }
 
