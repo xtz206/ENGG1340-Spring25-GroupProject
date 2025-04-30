@@ -520,8 +520,8 @@ void TechTree::update_available(int deposit)
 }
 
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
-    : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
-      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
+    : size(s), cursor(cts.at(0).position), turn(0), deposit(0), enemy_hitpoint(1000),
+      cities(cts), background(bg), missile_manager(cities), tech_tree()
 {
     missile_manager.inc_turn = {50, 30, 20};
     set_difficulty(1);
@@ -1399,7 +1399,6 @@ void TechTree::reset(void)
 
 void Game::reset(void)
 {
-    activated = false;
     turn = 0;
     deposit = 0;
     enemy_hitpoint = 0;

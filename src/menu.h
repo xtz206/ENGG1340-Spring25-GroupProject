@@ -9,7 +9,6 @@
 class Menu
 {
 protected:
-    bool activated;
     std::string title;
     std::vector<std::string> items;
     int cursor;
@@ -18,9 +17,6 @@ public:
     Menu(const std::string &t, const std::vector<std::string> &b);
     int get_cursor(void) const { return cursor; };
     virtual void move_cursor(int dcursor);
-    bool is_activated(void) { return activated; };
-    void activate(void) { activated = true; };
-    void deactivate(void) { activated = false; };
 
     const std::string &get_title(void) const { return title; };
     const std::vector<std::string> &get_items(void) const { return items; };

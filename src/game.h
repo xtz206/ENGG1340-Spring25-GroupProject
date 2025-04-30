@@ -248,7 +248,6 @@ class Game
     friend class OperationMenu;
 
 private:
-    bool activated;
     Size size;
     Position cursor;
     int turn;
@@ -294,10 +293,6 @@ public:
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);
-
-    bool is_activated(void) { return activated; };
-    void activate(void) { activated = true; };
-    void deactivate(void) { activated = false; };
 
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };

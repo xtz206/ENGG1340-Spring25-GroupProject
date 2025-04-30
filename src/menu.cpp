@@ -5,7 +5,7 @@
 #include "menu.h"
 
 Menu::Menu(const std::string &t, const std::vector<std::string> &it)
-    : activated(false), title(t), items(it), cursor(0)
+    : title(t), items(it), cursor(0)
 {
 }
 
