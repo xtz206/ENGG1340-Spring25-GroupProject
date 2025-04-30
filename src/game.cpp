@@ -145,7 +145,7 @@ void CruiseMissile::move_step(void)
     }
 }
 
-MissileManager::MissileManager(Game &g,std::vector<City> &cts) : game(g),id(0), cities(cts) {}
+MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
 
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
@@ -219,9 +219,6 @@ void MissileManager::update_missiles(void)
     for (auto cruise_missile : get_cruise_missiles())
     {
         cruise_missile->move();
-        if (cruise_missile->get_is_exploded()) {
-            game.add_score(50); 
-        }
     }
 }
 
@@ -524,7 +521,7 @@ void TechTree::update_available(int deposit)
 
 Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
     : activated(false), size(s), cursor(cts.at(0).position), turn(0), deposit(0),
-      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(*this,cities), tech_tree()
+      enemy_hitpoint(1000), cities(cts), background(bg), missile_manager(cities), tech_tree()
 {
     missile_manager.inc_turn = {50, 30, 20};
     set_difficulty(1);
@@ -1085,14 +1082,14 @@ void Game::hit_city(City &city, int damage)
     }
     if (!city.hitpoint - damage < 0)
     {
-        damage=city.hitpoint;
+        damage = city.hitpoint;
         city.hitpoint = 0;
         add_casualty_report(city.name, damage, city.hitpoint);
     }
     else
     {
         city.hitpoint -= damage / (en_fortress_city ? 2 : 1);
-        damage=damage / (en_fortress_city ? 2 : 1);
+        damage = damage / (en_fortress_city ? 2 : 1);
         add_casualty_report(city.name, damage, city.hitpoint);
     }
 }

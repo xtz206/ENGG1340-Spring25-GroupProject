@@ -13,7 +13,7 @@
 #define TOTAL_COLS 150
 #define MAP_LINES 18
 #define MAP_COLS 98
-#define INFO_LINES 6
+#define INFO_LINES 7
 #define INFO_COLS 49
 #define OPERATION_LINES 9
 #define OPERATION_COLS 40
@@ -181,23 +181,6 @@ void GameRenderer::draw(void)
     werase(super_weapon_info);
     werase(operation_window);
     werase(feedback_window);
-    int line = 0;
-
-    for (const auto &feedback : game.get_feedback_info()) {
-        mvwprintw(feedback_window, line++, 1, "%s", feedback.c_str());
-        if (line >= FEEDBACK_LINES - 1) break;
-    }
-
-    for (const auto &report : game.get_casualty_reports()) {
-        mvwprintw(feedback_window, line++, 1, "[T%d] %s: -%d (HP %d)",
-                  report.turn, report.city_name.c_str(), report.damage, report.remaining_hp);
-        if (line >= FEEDBACK_LINES - 1) break;
-    }
-
-    if (game.is_game_over()) {
-        mvwprintw(feedback_window, line++, 1, "Game Over");
-        mvwprintw(feedback_window, line++, 1, "Press any key to exit");
-    }
 
     // NOTE: draw map window
     for (int index = 0; index < game.get_background().size(); index++)
@@ -252,20 +235,7 @@ void GameRenderer::draw(void)
             break;
         }
         mvwprintw(map_window, missile->get_position().y, missile->get_position().x, "%s", direction.c_str());
-        mvwprintw(operation_window, 0, 0, "quick choice:");
-        mvwprintw(operation_window, 1, 2, "[1-%d] choose the city", 
-            std::min(9, game.get_selectable_city_count()));
-            std::vector<std::string> info = {
-                "current choice: " + game.get_selected_city_info(),
-                "coordinate: (" + std::to_string(game.get_cursor().x) + 
-                "," + std::to_string(game.get_cursor().y) + ")"
-            };
-            
-            for(size_t i = 0; i < info.size(); ++i) {
-                mvwprintw(selected_info_window, i, 0, "%s", info[i].c_str());
-    
     }
-
     mvwprintw(map_window, game.get_cursor().y, game.get_cursor().x, "X");
 
     // NOTE: draw info windows
@@ -316,10 +286,5 @@ void GameRenderer::draw(void)
     for (size_t index = 0; index < game.get_feedback_info().size(); index++)
     {
         mvwprintw(feedback_window, index, 0, "%s", game.get_feedback_info().at(index).c_str());
-    }
-    if (game.is_game_over())
-    {
-        mvwprintw(feedback_window, 0, 0, "Game Over");
-        mvwprintw(feedback_window, 1, 0, "Press any key to exit");
     }
 }
