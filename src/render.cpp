@@ -6,7 +6,6 @@
 #include "game.h"
 #include "menu.h"
 #include "render.h"
-#define INFO_LINES 7
 
 // TODO: make screen size variable to map size
 #define TOTAL_LINES 30

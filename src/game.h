@@ -301,26 +301,8 @@ private:
     int score = 0;
 
 public:
-    bool select_city_by_number(int number) {
-        if(number <= 0 || number > cities.size()) {
-            return false; 
-        }
     
-        selected_city_index = number - 1; 
-        cursor = cities[selected_city_index].get_position();
-        return true;
-    }
 
-
-    int get_selectable_city_count() const {
-        return cities.size();
-    }
-
-
-    std::string get_selected_city_info() const {
-        if(selected_city_index == -1) return "No city selected";
-        return cities[selected_city_index].get_info();
-    }
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);
@@ -348,6 +330,7 @@ public:
 
     // NOTE: cursor/position-related functions
     void move_cursor(Position dcursor);
+    void move_cursor_to_city(int index);
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;

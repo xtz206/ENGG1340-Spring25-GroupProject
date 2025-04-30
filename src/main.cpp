@@ -228,17 +228,46 @@ int main(void)
                             game.activate_iron_curtain();
                         }
                         break;
-                        case (key >= '1' && key <= '9') {
-                            int num = key - '0'; 
-                            if(game.select_city_by_number(num)) {
-                                feedback.add("city chosen " + std::to_string(num));
-                            } else {
-                                feedback.add("invald choice: currently only " 
-                                    + std::to_string(game.get_selectable_city_count())
-                                    + " cities");
-                            }
-                            return;
-                        }
+
+                    case '1':
+                        game.move_cursor_to_city(0);
+                        break;
+                    
+                    case '2':
+                        game.move_cursor_to_city(1);
+                        break;
+                   
+                    case '3':
+                        game.move_cursor_to_city(2);
+                        break;
+                    
+                    case '4':
+                        game.move_cursor_to_city(3);
+                        break;
+                    
+                    case '5':
+                        game.move_cursor_to_city(4);
+                        break;
+
+                    case '6':
+                        game.move_cursor_to_city(5);
+                        break;
+                    
+                    case '7':
+                        game.move_cursor_to_city(6);
+                        break;
+                    
+                    case '8':
+                        game.move_cursor_to_city(7);
+                        break;
+                   
+                    case '9':
+                        game.move_cursor_to_city(8);
+                        break;
+                    
+                    case '0':
+                        game.move_cursor_to_city(9);
+                        break;
 
                     case ' ':
                         game.pass_turn();

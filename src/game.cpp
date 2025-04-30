@@ -800,6 +800,15 @@ void Game::move_cursor(Position dcursor)
     cursor.x += dcursor.x;
 }
 
+void Game::move_cursor_to_city(int index)
+{
+    if (index < 0 || index >= cities.size())
+    {
+        return;
+    }
+    cursor = cities.at(index).get_position();
+}
+
 void Game::pass_turn(void)
 {
     // TODO: add keyboard shortcuts to select city
