@@ -286,6 +286,8 @@ public:
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
     bool is_on_sea(Position p) const { return background.at(p.y).at(p.x) == '#'; };
+    bool is_on_city(Position p) const { return background.at(p.y).at(p.x) == '@'; };
+    bool is_on_land(Position p) const { return background.at(p.y).at(p.x) == ' '; };
     bool is_selected_missile(void);
     bool is_selected_city(void);
     Missile &select_missile(void);
