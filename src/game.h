@@ -268,13 +268,8 @@ public:
     TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
-    VAttrString get_general_info(void);
-    VAttrString get_selected_info(void);
-    VAttrString get_tech_info(void) const;
-    VAttrString get_super_weapon_info(void) const;
-    VAttrString get_feedback_info(void) const;
-    VAttrString get_end_info(void) const;
     void insert_feedback(const AttrString &feedback);
+    void insert_feedback(const std::string &feedback, attr_t attr) { insert_feedback(AttrString(feedback, attr)); };
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
     int get_enemy_hp(void) const { return enemy_hitpoint; };

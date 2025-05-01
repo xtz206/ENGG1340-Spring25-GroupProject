@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
+#include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <ncurses.h>
 
 #include "game.h"
@@ -38,6 +40,17 @@ void Window::print(Position p, const char *s, attr_t attr)
     }
     wattron(window, attr);
     mvwprintw(window, p.y, p.x, "%s", s);
+    wattroff(window, attr);
+}
+
+void Window::print_spaces(int line, attr_t attr)
+{
+    if (line >= size.h)
+    {
+        return;
+    }
+    wattron(window, attr);
+    mvwprintw(window, line, 0, "%s", std::string(size.w, ' ').c_str());
     wattroff(window, attr);
 }
 
@@ -202,11 +215,57 @@ void EndMenuRenderer::init(void)
     box_window.draw_char(Size(desc_size.h + 1, 0), ACS_LTEE);
     box_window.draw_char(Size(desc_size.h + 1, item_size.w + 1), ACS_RTEE);
 
-    VAttrString info = game.get_end_info();
-    for (size_t index = 0; index < info.size(); index++)
+    std::ostringstream oss;
+
+    if (game.get_enemy_hp() > 0)
     {
-        desc_window.print_center(index, info.at(index));
+        desc_window.print_spaces(0, COLOR_PAIR(2));
+        desc_window.print_center(0, "YOU LOSE", COLOR_PAIR(2));
     }
+    else
+    {
+        desc_window.print_spaces(0, COLOR_PAIR(4));
+        desc_window.print_center(0, "YOU  WIN", COLOR_PAIR(4));
+    }
+
+    desc_window.print_left(1, "Score:", A_NORMAL);
+    if (game.get_score() > 1000)
+    {
+        oss << std::fixed << std::setprecision(2) << static_cast<double>(game.get_score()) / 1000 << "K";
+        desc_window.print_right(1, oss.str(), COLOR_PAIR(4));
+    }
+    else if (game.get_score() > 100)
+    {
+        oss << game.get_score();
+        desc_window.print_right(1, oss.str(), COLOR_PAIR(3));
+    }
+    else
+    {
+        oss << game.get_score();
+        desc_window.print_right(1, oss.str(), COLOR_PAIR(2));
+    }
+    oss.str("");
+
+    desc_window.print_left(2, "Casualty:", A_NORMAL);
+    if (game.get_casualty() > 1000)
+    {
+        oss << std::fixed << std::setprecision(2) << static_cast<double>(game.get_casualty()) / 1000 << "M";
+        desc_window.print_right(2, oss.str(), COLOR_PAIR(2));
+    }
+    else if (game.get_casualty() > 100)
+    {
+        oss << game.get_casualty() << "K";
+        desc_window.print_right(2, oss.str(), COLOR_PAIR(3));
+    }
+    else
+    {
+        oss << game.get_casualty() << "K";
+        desc_window.print_right(2, oss.str(), COLOR_PAIR(4));
+    }
+    oss.str("");
+
+    desc_window.print_left(3, "Turn:", A_NORMAL);
+    desc_window.print_right(3, std::to_string(game.get_turn()), A_NORMAL);
 }
 
 void EndMenuRenderer::render(void)
@@ -480,27 +539,194 @@ void GameRenderer::draw(void)
     int color_pair = (game.is_on_land(game.get_cursor()) ? 0 : (game.is_on_sea(game.get_cursor()) ? 1 : 3));
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(color_pair));
 
-    // NOTE: draw info windows
-    VAttrString info;
-    info = game.get_general_info();
-    for (size_t index = 0; index < info.size(); index++)
+    // NOTE: draw general windows
+    general_info_window.print_left(0, "Turn:", A_NORMAL);
+    general_info_window.print_right(0, std::to_string(game.get_turn()), A_NORMAL);
+    general_info_window.print_left(1, "Deposit:", A_NORMAL);
+    general_info_window.print_right(1, std::to_string(game.get_deposit()), A_NORMAL);
+    general_info_window.print_left(2, "Productivity:", A_NORMAL);
+    general_info_window.print_right(2, std::to_string(game.get_productivity()), A_NORMAL);
+    general_info_window.print_left(3, "Enemy HP:", A_NORMAL);
+    general_info_window.print_right(3, std::to_string(game.get_enemy_hp()), A_NORMAL);
+    if (game.en_self_defense_sys)
     {
-        general_info_window.print_left(index, info.at(index));
+        general_info_window.print_left(4, "Self Defense System:", A_NORMAL);
+        general_info_window.print_right(4, "ON", A_NORMAL);
     }
-    info = game.get_selected_info();
-    for (size_t index = 0; index < info.size(); index++)
+    if (game.en_enhanced_radar_I)
     {
-        selected_info_window.print_left(index, info.at(index));
+        int missile_count = game.missile_manager.get_attack_missiles().size();
+        if (missile_count == 0)
+        {
+            general_info_window.print_spaces(5, COLOR_PAIR(4));
+            general_info_window.print_left(5, "No Missiles Approaching", COLOR_PAIR(4));
+        }
+        else if (missile_count < 5)
+        {
+            general_info_window.print_spaces(5, COLOR_PAIR(3));
+            general_info_window.print_left(5, std::to_string(missile_count) + " Missile Approaching", COLOR_PAIR(3));
+        }
+        else
+        {
+            general_info_window.print_spaces(5, COLOR_PAIR(2));
+            general_info_window.print_left(5, std::to_string(missile_count) + " Missiles Approaching !!!", COLOR_PAIR(2));
+        }
     }
-    info = game.get_tech_info();
-    for (size_t index = 0; index < info.size(); index++)
+
+    // NOTE: draw selected info window
+    if (game.is_selected_missile())
     {
-        tech_info_window.print_left(index, info.at(index));
+        AttackMissile &missile = dynamic_cast<AttackMissile &>(game.select_missile());
+        selected_info_window.print_left(0, "Target:", A_NORMAL);
+        selected_info_window.print_left(1, "Speed:", A_NORMAL);
+        selected_info_window.print_left(2, "Damage:", A_NORMAL);
+
+        selected_info_window.print_right(0, missile.city.name, A_NORMAL);
+        selected_info_window.print_right(1, std::to_string(missile.speed), missile.speed > 2 ? COLOR_PAIR(2) : COLOR_PAIR(3));
+        selected_info_window.print_right(2, std::to_string(missile.damage), missile.damage > 200 ? COLOR_PAIR(2) : COLOR_PAIR(3));
     }
-    info = game.get_super_weapon_info();
-    for (size_t index = 0; index < info.size(); index++)
+    else if (game.is_selected_city())
     {
-        super_weapon_info_window.print_left(index, info.at(index));
+        City &city = game.select_city();
+
+        selected_info_window.print_left(0, "Name:", A_NORMAL);
+        selected_info_window.print_left(1, "Hitpoint:", A_NORMAL);
+        selected_info_window.print_left(2, "Productivity:", A_NORMAL);
+        selected_info_window.print_left(3, "Countdown:", A_NORMAL);
+        selected_info_window.print_left(4, "Cruise Storage:", A_NORMAL);
+
+        selected_info_window.print_right(0, city.name, A_NORMAL);
+        selected_info_window.print_right(1, std::to_string(city.hitpoint), A_NORMAL);
+        selected_info_window.print_right(2, std::to_string(city.productivity), A_NORMAL);
+        selected_info_window.print_right(2, std::to_string(city.countdown), A_NORMAL);
+        selected_info_window.print_right(2, std::to_string(city.cruise_storage), A_NORMAL);
+
+        if (true) // DEBUG: en_enhanced_radar_II
+        {
+            int missile_count = 0;
+            for (auto missile : game.missile_manager.get_attack_missiles())
+            {
+                if (missile->get_target() == city.get_position())
+                {
+                    missile_count++;
+                }
+            }
+
+            if (missile_count == 0)
+            {
+                selected_info_window.print_spaces(5, COLOR_PAIR(4));
+                selected_info_window.print_left(5, "No missiles targeting the city", COLOR_PAIR(4));
+            }
+            else if (missile_count < 3)
+            {
+                selected_info_window.print_spaces(5, COLOR_PAIR(3));
+                selected_info_window.print_left(5, std::to_string(missile_count) + " approaching the city", COLOR_PAIR(3));
+            }
+            else
+            {
+                selected_info_window.print_spaces(5, COLOR_PAIR(2));
+                selected_info_window.print_left(5, std::to_string(missile_count) + " Missiles Approaching !!!", COLOR_PAIR(2));
+            }
+        }
+    }
+    else
+    {
+        selected_info_window.print_left(0, "Nothing Selected Now", A_NORMAL);
+    }
+
+    if (game.tech_tree.researching != nullptr)
+    {
+        tech_info_window.print_left(0, "Researching:", A_NORMAL);
+        tech_info_window.print_left(1, "Remaining Time:", A_NORMAL);
+
+        tech_info_window.print_right(0, game.tech_tree.researching->name, A_NORMAL);
+        tech_info_window.print_right(1, std::to_string(game.tech_tree.remaining_time), A_NORMAL);
+    }
+    else
+    {
+        tech_info_window.print_left(0, "Not Researching", A_NORMAL);
+    }
+
+    tech_info_window.print_left(2, "Available:", A_NORMAL);
+    tech_info_window.print_left(3, "Researched:", A_NORMAL);
+
+    tech_info_window.print_right(2, "    ", game.tech_tree.available.size() > 0 ? COLOR_PAIR(4) : COLOR_PAIR(3));
+    tech_info_window.print_right(2, std::to_string(game.tech_tree.available.size()), game.tech_tree.available.size() > 0 ? COLOR_PAIR(4) : COLOR_PAIR(3));
+    tech_info_window.print_right(3, std::to_string(game.tech_tree.researched.size()));
+
+    tech_info_window.print_left(0, "Standard Bomb", A_NORMAL);
+    if (game.standard_bomb_counter > 0)
+    {
+        super_weapon_info_window.print_right(0, "             ", COLOR_PAIR(3));
+        tech_info_window.print_right(0, "Remains " + std::to_string(game.standard_bomb_counter), COLOR_PAIR(3));
+    }
+    else if (game.standard_bomb_counter == 0)
+    {
+        super_weapon_info_window.print_right(0, "             ", COLOR_PAIR(4));
+        super_weapon_info_window.print_left(0, "Ready", COLOR_PAIR(4));
+    }
+    else
+    {
+        super_weapon_info_window.print_right(0, "             ", COLOR_PAIR(2));
+        super_weapon_info_window.print_right(0, "Not Built", COLOR_PAIR(2));
+    }
+
+    if (true) // DEBUG: en_dirty_bomb
+    {
+        super_weapon_info_window.print_left(1, "Dirty Bomb", A_NORMAL);
+        if (game.dirty_bomb_counter > 0)
+        {
+            super_weapon_info_window.print_right(1, "             ", COLOR_PAIR(3));
+            super_weapon_info_window.print_right(1, "Remains " + std::to_string(game.dirty_bomb_counter), COLOR_PAIR(3));
+        }
+        else if (game.dirty_bomb_counter == 0)
+        {
+            super_weapon_info_window.print_right(1, "             ", COLOR_PAIR(4));
+            super_weapon_info_window.print_right(1, "Ready", COLOR_PAIR(4));
+        }
+        else
+        {
+            super_weapon_info_window.print_right(1, "             ", COLOR_PAIR(2));
+            super_weapon_info_window.print_right(1, "Not Built", COLOR_PAIR(2));
+        }
+    }
+    if (true) // DEBUG: en_hydrogen_bomb
+    {
+        super_weapon_info_window.print_left(2, "Hydrogen Bomb", A_NORMAL);
+        if (game.hydrogen_bomb_counter > 0)
+        {
+            super_weapon_info_window.print_right(2, "             ", COLOR_PAIR(3));
+            super_weapon_info_window.print_right(2, "Remains" + std::to_string(game.hydrogen_bomb_counter), COLOR_PAIR(3));
+        }
+        else if (game.hydrogen_bomb_counter == 0)
+        {
+            super_weapon_info_window.print_right(2, "             ", COLOR_PAIR(4));
+            super_weapon_info_window.print_right(2, "Ready", COLOR_PAIR(4));
+        }
+        else
+        {
+            super_weapon_info_window.print_right(2, "             ", COLOR_PAIR(2));
+            super_weapon_info_window.print_right(2, "Not Built", COLOR_PAIR(2));
+        }
+    }
+    if (true) // DEBUG: en_iron_curtain
+    {
+        super_weapon_info_window.print_left(3, "Iron Curtain", A_NORMAL);
+        if (game.iron_curtain_counter > 40)
+        {
+            super_weapon_info_window.print_right(3, "             ", COLOR_PAIR(4));
+            super_weapon_info_window.print_right(3, "Remains" + std::to_string(game.iron_curtain_counter), COLOR_PAIR(4));
+        }
+        else if (game.iron_curtain_counter > 0)
+        {
+            super_weapon_info_window.print_right(3, "             ", COLOR_PAIR(3));
+            super_weapon_info_window.print_right(3, "Remains" + std::to_string(game.iron_curtain_counter), COLOR_PAIR(3));
+        }
+        else
+        {
+            super_weapon_info_window.print_right(3, "             ", COLOR_PAIR(2));
+            super_weapon_info_window.print_right(3, "Not Activated", COLOR_PAIR(2));
+        }
     }
 
     // NOTE: draw operation window
@@ -521,11 +747,13 @@ void GameRenderer::draw(void)
     }
 
     // NOTE: draw feedback window
-    for (size_t index = 0; index < game.get_feedback_info().size(); index++)
-    {
-        feedback_window.print_left(index, game.get_feedback_info().at(index));
-    }
 
-    // mvwprintw(stdscr, 0, 0, "                                                  "); // clear the screen
-    // mvwprintw(stdscr, 0, 0, "Cursor: %d, %d", game.get_cursor().y, game.get_cursor().x);
+    for (int index = 0; index < game.get_feedbacks().size(); index++)
+    {
+        if (index >= feedback_size.h)
+        {
+            break;
+        }
+        feedback_window.print_left(index, game.get_feedbacks().at(game.get_feedbacks().size() - index - 1));
+    }
 }

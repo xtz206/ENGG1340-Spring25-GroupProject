@@ -27,11 +27,13 @@ public:
     void print(Position p, const char *s, attr_t = A_NORMAL);
     void print(Position p, const std::string &s, attr_t attr = A_NORMAL) { print(p, s.c_str(), attr); };
     void print(Position p, const AttrString &s) { print(p, s.str, s.attr); };
+    void print_spaces(int line, attr_t = A_NORMAL);
     void print_left(int line, const std::string &s, attr_t attr = A_NORMAL);
     void print_left(int line, const AttrString &s) { print_left(line, s.str, s.attr); };
     void print_center(int line, const std::string &s, attr_t attr = A_NORMAL);
     void print_center(int line, const AttrString &s) { print_center(line, s.str, s.attr); };
     void print_right(int line, const std::string &s, attr_t attr = A_NORMAL);
+    void print_right(int line, const AttrString &s) { print_right(line, s.str, s.attr); };
 };
 
 class Renderer
