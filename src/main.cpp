@@ -34,8 +34,8 @@ void init(void)
     keypad(stdscr, TRUE);
 
     init_pair(1, COLOR_BLACK, COLOR_CYAN);
-    init_pair(2, COLOR_RED, COLOR_BLACK);
-    init_pair(3, COLOR_RED, COLOR_CYAN);
+    init_pair(2, COLOR_WHITE, COLOR_RED);
+    init_pair(3, COLOR_WHITE, COLOR_GREEN);
 }
 
 int main(void)
@@ -479,7 +479,6 @@ int main(void)
                         break;
 
                     case '\n':
-                        // TODO: overwrite warning prompt
                         if (save_menu.get_item() == "SLOT 1 EMPTY" || save_menu.get_item() == "SLOT 1 FULL")
                         {
                             save_dumper.save_game("1");
@@ -531,7 +530,6 @@ int main(void)
                         break;
 
                     case '\n':
-                        // TODO: empty save slot warning prompt
                         if (load_menu.get_item() == "SLOT 1  FULL")
                         {
                             asset_loader.reset();

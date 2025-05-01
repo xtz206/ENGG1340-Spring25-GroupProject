@@ -865,7 +865,7 @@ void Game::pass_turn(void)
             city.countdown--;
             if (city.countdown == 0)
             {
-                insert_feedback(city.name + "Cruise Missile Built");
+                insert_feedback(city.name + " Cruise Missile Built");
                 city.cruise_storage += (en_enhanced_cruise_III ? 2 : 1);
             }
         }

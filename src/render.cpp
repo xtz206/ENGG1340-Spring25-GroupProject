@@ -421,35 +421,34 @@ void GameRenderer::draw(void)
             direction = "O";
             break;
         case MissileDirection::N:
-            direction = "\u21d1";
+            direction = "↑ ";
             break;
         case MissileDirection::NE:
-            direction = "\u21d7";
+            direction = "↗ ";
             break;
         case MissileDirection::E:
-            direction = "\u21d2";
+            direction = "→ ";
             break;
         case MissileDirection::SE:
-            direction = "\u21d8";
+            direction = "↘ ";
             break;
         case MissileDirection::S:
-            direction = "\u21d3";
+            direction = "↓ ";
             break;
         case MissileDirection::SW:
-            direction = "\u21d9";
+            direction = "↙ ";
             break;
         case MissileDirection::W:
-            direction = "\u21d0";
+            direction = "← ";
             break;
         case MissileDirection::NW:
-            direction = "\u21d6";
+            direction = "↖ ";
             break;
         default:
             break;
         }
 
-        int color_pair = (game.is_on_sea(missile->get_position()) ? 1 : 0) + (missile->get_type() == MissileType::ATTACK ? 2 : 0);
-        map_window.print(missile->get_position(), direction, COLOR_PAIR(color_pair));
+        map_window.print(missile->get_position(), direction, COLOR_PAIR(missile->get_type() == MissileType::ATTACK ? 2 : 3));
     }
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(game.is_on_sea(game.get_cursor())));
 
