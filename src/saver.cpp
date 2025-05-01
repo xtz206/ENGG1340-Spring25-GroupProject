@@ -214,6 +214,22 @@ void AssetLoader::load_cities(void)
     file.close();
 }
 
+std::vector<std::string> AssetLoader::load_title(void)
+{
+    std::ifstream file("title.txt");
+    if (!file.is_open())
+    {
+        throw std::runtime_error("Cannot open title.txt");
+    }
+    std::vector<std::string> title;
+    for (std::string line; std::getline(file, line);)
+    {
+        title.push_back(line);
+    }
+    file.close();
+    return title;
+}
+
 void AssetLoader::reset(void)
 {
     load_general();

@@ -26,7 +26,7 @@ public:
     void print(Position p, chtype ch, attr_t attr = A_NORMAL);
     void print(Position p, const char *s, attr_t = A_NORMAL);
     void print(Position p, const std::string &s, attr_t attr = A_NORMAL) { print(p, s.c_str(), attr); };
-    void print(Position p, const AttrString& s) { print(p, s.str, s.attr); };
+    void print(Position p, const AttrString &s) { print(p, s.str, s.attr); };
     void print_left(int line, const std::string &s, attr_t attr = A_NORMAL);
     void print_left(int line, const AttrString &s) { print_left(line, s.str, s.attr); };
     void print_center(int line, const std::string &s, attr_t attr = A_NORMAL);
@@ -56,6 +56,24 @@ protected:
 
 public:
     BasicMenuRenderer(Menu &m, Size s);
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
+class TitleMenuRenderer : public Renderer
+{
+private:
+    TitleMenu &menu;
+
+    Size size;
+    Position pos;
+
+    Window title_window;
+
+public:
+    TitleMenuRenderer(TitleMenu &m, Size s);
 
     void init(void);
     void render(void);

@@ -11,6 +11,7 @@
 
 enum class Stage
 {
+    TITLE_MENU,
     START_MENU,
     LEVEL_MENU,
     TUTORIAL_MENU,
@@ -37,6 +38,7 @@ void init(void)
     init_pair(2, COLOR_WHITE, COLOR_RED);
     init_pair(3, COLOR_WHITE, COLOR_GREEN);
     init_pair(4, COLOR_WHITE, COLOR_YELLOW);
+    
 }
 
 int main(void)
@@ -46,7 +48,7 @@ int main(void)
         init();
 
         short key;
-        Stage stage = Stage::START_MENU;
+        Stage stage = Stage::TITLE_MENU;
 
         Game game = Game();
         SaveDumper save_dumper = SaveDumper(game);
@@ -54,7 +56,8 @@ int main(void)
         AssetLoader asset_loader = AssetLoader(game);
         asset_loader.load_general();
 
-        BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
+        TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
+        BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
@@ -64,6 +67,7 @@ int main(void)
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
 
+        TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 100));
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
@@ -76,7 +80,30 @@ int main(void)
 
         while (true)
         {
-            if (stage == Stage::START_MENU)
+            if (stage == Stage::TITLE_MENU)
+            {
+                title_menu_renderer.init();
+                while (stage == Stage::TITLE_MENU)
+                {
+                    key = getch();
+
+                    switch (key)
+                    {
+                    case '\033':
+                        stage = Stage::QUIT;
+                        break;
+                    case ERR:
+                        break;
+                    default:
+                        stage = Stage::START_MENU;
+                        break;
+                    }
+                    title_menu_renderer.draw();
+                    title_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (stage == Stage::START_MENU)
             {
                 start_menu_renderer.init();
                 while (stage == Stage::START_MENU)

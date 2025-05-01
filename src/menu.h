@@ -43,6 +43,13 @@ public:
     int get_limit(void) const { return limit; };
 };
 
+class TitleMenu : public Menu
+
+{
+public:
+    TitleMenu(const std::vector<std::string> &t, const std::string &d);
+};
+
 class SaveMenu : public BasicMenu
 {
 private:

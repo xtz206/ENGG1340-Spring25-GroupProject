@@ -17,6 +17,7 @@ public:
     void load_general(void);
     void load_background(void);
     void load_cities(void);
+    std::vector<std::string> load_title(void);
     void reset(void);
 };
 

@@ -35,6 +35,15 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
+TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
+    : Menu("", t)
+{
+    items.push_back("");
+    items.push_back("");
+    items.push_back("");
+    items.push_back(d);
+}
+
 SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
     : BasicMenu(t, {}), save_dumper(sd),
       all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
@@ -58,6 +67,7 @@ LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
 {
     items.push_back(all_items.at(0));
 }
+
 void LoadMenu::update_items(void)
 {
     items.erase(items.begin() + 1, items.end());
@@ -65,8 +75,6 @@ void LoadMenu::update_items(void)
     items.push_back(all_items.at(save_loader.is_slot_empty("2") ? 2 : 5));
     items.push_back(all_items.at(save_loader.is_slot_empty("3") ? 3 : 6));
 }
-
-
 
 OperationMenu::OperationMenu(Game &g)
     : ScrollMenu("Operation", {}, 9), game(g),
@@ -171,7 +179,6 @@ void TutorialMenu::prev_page(void)
     if (page_index > 0)
         page_index--;
 }
-
 
 std::string TutorialMenu::get_page_info() const
 {

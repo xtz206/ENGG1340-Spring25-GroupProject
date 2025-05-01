@@ -139,6 +139,33 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
+TitleMenuRenderer::TitleMenuRenderer(TitleMenu &m, Size s)
+    : menu(m), size(s), pos((ALL_SIZE - s) / 2),
+      title_window(Window(stdscr, s, pos + Size(1, 1)))
+{
+}
+
+void TitleMenuRenderer::init(void)
+{
+    erase();
+
+    title_window.erase();
+
+    for (size_t index = 0; index < menu.get_items().size(); index++)
+    {
+        title_window.print_center(index, menu.get_item(index));
+    }
+}
+
+void TitleMenuRenderer::render(void)
+{
+    title_window.refresh();
+}
+
+void TitleMenuRenderer::draw(void)
+{
+}
+
 void SaveMenuRenderer::draw(void)
 {
     item_window.erase();
