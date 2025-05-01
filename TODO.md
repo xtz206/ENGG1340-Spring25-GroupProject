@@ -58,8 +58,8 @@
 ## Statistics
 
 - [x] Counting Turns; Missile launched; Missile defended;
-- [ ] Generate and store score
-- [ ] Data make game more realistic (e.g. casualty)
+- [x] Generate and store score
+- [x] Data make game more realistic (e.g. casualty)
 - [ ] Display statistics at end of game
 
 ---
