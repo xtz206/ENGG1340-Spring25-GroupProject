@@ -448,7 +448,8 @@ void GameRenderer::draw(void)
             break;
         }
 
-        map_window.print(missile->get_position(), direction, COLOR_PAIR(game.is_on_sea(missile->get_position())));
+        int color_pair = (game.is_on_sea(missile->get_position()) ? 1 : 0) + (missile->get_type() == MissileType::ATTACK ? 2 : 0);
+        map_window.print(missile->get_position(), direction, COLOR_PAIR(color_pair));
     }
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(game.is_on_sea(game.get_cursor())));
 
