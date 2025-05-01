@@ -601,7 +601,7 @@ void GameRenderer::draw(void)
         selected_info_window.print_right(2, std::to_string(city.countdown), A_NORMAL);
         selected_info_window.print_right(2, std::to_string(city.cruise_storage), A_NORMAL);
 
-        if (true) // DEBUG: en_enhanced_radar_II
+        if (game.en_enhanced_radar_II)
         {
             int missile_count = 0;
             for (auto missile : game.missile_manager.get_attack_missiles())
@@ -671,7 +671,7 @@ void GameRenderer::draw(void)
         super_weapon_info_window.print_right(0, "Not Built", COLOR_PAIR(2));
     }
 
-    if (true) // DEBUG: en_dirty_bomb
+    if (game.en_dirty_bomb)
     {
         super_weapon_info_window.print_left(1, "Dirty Bomb", A_NORMAL);
         if (game.dirty_bomb_counter > 0)
@@ -690,7 +690,7 @@ void GameRenderer::draw(void)
             super_weapon_info_window.print_right(1, "Not Built", COLOR_PAIR(2));
         }
     }
-    if (true) // DEBUG: en_hydrogen_bomb
+    if (game.en_hydrogen_bomb)
     {
         super_weapon_info_window.print_left(2, "Hydrogen Bomb", A_NORMAL);
         if (game.hydrogen_bomb_counter > 0)
@@ -709,7 +709,7 @@ void GameRenderer::draw(void)
             super_weapon_info_window.print_right(2, "Not Built", COLOR_PAIR(2));
         }
     }
-    if (true) // DEBUG: en_iron_curtain
+    if (game.en_iron_curtain)
     {
         super_weapon_info_window.print_left(3, "Iron Curtain", A_NORMAL);
         if (game.iron_curtain_counter > 40)
