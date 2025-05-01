@@ -479,17 +479,17 @@ int main(void)
                         // TODO: overwrite warning prompt
                         if (save_menu.get_item() == "SLOT 1 EMPTY" || save_menu.get_item() == "SLOT 1 FULL")
                         {
-                            save_dumper.save_game("1", true);
+                            save_dumper.save_game("1");
                             stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "SLOT 2 EMPTY" || save_menu.get_item() == "SLOT 2 FULL")
                         {
-                            save_dumper.save_game("2", true);
+                            save_dumper.save_game("2");
                             stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "SLOT 3 EMPTY" || save_menu.get_item() == "SLOT 3 FULL")
                         {
-                            save_dumper.save_game("3", true);
+                            save_dumper.save_game("3");
                             stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "RETURN TO MENU")

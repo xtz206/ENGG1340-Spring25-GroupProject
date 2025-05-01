@@ -14,8 +14,8 @@ class SaveDumper
 
 public:
     SaveDumper(Game &g) : game(g) {}
-    bool is_slot_empty(std::string index) { return true; }; // DEBUG: impl this function
-    bool save_game(std::string index, bool if_cover = false);
+    bool is_slot_empty(std::string index);
+    bool save_game(std::string index);
     void save_game_general(std::string filepath);
     void save_attack_missile(std::string filepath);
     void save_cruise(std::string filepath);

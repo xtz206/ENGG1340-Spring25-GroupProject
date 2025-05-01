@@ -164,7 +164,18 @@ void SaveDumper::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
-bool SaveDumper::save_game(std::string index, bool if_cover)
+bool SaveDumper::is_slot_empty(std::string index)
+{
+    std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
+    struct stat sub_info;
+    if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    {
+        return false; 
+    }
+    return true;
+}
+
+bool SaveDumper::save_game(std::string index)
 {
     // check if the save folder exists, if not, create it
     struct stat info;
@@ -180,33 +191,32 @@ bool SaveDumper::save_game(std::string index, bool if_cover)
         throw std::runtime_error("Cannot create save folder");
     }
     
-    // TODO: remove commented code
-    //generate timestamp
-    // std::time_t now = std::time(nullptr);
-    // char timeStamp[20];
-    // std::strftime(timeStamp, sizeof(timeStamp), "%Y-%m-%d_%H-%M-%S", std::localtime(&now));
 
     std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
     struct stat sub_info;
     
-    if (!if_cover) {
-        if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    // if (!if_cover) {
+    //     if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    //     {
+    //         std::string command = "rm -rf " + sub_folderpath_by_time;
+    //         if (system(command.c_str()) != 0)
+    //         {
+    //         throw std::runtime_error("Failed to remove existing folder");
+    //         }
+    //     }
+    // }
+    
+    if (!is_slot_empty(index))
+    {
+        std::string command = "rm -rf " + sub_folderpath_by_time;
+        if (system(command.c_str()) != 0)
         {
-            std::string command = "rm -rf " + sub_folderpath_by_time;
-            if (system(command.c_str()) != 0)
-            {
             throw std::runtime_error("Failed to remove existing folder");
-            }
         }
     }
-    
-    if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    if (mkdir(sub_folderpath_by_time.c_str(), 0777) != 0)
     {
-        return false; 
-    }
-    else if (mkdir(sub_folderpath_by_time.c_str(), 0777) != 0)
-    {
-        return false;
+        throw std::runtime_error("Cannot create save folder");
     }
     /*TODO: add hint to notify user slot is occupied*/
     
