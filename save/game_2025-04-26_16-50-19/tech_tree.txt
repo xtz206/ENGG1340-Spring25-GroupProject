@@ -1,5 +1,0 @@
-researched,Enhanced Cruise I,Enhanced Radar I
-available,none
-researching,Enhanced Cruise II
-prev_researching,Enhanced Radar I
-remaining_time,29
