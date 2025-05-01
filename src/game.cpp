@@ -2,7 +2,9 @@
 #include <vector>
 #include <algorithm>
 #include <random>
-#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <stdexcept>
 #include <ctime>
 #include "game.h"
 #include "saver.h"
@@ -756,6 +758,8 @@ VAttrString Game::get_feedback_info(void) const
 
 VAttrString Game::get_end_info(void) const
 {
+    std::ostringstream word_oss;
+    std::ostringstream line_oss;
     VAttrString info;
     if (enemy_hitpoint > 0)
     {
@@ -766,9 +770,54 @@ VAttrString Game::get_end_info(void) const
         info.push_back(" YOU  WIN ");
     }
 
-    info.push_back("Score:    " + std::to_string(score));
-    info.push_back("Casualty:  " + std::to_string(casualty) + "K");
-    info.push_back("Turn:        " + std::to_string(turn));
+    if (score > 1000)
+    {
+        word_oss << std::fixed << std::setprecision(2) << static_cast<double>(score) / 1000 << "K";
+        line_oss << std::left << std::setw(10) << "Score: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(4)});
+    }
+    else if (score > 100)
+    {
+        word_oss << score << "K";
+        line_oss << std::left << std::setw(10) << "Score: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(3)});
+    }
+    else
+    {
+        word_oss << score;
+        line_oss << std::left << std::setw(10) << "Score: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(2)});
+    }
+    word_oss.str("");
+    line_oss.str("");
+
+    if (casualty > 1000)
+    {
+        word_oss << std::fixed << std::setprecision(2) << static_cast<double>(casualty) / 1000 << "M";
+        line_oss << std::left << std::setw(10) << "Casualty: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(2)});
+    }
+    else if (casualty > 100)
+    {
+        word_oss << casualty << "K";
+        line_oss << std::left << std::setw(10) << "Casualty: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(3)});
+    }
+    else
+    {
+        word_oss << casualty << "K";
+        line_oss << std::left << std::setw(10) << "Casualty: " << std::right << std::setw(10) << word_oss.str();
+        info.push_back({line_oss.str(), COLOR_PAIR(4)});
+    }
+    word_oss.str("");
+    line_oss.str("");
+
+    word_oss << turn;
+    line_oss << std::left << std::setw(10) << "Turns: " << std::right << std::setw(10) << word_oss.str();
+    info.push_back(line_oss.str());
+    word_oss.str("");
+    line_oss.str("");
+
 
     return info;
 }
