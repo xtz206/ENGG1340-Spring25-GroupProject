@@ -194,18 +194,7 @@ bool SaveDumper::save_game(std::string index)
 
     std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
     struct stat sub_info;
-    
-    // if (!if_cover) {
-    //     if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
-    //     {
-    //         std::string command = "rm -rf " + sub_folderpath_by_time;
-    //         if (system(command.c_str()) != 0)
-    //         {
-    //         throw std::runtime_error("Failed to remove existing folder");
-    //         }
-    //     }
-    // }
-    
+        
     if (!is_slot_empty(index))
     {
         std::string command = "rm -rf " + sub_folderpath_by_time;
