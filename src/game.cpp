@@ -576,11 +576,11 @@ std::vector<std::string> Game::get_general_info(void)
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
     info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
-    if (true) // DEBUG: en_self_defense_sys
+    if (en_self_defense_sys)
     {
         info.push_back("Self Defense System: ON");
     }
-    if (true) // DEBUG: en_enhanced_radar_I
+    if (en_enhanced_radar_I)
     {
 
         int missile_count = missile_manager.get_attack_missiles().size();
@@ -619,7 +619,7 @@ std::vector<std::string> Game::get_selected_info(void)
         info.push_back("Productivity: " + std::to_string(city.productivity));
         info.push_back("Countdown: " + std::to_string(city.countdown));
         info.push_back("Cruise Storage: " + std::to_string(city.cruise_storage));
-        if (true) // DEBUG: en_enhanced_radar_II
+        if (en_enhanced_radar_II)
         {
 
             int missile_count = 0;
@@ -688,7 +688,7 @@ std::vector<std::string> Game::get_super_weapon_info(void) const
         info.push_back("Standard Bomb Not Built");
     }
 
-    if (true) // DEBUG: en_dirty_bomb
+    if (en_dirty_bomb)
     {
         if (dirty_bomb_counter > 0)
         {
@@ -704,7 +704,7 @@ std::vector<std::string> Game::get_super_weapon_info(void) const
         }
     }
 
-    if (true) // DEBUG: en_hydrogen_bomb
+    if (en_hydrogen_bomb)
     {
         if (hydrogen_bomb_counter > 0)
         {
@@ -720,7 +720,7 @@ std::vector<std::string> Game::get_super_weapon_info(void) const
         }
     }
 
-    if (true) // DEBUG: en_iron_curtain
+    if (en_iron_curtain)
     {
         if (iron_curtain_counter >= 0)
         {

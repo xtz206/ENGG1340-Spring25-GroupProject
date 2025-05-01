@@ -53,15 +53,11 @@ int main(void)
         AssetLoader asset_loader = AssetLoader(game);
         asset_loader.load_general();
 
-        // TODO: store menu title and buttons in separate file instead of hardcoding
-        // TODO: button name localization
-        //       replace the strings with a vector<string> or map<string, string> or macro
         BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
         LoadMenu load_menu = LoadMenu("LOAD GAME", save_loader);
-        // DEBUG: the 'DEBUG' button is just for testing, remove later
         BasicMenu end_menu = BasicMenu("GAME END", {"RETURN TO MENU", "QUIT"});
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
@@ -226,7 +222,6 @@ int main(void)
                     usleep(10000);
                 }
             }
-
             else if (stage == Stage::GAME)
             {
                 game_renderer.init();
