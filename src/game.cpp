@@ -145,8 +145,6 @@ void CruiseMissile::move_step(void)
     }
 }
 
-MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
-
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
     return missiles;
@@ -280,6 +278,27 @@ int MissileManager::generate_random(int turn, int hitpoint)
     std::mt19937 mt(rd());
     std::discrete_distribution<> dist(weights.begin(), weights.end());
     return dist(mt);
+}
+
+void MissileManager::set_difficulty(int lv)
+{
+    switch (lv)
+    {
+    case 3:
+        speed_list = {1, 1, 1, 2, 2};
+        damage_list = {100, 100, 100, 150, 200};
+        break;
+    case 2:
+        speed_list = {1, 1, 2, 2, 3};
+        damage_list = {100, 100, 200, 200, 200};
+        break;
+
+    case 1:
+    default:
+        speed_list = {1, 2, 2, 3, 3};
+        damage_list = {150, 150, 200, 200, 300};
+        break;
+    }
 }
 
 bool MissileManager::city_weight_check(City &c)
@@ -519,26 +538,16 @@ void TechTree::update_available(int deposit)
     }
 }
 
-Game::Game(Size s, std::vector<City> cts, std::vector<std::string> bg)
-    : size(s), cursor(cts.at(0).position), turn(0), deposit(0), enemy_hitpoint(1000),
-      cities(cts), background(bg), missile_manager(cities), tech_tree()
-{
-    missile_manager.inc_turn = {50, 30, 20};
-    set_difficulty(1);
-}
-
 void Game::set_difficulty(int lv)
 {
+    missile_manager.set_difficulty(lv);
     switch (lv)
     {
     case 1:
+    default:
     {
         difficulty_level = 1;
         enemy_hitpoint = 1000;
-        std::vector<int> sl = {1, 1, 1, 2, 2};
-        std::vector<int> dmg = {100, 100, 100, 150, 200};
-        missile_manager.speed_list = sl;
-        missile_manager.damage_list = dmg;
         deposit = 2000;
         break;
     }
@@ -547,10 +556,6 @@ void Game::set_difficulty(int lv)
 
         difficulty_level = 2;
         enemy_hitpoint = 2000;
-        std::vector<int> sl = {1, 1, 2, 2, 3};
-        std::vector<int> dmg = {100, 100, 200, 200, 200};
-        missile_manager.speed_list = sl;
-        missile_manager.damage_list = dmg;
         deposit = 1000;
         break;
     }
@@ -558,25 +563,12 @@ void Game::set_difficulty(int lv)
     {
         difficulty_level = 3;
         enemy_hitpoint = 3000;
-        std::vector<int> sl = {1, 2, 2, 3, 3};
-        std::vector<int> dmg = {150, 150, 200, 200, 300};
-        missile_manager.speed_list = sl;
-        missile_manager.damage_list = dmg;
         deposit = 500;
-        break;
-    }
-    default:
-    {
-        difficulty_level = 1;
-        enemy_hitpoint = 1000;
-        std::vector<int> sl = {1, 1, 2, 2, 3};
-        std::vector<int> dmg = {100, 100, 100, 150, 200};
-        missile_manager.speed_list = sl;
-        missile_manager.damage_list = dmg;
         break;
     }
     }
 }
+
 std::vector<std::string> Game::get_general_info(void)
 {
     std::vector<std::string> info;
@@ -730,10 +722,10 @@ std::vector<std::string> Game::get_super_weapon_info(void) const
 
     if (true) // DEBUG: en_iron_curtain
     {
-        if (iron_curtain_activated)
+        if (iron_curtain_counter >= 0)
         {
             info.push_back("Iron Curtain Activated");
-            info.push_back("Remaining Time: " + std::to_string(iron_curtain_cnt));
+            info.push_back("Remaining Time: " + std::to_string(iron_curtain_counter));
         }
         else
         {
@@ -777,7 +769,7 @@ std::vector<std::string> Game::get_end_info(void) const
     info.push_back("Score:    " + std::to_string(score));
     info.push_back("Casualty:  " + std::to_string(casualty) + "K");
     info.push_back("Turn:        " + std::to_string(turn));
-    
+
     return info;
 }
 
@@ -1125,7 +1117,7 @@ void Game::finish_research(TechNode *node)
 void Game::hit_city(City &city, int damage)
 {
     // TODO: score/casualty param fine tune
-    if (iron_curtain_activated)
+    if (iron_curtain_counter >= 0)
     {
         insert_feedback("Iron Curtain Activated, " + city.name + " Not Damaged");
         return;
@@ -1369,7 +1361,7 @@ void Game::activate_iron_curtain(void)
         insert_feedback("Iron Curtain Not Researched");
         return;
     }
-    if (iron_curtain_activated)
+    if (iron_curtain_counter >= 0)
     {
         insert_feedback("Iron Curtain Already Activated");
         return;
@@ -1381,19 +1373,18 @@ void Game::activate_iron_curtain(void)
     }
     insert_feedback("Iron Curtain Activated");
     deposit -= 10000;
-    iron_curtain_activated = true;
-    iron_curtain_cnt = 30;
+    iron_curtain_counter = 30;
 }
 
 void Game::check_iron_curtain(void)
 {
-    if (iron_curtain_activated)
+    if (iron_curtain_counter >= 0)
     {
-        iron_curtain_cnt--;
-        if (iron_curtain_cnt <= 0)
+        iron_curtain_counter--;
+        if (iron_curtain_counter <= 0)
         {
             insert_feedback("Iron Curtain Deactivated");
-            iron_curtain_activated = false;
+            iron_curtain_counter = -1;
         }
     }
 }
@@ -1414,38 +1405,4 @@ void Game::self_defense(void)
             }
         }
     }
-}
-
-void MissileManager::reset(void)
-{
-    for (auto missile : missiles)
-    {
-        delete missile;
-    }
-    missiles.clear();
-}
-
-void TechTree::reset(void)
-{
-    researching = nullptr;
-    prev_researching = nullptr;
-    remaining_time = 0;
-    researched.clear();
-    available.clear();
-}
-
-void Game::reset(void)
-{
-    turn = 0;
-    deposit = 0;
-    enemy_hitpoint = 0;
-    cities.clear();
-    missile_manager.reset();
-    tech_tree.reset();
-    feedbacks.clear();
-    standard_bomb_counter = -1;
-    dirty_bomb_counter = -1;
-    hydrogen_bomb_counter = -1;
-    iron_curtain_activated = false;
-    difficulty_level = 1;
 }

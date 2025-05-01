@@ -6,7 +6,6 @@
 #include "game.h"
 #include "menu.h"
 #include "render.h"
-#include "loader.h"
 #include "saver.h"
 #include "utils.h"
 
@@ -43,10 +42,12 @@ int main(void)
 
         short key;
         Stage stage = Stage::START_MENU;
-        Loader loader = Loader();
-        Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
+
+        Game game = Game();
         SaveDumper save_dumper = SaveDumper(game);
         SaveLoader save_loader = SaveLoader(game);
+        AssetLoader asset_loader = AssetLoader(game);
+        asset_loader.load_general();
 
         // TODO: store menu title and buttons in separate file instead of hardcoding
         // TODO: button name localization
@@ -143,16 +144,19 @@ int main(void)
                     case '\n':
                         if (level_menu.get_item() == "EASY")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(1);
                             stage = Stage::GAME;
                         }
                         else if (level_menu.get_item() == "NORMAL")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(2);
                             stage = Stage::GAME;
                         }
                         else if (level_menu.get_item() == "HARD")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(3);
                             stage = Stage::GAME;
                         }

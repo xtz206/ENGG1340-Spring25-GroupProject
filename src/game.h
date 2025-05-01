@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <array>
 #include <algorithm>
 #include "saver.h"
 #include "utils.h"
@@ -121,24 +122,26 @@ class MissileManager
     friend class GameRenderer;
     friend class SaveDumper;
     friend class SaveLoader;
+    friend class AssetLoader;
 
 private:
     int id;
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
-    std::vector<int> speed_list;
-    std::vector<int> damage_list;
+    std::array<int, 5> speed_list = {0};
+    std::array<int, 5> damage_list = {0};
     // NOTE: controls how missile num in a wave increases by turn
-    std::vector<int> inc_turn;
+    std::array<int, 3> inc_turn = {50, 30, 20};
     int generate_random(int turn, int hitpoint);
     int get_process_level(int turn, int hitpoint);
 
 public:
-    MissileManager(std::vector<City> &cts);
+    MissileManager(std::vector<City> &cts) : id(0), cities(cts) {};
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
 
+    void set_difficulty(int lv);
     bool city_weight_check(City &c); // NOTE: this checks cities weight of becoming a target
     void create_attack_missile(Position p, City &c, int d, int v);
     bool create_cruise_missile(City &c, int d, int v);
@@ -146,8 +149,6 @@ public:
     void remove_missiles(void);
 
     void create_attack_wave(int turn, int difficulty_level, int hitpoint);
-
-    void reset(void);
 };
 
 class TechNode
@@ -178,6 +179,7 @@ class TechTree
     friend class TechMenu;
     friend class SaveDumper;
     friend class SaveLoader;
+    friend class AssetLoader;
 
 private:
     std::vector<TechNode *> nodes;
@@ -200,8 +202,6 @@ public:
     bool is_available(TechNode *node) const { return std::find(available.begin(), available.end(), node) != available.end(); };
     void update_available(int deposit);
 
-    void reset(void);
-
 private:
     bool check_available(TechNode *node, int deposit) const;
 };
@@ -211,6 +211,7 @@ class Game
     friend class GameRenderer;
     friend class SaveDumper;
     friend class SaveLoader;
+    friend class AssetLoader;
     friend class OperationMenu;
 
 private:
@@ -220,18 +221,22 @@ private:
     int deposit;
     int difficulty_level;
     int enemy_hitpoint;
-    int score = 0;
-    int casualty = 0;
+    int score;
+    int casualty;
 
-    // NOTE: -1 means not built yet, 0 means built, otherwise means building (remaining time)
-    int standard_bomb_counter = -1;
-    int dirty_bomb_counter = -1;
-    int hydrogen_bomb_counter = -1;
     std::vector<City> cities;
     std::vector<std::string> background;
     std::vector<std::string> feedbacks;
     MissileManager missile_manager;
     TechTree tech_tree;
+
+    // NOTE: super weapon flags
+    //       -1 means not built yet, 0 means built,
+    //       otherwise means building (remaining time)
+    int standard_bomb_counter = -1;
+    int dirty_bomb_counter = -1;
+    int hydrogen_bomb_counter = -1;
+    int iron_curtain_counter = -1;
 
     // NOTE: technology researched flags
     bool en_enhanced_radar_I = false;
@@ -249,13 +254,8 @@ private:
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false;
 
-    // NOTE: iron curtain activation and countdown
-    bool iron_curtain_activated = false;
-    int iron_curtain_cnt = 0;
-
 public:
-    Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
-    // NOTE: set difficulty and params used by missile_manager
+    Game(void) : missile_manager(cities) {};
     void set_difficulty(int lv);
 
     const Size &get_size(void) const { return size; };
@@ -305,8 +305,6 @@ public:
     void activate_iron_curtain(void);
     void check_iron_curtain(void);
     void self_defense(void);
-
-    void reset(void);
 
     // TODO: score-related functions
     int get_score(void) const { return score; };

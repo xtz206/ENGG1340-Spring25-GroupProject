@@ -1,2 +1,26 @@
-height: 18
-width: 98
+size_y:18
+size_x:98
+cursor_y:9
+cursor_x:49
+turn:1
+score:0
+casualty:0
+missile_manager_id:0
+standard_bomb_counter:-1
+dirty_bomb_counter:-1
+hydrogen_bomb_counter:-1
+iron_curtain_counter:-1
+enhanced_radar_I:0
+enhanced_radar_II:0
+enhanced_radar_III:0
+enhanced_cruise_I:1
+enhanced_cruise_II:0
+enhanced_cruise_III:0
+fortress_city:0
+urgent_production:0
+evacuated_industry:0
+dirty_bomb:0
+fast_nuke:0
+hydrogen_bomb:0
+self_defense_sys:0
+iron_curtain:0
