@@ -54,6 +54,7 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
+// TODO: write docstring for this function
 TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
     : Menu("", t)
 {
@@ -63,6 +64,7 @@ TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
     items.push_back(d);
 }
 
+// TODO: write docstring for this function
 SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
     : BasicMenu(t, {}), save_dumper(sd),
       all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
@@ -71,6 +73,7 @@ SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
     items.push_back(all_items.at(0));
 }
 
+// TODO: write docstring for this function
 void SaveMenu::update_items(void)
 {
     items.erase(items.begin() + 1, items.end());
@@ -79,6 +82,7 @@ void SaveMenu::update_items(void)
     items.push_back(all_items.at(save_dumper.is_slot_empty("3") ? 3 : 6));
 }
 
+// TODO: write docstring for this function
 LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
     : BasicMenu(t, {}), save_loader(sl),
       all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
@@ -87,6 +91,7 @@ LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
     items.push_back(all_items.at(0));
 }
 
+// TODO: write docstring for this function
 void LoadMenu::update_items(void)
 {
     items.erase(items.begin() + 1, items.end());
@@ -95,6 +100,7 @@ void LoadMenu::update_items(void)
     items.push_back(all_items.at(save_loader.is_slot_empty("3") ? 3 : 6));
 }
 
+// TODO: write docstring for this function
 OperationMenu::OperationMenu(Game &g)
     : ScrollMenu("Operation", {}, 9), game(g), // Initialize scroll parameters
       all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
@@ -200,6 +206,7 @@ std::vector<std::string> TechMenu::get_item_description()
     return description;
 }
 
+// TODO: write docstring for this function
 TutorialMenu::TutorialMenu(void)
     : BasicMenu("TUTORIAL", {"NEXT PAGE", "PREV PAGE", "RETURN TO MENU"}), page_index(0),
       pages({{"W/A/S/D          Move Cursor", "Q             Prev Operation", "E             Next Operation",
@@ -209,18 +216,21 @@ TutorialMenu::TutorialMenu(void)
 {
 }
 
+// TODO: write docstring for this function
 void TutorialMenu::next_page(void)
 {
     if (page_index < pages.size() - 1)
         page_index++;
 }
 
+// TODO: write docstring for this function
 void TutorialMenu::prev_page(void)
 {
     if (page_index > 0)
         page_index--;
 }
 
+// TODO: write docstring for this function
 std::string TutorialMenu::get_page_info() const
 {
     return std::to_string(page_index + 1) + "/" + std::to_string(pages.size());

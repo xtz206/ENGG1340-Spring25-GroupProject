@@ -392,6 +392,7 @@ int MissileManager::generate_random(int turn, int hitpoint)
     return dist(mt);                                                   // Generate a random number
 }
 
+// TODO: write docstring for this function
 void MissileManager::set_difficulty(int lv)
 {
     switch (lv)
