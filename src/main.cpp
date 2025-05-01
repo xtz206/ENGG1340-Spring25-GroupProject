@@ -50,12 +50,12 @@ int main(void)
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
-        BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN"});
+        BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
         // DEBUG: the 'DEBUG' button is just for testing, remove later
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
-        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
+        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
@@ -431,7 +431,7 @@ int main(void)
                         break;
 
                     case '\n':
-                        if (tech_menu.get_item() == "Return to Game")
+                        if (tech_menu.get_item() == "RETURN TO GAME")
                         {
                             stage = Stage::GAME;
                         }
