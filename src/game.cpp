@@ -1441,8 +1441,7 @@ void Game::launch_cruise(void)
     }
     // TODO: city countdown when launching cruise
     insert_feedback("Cruise Missile Launched");
-    e
-        city.cruise_storage--;
+    city.cruise_storage--;
 }
 
 /**
