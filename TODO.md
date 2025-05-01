@@ -5,7 +5,7 @@
 ## Render && UI
 
 - [x] Render color for maps
-- [ ] Colorful UI
+- [x] Colorful UI
 - [x] Better way to showcase operation and INFOs
 - [x] showing counts of attack missiles
 - [x] StartMenu of game
