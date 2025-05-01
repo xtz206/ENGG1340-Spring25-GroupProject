@@ -14,6 +14,7 @@ class SaveDumper
 
 public:
     SaveDumper(Game &g) : game(g) {}
+    bool is_slot_empty(std::string index) { return true; }; // DEBUG: impl this function
     bool save_game(std::string index, bool if_cover = false);
     void save_game_general(std::string filepath);
     void save_attack_missile(std::string filepath);
@@ -31,6 +32,7 @@ class SaveLoader
 
 public:
     SaveLoader(Game &g) : game(g), folderpath(dft_folderpath) {};
+    bool is_slot_empty(std::string index) { return true; }; // DEBUG: impl this function
     void load_cities();
     void load_general();
     void load_attack_missile();

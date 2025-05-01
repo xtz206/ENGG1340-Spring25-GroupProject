@@ -44,17 +44,20 @@ int main(void)
         short key;
         Stage stage = Stage::START_MENU;
         Loader loader = Loader();
+        Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
+        SaveDumper save_dumper = SaveDumper(game);
+        SaveLoader save_loader = SaveLoader(game);
+
         // TODO: store menu title and buttons in separate file instead of hardcoding
         // TODO: button name localization
         //       replace the strings with a vector<string> or map<string, string> or macro
         BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
-        BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
-        BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
+        SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
+        LoadMenu load_menu = LoadMenu("LOAD GAME", save_loader);
         // DEBUG: the 'DEBUG' button is just for testing, remove later
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
-        Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
@@ -68,9 +71,6 @@ int main(void)
         BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu, Size(10, 30));
         GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
-
-        SaveDumper save_dumper = SaveDumper(game);
-        SaveLoader save_loader = SaveLoader(game);
 
         while (true)
         {
@@ -477,28 +477,19 @@ int main(void)
 
                     case '\n':
                         // TODO: overwrite warning prompt
-                        if (save_menu.get_item() == "SLOT 1")
+                        if (save_menu.get_item() == "SLOT 1 EMPTY")
                         {
-                            if (!save_dumper.save_game("1"))
-                            {
-                                save_dumper.save_game("1", true);
-                            }
+                            save_dumper.save_game("1");
                             stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 2")
+                        else if (save_menu.get_item() == "SLOT 2 EMPTY")
                         {
-                            if (!save_dumper.save_game("2"))
-                            {
-                                save_dumper.save_game("2", true);
-                            }
+                            save_dumper.save_game("2");
                             stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 3")
+                        else if (save_menu.get_item() == "SLOT 3 EMPTY")
                         {
-                            if (!save_dumper.save_game("3"))
-                            {
-                                save_dumper.save_game("3", true);
-                            }
+                            save_dumper.save_game("3");
                             stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "RETURN TO MENU")
@@ -511,6 +502,7 @@ int main(void)
                         stage = Stage::QUIT;
                         break;
                     }
+                    save_menu.update_items();
                     save_menu_renderer.draw();
                     save_menu_renderer.render();
                     usleep(10000);
@@ -537,17 +529,17 @@ int main(void)
 
                     case '\n':
                         // TODO: empty save slot warning prompt
-                        if (load_menu.get_item() == "SLOT 1")
+                        if (load_menu.get_item() == "SLOT 1  FULL")
                         {
                             save_loader.load_game("1");
                             stage = Stage::GAME;
                         }
-                        else if (load_menu.get_item() == "SLOT 2")
+                        else if (load_menu.get_item() == "SLOT 2 FULL")
                         {
                             save_loader.load_game("2");
                             stage = Stage::GAME;
                         }
-                        else if (load_menu.get_item() == "SLOT 3")
+                        else if (load_menu.get_item() == "SLOT 3 FULL")
                         {
                             save_loader.load_game("3");
                             stage = Stage::GAME;
@@ -562,6 +554,7 @@ int main(void)
                         stage = Stage::QUIT;
                         break;
                     }
+                    load_menu.update_items();
                     load_menu_renderer.draw();
                     load_menu_renderer.render();
                     usleep(10000);

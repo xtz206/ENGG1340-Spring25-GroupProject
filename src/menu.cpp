@@ -35,6 +35,39 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
+SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
+    : BasicMenu(t, {}), save_dumper(sd),
+      all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
+                 "SLOT 1  FULL", "SLOT 2  FULL", "SLOT 3  FULL"})
+{
+    items.push_back(all_items.at(0));
+}
+
+void SaveMenu::update_items(void)
+{
+    items.erase(items.begin() + 1, items.end());
+    items.push_back(all_items.at(save_dumper.is_slot_empty("1") ? 1 : 4));
+    items.push_back(all_items.at(save_dumper.is_slot_empty("2") ? 2 : 5));
+    items.push_back(all_items.at(save_dumper.is_slot_empty("3") ? 3 : 6));
+}
+
+LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
+    : BasicMenu(t, {}), save_loader(sl),
+      all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
+                 "SLOT 1  FULL", "SLOT 2  FULL", "SLOT 3  FULL"})
+{
+    items.push_back(all_items.at(0));
+}
+void LoadMenu::update_items(void)
+{
+    items.erase(items.begin() + 1, items.end());
+    items.push_back(all_items.at(save_loader.is_slot_empty("1") ? 1 : 4));
+    items.push_back(all_items.at(save_loader.is_slot_empty("2") ? 2 : 5));
+    items.push_back(all_items.at(save_loader.is_slot_empty("3") ? 3 : 6));
+}
+
+
+
 OperationMenu::OperationMenu(Game &g)
     : ScrollMenu("Operation", {}, 9), game(g),
       all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
