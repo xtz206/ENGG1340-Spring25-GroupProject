@@ -4,7 +4,7 @@
 
 ## Render && UI
 
-- [ ] Render color for maps
+- [x] Render color for maps
 - [ ] Colorful UI
 - [x] Better way to showcase operation and INFOs
 - [x] showing counts of attack missiles
@@ -49,9 +49,8 @@
 
 - [x] Levels of game
 - [x] Basic Text Tutorial (i.e. how to play, keyboard shortcuts and actions)
-- [ ] Restart Button at pause menu and end menu
-- [ ] Change another map
-- [ ] overwrite/empty warning when saving/loading
+- [x] Change another map
+- [x] overwrite/empty warning when saving/loading
 
 ---
 
@@ -60,7 +59,7 @@
 - [x] Counting Turns; Missile launched; Missile defended;
 - [x] Generate and store score
 - [x] Data make game more realistic (e.g. casualty)
-- [ ] Display statistics at end of game
+- [x] Display statistics at end of game
 
 ---
 
