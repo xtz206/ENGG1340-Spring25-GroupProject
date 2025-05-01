@@ -127,6 +127,7 @@ class MissileManager
 
 private:
     int id;
+    Size size;
     std::vector<City> &cities;
     std::vector<Missile *> missiles;
     std::array<int, 5> speed_list = {0};

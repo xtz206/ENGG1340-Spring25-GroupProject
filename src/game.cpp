@@ -365,9 +365,9 @@ void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_l
         {
             target_index = targetDist(rng);
         }
-        // randomly generate a pos with in {(0,0),(20,100)}
-        std::uniform_int_distribution<> xDist(0, 99);
-        std::uniform_int_distribution<> yDist(0, 19);
+        // randomly generate a pos with in {(y,x) | 0 < y <= size.h, 0 < x <= size.w}
+        std::uniform_int_distribution<> xDist(0, size.w + 1);
+        std::uniform_int_distribution<> yDist(0, size.h + 1);
         std::uniform_int_distribution<> edgeDist(0, 3);
 
         int edge = edgeDist(rng);
@@ -378,13 +378,13 @@ void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_l
             start = Position(yDist(rng), 0);
             break;
         case 1:
-            start = Position(yDist(rng), 99);
+            start = Position(yDist(rng), size.w + 1);
             break;
         case 2:
             start = Position(0, xDist(rng));
             break;
         case 3:
-            start = Position(19, xDist(rng));
+            start = Position(size.h + 1, xDist(rng));
             break;
         default:
             start = Position(0, 0);
