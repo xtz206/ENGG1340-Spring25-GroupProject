@@ -1155,10 +1155,13 @@ void Game::fix_city(void)
         return;
     }
     City &city = select_city();
-    // TODO: city countdown when fixing
-    // TODO: deposit cost when fixing
+    if (deposit < 5000)
+    {
+        insert_feedback("Deposit not enough (5000) to fix city");
+        return;
+    }
     insert_feedback("City Fixed, HP +100");
-    city.hitpoint += 100;
+    city.hitpoint += 500;
 }
 
 void Game::build_cruise(void)
@@ -1176,12 +1179,12 @@ void Game::build_cruise(void)
     }
     if (deposit < 200 && !en_enhanced_radar_I)
     {
-        insert_feedback("Deposit not enough to build cruise");
+        insert_feedback("Deposit not enough(200) to build cruise");
         return;
     }
     if (deposit < 100)
     {
-        insert_feedback("Deposit not enough to build cruise");
+        insert_feedback("Deposit not enough(100) to build cruise");
         return;
     }
     deposit -= en_enhanced_cruise_I ? 100 : 200;
@@ -1225,7 +1228,7 @@ void Game::build_standard_bomb(void)
     }
     if (deposit < 3000)
     {
-        insert_feedback("Deposit not enough to build standard bomb");
+        insert_feedback("Deposit not enough(3000) to build standard bomb");
         return;
     }
 
@@ -1272,7 +1275,7 @@ void Game::build_dirty_bomb(void)
     }
     if (deposit < 2000)
     {
-        insert_feedback("Deposit not enough to build dirty bomb");
+        insert_feedback("Deposit not enough(2000) to build dirty bomb");
         return;
     }
 
@@ -1326,7 +1329,7 @@ void Game::build_hydrogen_bomb(void)
     }
     if (deposit < 6000)
     {
-        insert_feedback("Deposit not enough to build hydrogen bomb");
+        insert_feedback("Deposit not enough(6000) to build hydrogen bomb");
         return;
     }
     deposit -= 5000;
@@ -1373,7 +1376,7 @@ void Game::activate_iron_curtain(void)
     }
     if (deposit < 10000)
     {
-        insert_feedback("Deposit not enough to activate iron curtain");
+        insert_feedback("Deposit not enough(10000) to activate iron curtain");
         return;
     }
     insert_feedback("Iron Curtain Activated");
