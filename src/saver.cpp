@@ -33,11 +33,13 @@ void AssetLoader::load_general(void)
         {
             getline(iss, word);
             game.size.h = std::stoi(word);
+            game.missile_manager.size.h = game.size.h;
         }
         else if (word == "size_x")
         {
             getline(iss, word);
             game.size.w = std::stoi(word);
+            game.missile_manager.size.w = game.size.w;
         }
         else if (word == "cursor_y")
         {
@@ -521,11 +523,13 @@ void SaveLoader::load_general()
         {
             getline(iss, word);
             game.size.h = std::stoi(word);
+            game.missile_manager.size.h = game.size.h; 
         }
         else if (word == "size_x")
         {
             getline(iss, word);
             game.size.w = std::stoi(word);
+            game.missile_manager.size.w = game.size.w;
         }
         else if (word == "cursor_y")
         {
