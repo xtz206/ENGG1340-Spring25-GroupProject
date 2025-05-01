@@ -1,10 +1,10 @@
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <ctime>
-#include <fstream>
 #include <string>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <ctime>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "saver.h"
 #include "game.h"
 
