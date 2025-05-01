@@ -535,16 +535,19 @@ int main(void)
                         // TODO: empty save slot warning prompt
                         if (load_menu.get_item() == "SLOT 1  FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("1");
                             stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "SLOT 2 FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("2");
                             stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "SLOT 3 FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("3");
                             stage = Stage::GAME;
                         }

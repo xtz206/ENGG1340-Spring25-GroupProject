@@ -277,7 +277,7 @@ void SaveDumper::save_general(std::string filepath)
     general_log.close();
 }
 
-void SaveDumper::save_attack_missile(std::string filepath)
+void SaveDumper::save_attack_missiles(std::string filepath)
 {
     std::string filename = filepath + "attack_missiles.txt";
     std::ofstream attack_missile_log(filename);
@@ -293,9 +293,9 @@ void SaveDumper::save_attack_missile(std::string filepath)
     attack_missile_log.close();
 }
 
-void SaveDumper::save_cruise_missile(std::string filepath)
+void SaveDumper::save_cruise_missiles(std::string filepath)
 {
-    std::string filename = filepath + "cruise_missile.txt";
+    std::string filename = filepath + "cruise_missiles.txt";
     std::ofstream cruise_missile_log(filename);
     if (cruise_missile_log.is_open())
     {
@@ -445,8 +445,8 @@ bool SaveDumper::save_game(std::string index)
     /*TODO: add hint to notify user slot is occupied*/
 
     save_general(sub_folderpath);
-    save_attack_missile(sub_folderpath);
-    save_cruise_missile(sub_folderpath);
+    save_attack_missiles(sub_folderpath);
+    save_cruise_missiles(sub_folderpath);
     save_cities(sub_folderpath);
     save_tech_tree(sub_folderpath);
     return true;
@@ -668,7 +668,7 @@ void SaveLoader::load_general()
     }
 }
 
-void SaveLoader::load_attack_missile()
+void SaveLoader::load_attack_missiles()
 {
     std::string filename = folderpath + "attack_missiles.txt";
     std::ifstream attack_missile_log(filename);
@@ -718,7 +718,7 @@ void SaveLoader::load_attack_missile()
     }
 }
 
-void SaveLoader::load_cruise_missile()
+void SaveLoader::load_cruise_missiles()
 {
     std::string filename = folderpath + "cruise_missiles.txt";
     std::ifstream cruise_missile_log(filename);
@@ -874,6 +874,17 @@ void SaveLoader::load_tech_tree()
     }
 }
 
+bool SaveLoader::is_slot_empty(std::string index)
+{
+    std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
+    struct stat sub_info;
+    if (stat(sub_folderpath_by_time.c_str(), &sub_info) == 0 && (sub_info.st_mode & S_IFDIR))
+    {
+        return false;
+    }
+    return true;
+}
+
 bool SaveLoader::load_game(const std::string &index)
 {
     folderpath = "../save/game_" + index + "/";
@@ -890,8 +901,8 @@ bool SaveLoader::load_game(const std::string &index)
 
     load_general();
     load_cities();
-    load_attack_missile();
-    load_cruise_missile();
+    load_attack_missiles();
+    load_cruise_missiles();
     load_tech_tree();
     return true;
 }

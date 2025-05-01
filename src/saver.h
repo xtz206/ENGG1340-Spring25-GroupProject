@@ -32,8 +32,8 @@ public:
     bool save_game(std::string index);
     void save_cities(std::string filepath);
     void save_general(std::string filepath);
-    void save_attack_missile(std::string filepath);
-    void save_cruise_missile(std::string filepath);
+    void save_attack_missiles(std::string filepath);
+    void save_cruise_missiles(std::string filepath);
     void save_tech_tree(std::string filepath);
 };
 
@@ -45,12 +45,12 @@ private:
 
 public:
     SaveLoader(Game &g) : game(g), folderpath("../save/") {};
-    bool is_slot_empty(std::string index) { return true; }; // DEBUG: impl this function
+    bool is_slot_empty(std::string index);
     bool load_game(const std::string &index);
     void load_cities();
     void load_general();
-    void load_attack_missile();
-    void load_cruise_missile();
+    void load_attack_missiles();
+    void load_cruise_missiles();
     void load_tech_tree();
 };
 #endif
