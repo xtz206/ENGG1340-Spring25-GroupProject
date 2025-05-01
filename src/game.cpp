@@ -1135,14 +1135,14 @@ void Game::hit_city(City &city, int damage)
     damage = en_self_defense_sys ? damage / 2 : damage;
     if (damage > city.hitpoint && city.hitpoint > 0)
     {
-        insert_feedback(city.name + " Destroyed by Attack Missile!");
+        insert_feedback(AttrString(city.name + " Destroyed by Attack Missile!", COLOR_PAIR(2)));
         city.hitpoint = 0;
         score -= 50;
         casualty += 100;
     }
     else
     {
-        insert_feedback(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)));
+        insert_feedback(AttrString(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)), COLOR_PAIR(2)));
         city.hitpoint -= damage;
         score -= 20;
         casualty += 30;
