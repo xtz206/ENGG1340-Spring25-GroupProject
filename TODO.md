@@ -74,3 +74,77 @@
 - [ ] Test Control of Flow / Keyboard Shortcuts
 - [ ] Test Game Difficulty & Balance, then fine-tune parameters accordingly
 - [ ] Fix bugs in file saving/loading
+
+---
+
+## Documentation
+
+### README.md
+
+- [ ] Team member identification
+- [ ] Game description
+- [ ] Feature Implemented(Random/DataStructure/DMM/FileIO/MultiFile/DifficultyLevel)
+- [ ] List of Libraries (features)
+- [ ] Compilation and Execution Instructions
+
+### Video
+
+- [ ] Game Play
+- [ ] Features
+- [ ] Random
+- [ ] FileIO
+
+### game.cpp
+
+- [ ] File Header
+- [x] Function Header
+- [x] Inline comments
+
+### game.h
+
+- [ ] File Header
+- [ ] Class Header
+
+### main.cpp
+
+- [ ] File Header
+- [ ] Function Header
+- [ ] Inline comments
+
+### menu.cpp
+
+- [ ] File Header
+- [ ] Function Header
+- [ ] Inline comments
+
+### menu.h
+
+- [ ] File Header
+- [ ] Class Header
+
+### render.cpp
+
+- [ ] File Header
+- [ ] Function Header
+- [ ] Inline comments
+
+### render.h
+
+- [ ] File Header
+- [ ] Class Header
+
+### saver.cpp
+
+- [ ] File Header
+- [ ] Function Header
+- [ ] Inline comments
+
+### saver.h
+
+- [ ] File Header
+- [ ] Class Header
+
+### utils.h
+
+- [x] File Header
+- [x] Class Header
