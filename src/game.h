@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 #include "saver.h"
-#include <deque>
 
 #define inf 0x3f3f3f3f
 
@@ -231,13 +230,6 @@ private:
     bool check_available(TechNode *node, int deposit) const;
 };
 
-struct CasualtyReport {
-    std::string city_name;
-    int damage;
-    int remaining_hp;
-    int turn;
-};
-
 class Game
 {
     friend class GameRenderer;
@@ -252,6 +244,9 @@ private:
     int deposit;
     int difficulty_level;
     int enemy_hitpoint;
+    int score = 0;
+    int casualty = 0;
+
     // NOTE: -1 means not built yet, 0 means built, otherwise means building (remaining time)
     int standard_bomb_counter = -1;
     int dirty_bomb_counter = -1;
@@ -259,7 +254,6 @@ private:
     std::vector<City> cities;
     std::vector<std::string> background;
     std::vector<std::string> feedbacks;
-    std::deque<CasualtyReport> casualty_reports;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -283,11 +277,7 @@ private:
     bool iron_curtain_activated = false;
     int iron_curtain_cnt = 0;
 
-    int score = 0;
-
 public:
-    
-
     Game(Size s, std::vector<City> cts, std::vector<std::string> bg);
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);
@@ -341,14 +331,9 @@ public:
 
     void reset(void);
 
-    int get_score() const { return score; }
-    void add_score(int value) { score += value; }
-
-    void add_casualty_report(const std::string &name, int dmg, int hp) {
-        casualty_reports.push_front({name, dmg, hp, turn});
-        if (casualty_reports.size() > 5) casualty_reports.pop_back(); 
-    }
-    const std::deque<CasualtyReport>& get_casualty_reports() const { return casualty_reports; }
+    // TODO: score-related functions
+    int get_score(void) const { return score; };
+    int get_casualty(void) const { return casualty; };
 };
 
 #endif

@@ -26,7 +26,6 @@ public:
 
 class BasicMenu : public Menu
 {
-
 public:
     BasicMenu(const std::string &t, const std::vector<std::string> &it) : Menu(t, it) {};
 };

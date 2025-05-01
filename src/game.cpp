@@ -583,7 +583,6 @@ std::vector<std::string> Game::get_general_info(void)
     info.push_back("Turn: " + std::to_string(turn));
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
-    info.push_back("Score: " + std::to_string(score));
     info.push_back("Enemy HP: " + std::to_string(enemy_hitpoint));
     if (true) // DEBUG: en_self_defense_sys
     {
@@ -826,7 +825,6 @@ void Game::pass_turn(void)
         if (attack_missile->get_direction() == MissileDirection::A)
         {
             hit_city(attack_missile->city, attack_missile->damage);
-            insert_feedback(attack_missile->city.name + " Hit by Attack Missile!!!");
         }
     }
 
@@ -1019,58 +1017,72 @@ void Game::finish_research(TechNode *node)
     }
     if (node->name == "Enhanced Radar I")
     {
+        score += 10;
         en_enhanced_radar_I = true;
     }
     else if (node->name == "Enhanced Radar II")
     {
+        score += 20;
         en_enhanced_radar_II = true;
     }
     else if (node->name == "Enhanced Radar III")
     {
+        score += 30;
         en_enhanced_radar_III = true;
     }
     else if (node->name == "Enhanced Cruise I")
     {
+        score += 10;
         en_enhanced_cruise_I = true;
     }
     else if (node->name == "Enhanced Cruise II")
     {
+        score += 20;
         en_enhanced_cruise_II = true;
     }
     else if (node->name == "Enhanced Cruise III")
     {
+        score += 30;
         en_enhanced_cruise_III = true;
     }
     else if (node->name == "Self Defense System")
     {
+        score += 50;
         en_self_defense_sys = true;
     }
     else if (node->name == "Fortress City")
     {
+        score += 10;
         en_fortress_city = true;
     }
     else if (node->name == "Urgent Production")
     {
+        score += 20;
         en_urgent_production = true;
     }
     else if (node->name == "Evacuated Industry")
     {
+        score += 30;
         en_evacuated_industry = true;
     }
     else if (node->name == "Dirty Bomb")
     {
+        score += 10;
         en_dirty_bomb = true;
     }
     else if (node->name == "Fast Nuke")
     {
+        score += 20;
         en_fast_nuke = true;
     }
     else if (node->name == "Hydrogen Bomb")
     {
+        score += 30;
         en_hydrogen_bomb = true;
     }
     else if (node->name == "Iron Curtain")
     {
+        score += 50;
         en_iron_curtain = true;
     }
     else
@@ -1081,22 +1093,26 @@ void Game::finish_research(TechNode *node)
 
 void Game::hit_city(City &city, int damage)
 {
+    // TODO: score/casualty param fine tune
     if (iron_curtain_activated)
     {
-        insert_feedback("Iron Curtain Activated, Damage to " + city.name + " is reduced to 0");
+        insert_feedback("Iron Curtain Activated, " + city.name + " Not Damaged");
         return;
     }
-    if (!city.hitpoint - damage < 0)
+    damage = en_self_defense_sys ? damage / 2 : damage;
+    if (damage > city.hitpoint && city.hitpoint > 0)
     {
-        damage = city.hitpoint;
+        insert_feedback(city.name + " Destroyed by Attack Missile!");
         city.hitpoint = 0;
-        add_casualty_report(city.name, damage, city.hitpoint);
+        score -= 50;
+        casualty += 100;
     }
     else
     {
-        city.hitpoint -= damage / (en_fortress_city ? 2 : 1);
-        damage = damage / (en_fortress_city ? 2 : 1);
-        add_casualty_report(city.name, damage, city.hitpoint);
+        insert_feedback(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)));
+        city.hitpoint -= damage;
+        score -= 20;
+        casualty += 30;
     }
 }
 
@@ -1110,7 +1126,7 @@ void Game::fix_city(void)
     City &city = select_city();
     // TODO: city countdown when fixing
     // TODO: deposit cost when fixing
-    insert_feedback("City Fixed, Hitpoint +100");
+    insert_feedback("City Fixed, HP +100");
     city.hitpoint += 100;
 }
 
@@ -1203,6 +1219,7 @@ void Game::launch_standard_bomb(void)
     insert_feedback("Standard Bomb Hit, Enemy Hitpoint Reduced by 50");
     standard_bomb_counter = -1;
     enemy_hitpoint -= 50;
+    score += 20;
 }
 
 void Game::build_dirty_bomb(void)
@@ -1256,6 +1273,7 @@ void Game::launch_dirty_bomb(void)
     }
     insert_feedback("Dirty Bomb Hit, Enemy Hitpoint Reduced by 50");
     enemy_hitpoint -= 50;
+    score += 20;
 }
 
 void Game::build_hydrogen_bomb(void)
@@ -1307,6 +1325,7 @@ void Game::launch_hydrogen_bomb(void)
     }
     insert_feedback("Hydrogen Bomb Hit, Enemy Hitpoint Reduced by 500");
     enemy_hitpoint -= 500;
+    score += 50;
 }
 
 void Game::activate_iron_curtain(void)
