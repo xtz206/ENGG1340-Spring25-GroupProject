@@ -5,33 +5,9 @@
 #include <vector>
 #include <algorithm>
 #include "saver.h"
+#include "utils.h"
 
 #define inf 0x3f3f3f3f
-
-class Position
-{
-    // NOTE: The Position is (y, x) instead of (x, y)
-    //       This is to match the (line, col) system used by ncurses
-public:
-    union
-    {
-        int y;
-        int l; // line
-        int h; // height
-    };
-    union
-    {
-        int x;
-        int c; // col
-        int w; // width
-    };
-
-public:
-    Position() : y(0), x(0) {}
-    Position(int ny, int nx) : y(ny), x(nx) {}
-    bool operator==(const Position &p) const { return y == p.y && x == p.x; };
-};
-typedef Position Size;
 
 class City
 {
@@ -282,6 +258,7 @@ public:
     // NOTE: set difficulty and params used by missile_manager
     void set_difficulty(int lv);
 
+    const Size &get_size(void) const { return size; };
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
     const std::vector<std::string> &get_feedbacks(void) const { return feedbacks; };

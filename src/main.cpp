@@ -8,6 +8,7 @@
 #include "render.h"
 #include "loader.h"
 #include "saver.h"
+#include "utils.h"
 
 enum class Stage
 {
@@ -58,15 +59,15 @@ int main(void)
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
 
-        BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
-        BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);
-        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu);
-        BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
-        BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu);
-        BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu);
-        BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu);
-        GameRenderer game_renderer = GameRenderer(game, operation_menu);
-        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
+        BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
+        BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
+        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 40), Size(5, 40));
+        BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
+        BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu, Size(10, 30));
+        BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu, Size(10, 30));
+        BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu, Size(10, 30));
+        GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
+        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
 
         SaveDumper save_dumper = SaveDumper(game);
         SaveLoader save_loader = SaveLoader(game);

@@ -4,9 +4,30 @@
 #include <string>
 #include <vector>
 #include <ncurses.h>
+#include "utils.h"
 
-class Menu;
-class Game;
+class Window
+{
+private:
+    WINDOW *window;
+    Size size;
+    Position pos;
+
+public:
+    Window(WINDOW *win, Size s, Position p);
+    Window(Window &win, Size s, Position p);
+    ~Window(void) { delwin(window); };
+    void refresh(void) { wrefresh(window); };
+    void erase(void) { werase(window); };
+    void draw_margin(void) { box(window, 0, 0); };
+    void draw_hline(Position p, int len) { mvwhline(window, p.y, p.x, ACS_HLINE, len); };
+    void draw_vline(Position p, int len) { mvwvline(window, p.y, p.x, ACS_VLINE, len); };
+    void draw_char(Position p, chtype ch) { mvwaddch(window, p.y, p.x, ch); };
+    void print_move(Position p, const std::string &s, attr_t attr = A_NORMAL);
+    void print_left(int line, const std::string &s, attr_t attr = A_NORMAL);
+    void print_center(int line, const std::string &s, attr_t attr = A_NORMAL);
+    void print_right(int line, const std::string &s, attr_t attr = A_NORMAL);
+};
 
 class Renderer
 {
@@ -21,11 +42,15 @@ class BasicMenuRenderer : public Renderer
 {
 private:
     Menu &menu;
-    WINDOW *box_window;
-    WINDOW *item_window;
+
+    Size size;
+    Position pos;
+
+    Window box_window;
+    Window item_window;
 
 public:
-    BasicMenuRenderer(Menu &m) : menu(m) {};
+    BasicMenuRenderer(Menu &m, Size s);
 
     void init(void);
     void render(void);
@@ -36,12 +61,17 @@ class TutorialMenuRenderer : public Renderer
 {
 private:
     TutorialMenu &menu;
-    WINDOW *box_window;
-    WINDOW *page_window;
-    WINDOW *item_window;
+
+    Size page_size;
+    Size item_size;
+    Position pos;
+
+    Window box_window;
+    Window page_window;
+    Window item_window;
 
 public:
-    TutorialMenuRenderer(TutorialMenu &m) : menu(m) {};
+    TutorialMenuRenderer(TutorialMenu &m, Size ps, Size is);
 
     void init(void);
     void render(void);
@@ -52,12 +82,17 @@ class TechMenuRenderer : public Renderer
 {
 private:
     TechMenu &menu;
-    WINDOW *box_window;
-    WINDOW *item_window;
-    WINDOW *desc_window;
+
+    Size item_size;
+    Size desc_size;
+    Position pos;
+
+    Window box_window;
+    Window item_window;
+    Window desc_window;
 
 public:
-    TechMenuRenderer(TechMenu &m) : menu(m) {};
+    TechMenuRenderer(TechMenu &m, Size is, Size ds);
 
     void init(void);
     void render(void);
@@ -69,17 +104,26 @@ class GameRenderer : public Renderer
 private:
     Game &game;
     OperationMenu &menu;
-    WINDOW *box_window;
-    WINDOW *map_window;
-    WINDOW *general_info_window;
-    WINDOW *selected_info_window;
-    WINDOW *tech_info_window;
-    WINDOW *super_weapon_info;
-    WINDOW *operation_window;
-    WINDOW *feedback_window;
+
+    Size map_size;
+    Size info_size;
+    Size operation_size;
+    Size feedback_size;
+    std::vector<int> fields;
+    Position pos;
+
+    Window box_window;
+    Window map_window;
+    Window info_window;
+    Window general_info_window;
+    Window selected_info_window;
+    Window tech_info_window;
+    Window super_weapon_info_window;
+    Window operation_window;
+    Window feedback_window;
 
 public:
-    GameRenderer(Game &g, OperationMenu &m) : game(g), menu(m) {};
+    GameRenderer(Game &g, OperationMenu &m, Size s, const std::vector<int> &ls);
 
     void init(void);
     void render(void);
