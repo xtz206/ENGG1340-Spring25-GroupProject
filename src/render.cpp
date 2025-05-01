@@ -129,7 +129,25 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
-EndMenuRenderer::EndMenuRenderer(Game &g, BasicMenu &m, Size ds, Size is)
+void SaveMenuRenderer::draw(void)
+{
+    item_window.erase();
+    for (size_t index = 0; index < menu.get_items().size(); index++)
+    {
+        if (index == menu.get_cursor())
+        {
+            item_window.print_center(index, menu.get_item(index), A_REVERSE);
+        }
+        else
+        {
+            item_window.print_center(index, menu.get_item(index));
+        }
+    }
+
+    item_window.print_center(size.h - 2, "SAVE ON FULL WILL OVERWRITE");
+}
+
+EndMenuRenderer::EndMenuRenderer(Game &g, Menu &m, Size ds, Size is)
     : menu(m), game(g), desc_size(ds), item_size(is), pos((ALL_SIZE - Size(is.h + ds.h + 2, is.w + 2)) / 2),
       box_window(Window(stdscr, Size(is.h + ds.h + 3, is.w + 2), pos)),
       desc_window(Window(box_window, desc_size, pos + Size(1, 1))),

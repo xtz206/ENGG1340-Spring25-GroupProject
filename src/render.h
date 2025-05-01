@@ -40,7 +40,7 @@ public:
 
 class BasicMenuRenderer : public Renderer
 {
-private:
+protected:
     Menu &menu;
 
     Size size;
@@ -57,11 +57,20 @@ public:
     void draw(void);
 };
 
+class SaveMenuRenderer : public BasicMenuRenderer
+{
+
+public:
+    SaveMenuRenderer(Menu &m, Size s) : BasicMenuRenderer(m, s) {};
+
+    void draw(void);
+};
+
 class EndMenuRenderer : public Renderer
 {
 private:
     Game &game;
-    BasicMenu &menu;
+    Menu &menu;
 
     Size desc_size;
     Size item_size;
@@ -72,7 +81,7 @@ private:
     Window item_window;
 
 public:
-    EndMenuRenderer(Game &g, BasicMenu &m, Size ds, Size is);
+    EndMenuRenderer(Game &g, Menu &m, Size ds, Size is);
 
     void init(void);
     void render(void);

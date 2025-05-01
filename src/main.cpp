@@ -64,10 +64,10 @@ int main(void)
 
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
-        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 40), Size(5, 40));
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
-        BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu, Size(10, 30));
-        BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu, Size(10, 30));
+        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 40), Size(5, 40));
+        SaveMenuRenderer save_menu_renderer = SaveMenuRenderer(save_menu, Size(10, 30));
+        SaveMenuRenderer load_menu_renderer = SaveMenuRenderer(load_menu, Size(10, 30));
         EndMenuRenderer end_menu_renderer = EndMenuRenderer(game, end_menu, Size(10, 30), Size(5, 30));
         GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
@@ -477,19 +477,19 @@ int main(void)
 
                     case '\n':
                         // TODO: overwrite warning prompt
-                        if (save_menu.get_item() == "SLOT 1 EMPTY")
+                        if (save_menu.get_item() == "SLOT 1 EMPTY" || save_menu.get_item() == "SLOT 1 FULL")
                         {
-                            save_dumper.save_game("1");
+                            save_dumper.save_game("1", true);
                             stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 2 EMPTY")
+                        else if (save_menu.get_item() == "SLOT 2 EMPTY" || save_menu.get_item() == "SLOT 2 FULL")
                         {
-                            save_dumper.save_game("2");
+                            save_dumper.save_game("2", true);
                             stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 3 EMPTY")
+                        else if (save_menu.get_item() == "SLOT 3 EMPTY" || save_menu.get_item() == "SLOT 3 FULL")
                         {
-                            save_dumper.save_game("3");
+                            save_dumper.save_game("3", true);
                             stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "RETURN TO MENU")
