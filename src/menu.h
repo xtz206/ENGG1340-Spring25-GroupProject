@@ -53,7 +53,7 @@ public:
 class SaveMenu : public BasicMenu
 {
 private:
-    SaveDumper& save_dumper;
+    SaveDumper &save_dumper;
     std::vector<std::string> all_items;
 
 public:
@@ -66,10 +66,10 @@ class LoadMenu : public BasicMenu
 private:
     SaveLoader save_loader;
     std::vector<std::string> all_items;
+
 public:
     LoadMenu(const std::string &t, SaveLoader &sl);
     void update_items(void);
-
 };
 
 class OperationMenu : public ScrollMenu

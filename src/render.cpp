@@ -181,7 +181,7 @@ void SaveMenuRenderer::draw(void)
         }
     }
 
-    item_window.print_center(size.h - 2, "SAVE ON FULL WILL OVERWRITE", COLOR_PAIR(4));
+    item_window.print_center(size.h - 2, "SAVE ON FULL WILL OVERWRITE", COLOR_PAIR(3));
 }
 
 EndMenuRenderer::EndMenuRenderer(Game &g, Menu &m, Size ds, Size is)
@@ -422,7 +422,7 @@ void GameRenderer::draw(void)
                 map_window.print(Position(line, col), " ", COLOR_PAIR(0));
                 break;
             case '@':
-                map_window.print(Position(line, col), "@", COLOR_PAIR(4));
+                map_window.print(Position(line, col), "@", COLOR_PAIR(3));
                 break;
             case '#':
                 map_window.print(Position(line, col), " ", COLOR_PAIR(1));
@@ -477,7 +477,7 @@ void GameRenderer::draw(void)
 
         map_window.print(missile->get_position(), direction, COLOR_PAIR(missile->get_type() == MissileType::ATTACK ? 2 : 3));
     }
-    int color_pair = (game.is_on_land(game.get_cursor()) ? 0 : (game.is_on_sea(game.get_cursor()) ? 1 : 4));
+    int color_pair = (game.is_on_land(game.get_cursor()) ? 0 : (game.is_on_sea(game.get_cursor()) ? 1 : 3));
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(color_pair));
 
     // NOTE: draw info windows

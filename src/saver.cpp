@@ -539,7 +539,7 @@ void SaveLoader::load_general()
         {
             getline(iss, word);
             game.size.h = std::stoi(word);
-            game.missile_manager.size.h = game.size.h; 
+            game.missile_manager.size.h = game.size.h;
         }
         else if (word == "size_x")
         {
