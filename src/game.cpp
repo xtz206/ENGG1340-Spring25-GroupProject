@@ -9,10 +9,6 @@
 #include "game.h"
 #include "saver.h"
 
-// TODO: move macro to a separate header file
-#define DEFEND_RADIUS 10
-#define CRUISE_BUILD_TIME 5
-
 /**
  * @brief Constructor for the Missile class.
  *
@@ -291,7 +287,7 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
             target_missile = attack_missile;
         }
     }
-    if (target_missile == nullptr || target_distance > DEFEND_RADIUS) // Check if no target or too far
+    if (target_missile == nullptr || target_distance > 10) // Check if no target or too far
     {
         return false; // No cruise missile created
     }
@@ -351,8 +347,7 @@ void MissileManager::remove_missiles(void)
         }
     }
 }
-#define HP_PHASE 200
-#define TURN_PHASE 100
+
 /**
  * @brief Gets the process level based on the turn and hitpoint.
  *
@@ -362,9 +357,9 @@ void MissileManager::remove_missiles(void)
  */
 int MissileManager::get_process_level(int turn, int hitpoint)
 {
-    int HP_factor = hitpoint / HP_PHASE; // Calculate the HP factor
-    int turn_factor = turn / TURN_PHASE; // Calculate the turn factor
-    if (turn_factor > 4)                 // Limit the turn factor
+    int HP_factor = hitpoint / 200; // Calculate the HP factor
+    int turn_factor = turn / 100;   // Calculate the turn factor
+    if (turn_factor > 4)            // Limit the turn factor
     {
         turn_factor = 4;
     }
@@ -559,13 +554,11 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     TechNode *urgent_production = new TechNode("Urgent Production", {"Increase cities's base production by 200%"}, 5000, 30, {fortress_city});
     TechNode *evacuated_industry = new TechNode("Evacuated Industry", {"City can maintain base production and missile", "storage even after destroyed"}, 10000, 50, {urgent_production});
 
-    // TODO: change effects into more innovative ones
     TechNode *dirty_bomb = new TechNode("Dirty Bomb", {"Allow to launch a new counter-attack missile", "with 50% cost but 75% hit rate"}, 2000, 10, {});
     TechNode *fast_nuke = new TechNode("Fast Nuke", {"Reduce counter-attack missile build-time by 50%"}, 5000, 30, {dirty_bomb});
     TechNode *hydrogen_bomb = new TechNode("Hydrogen Bomb", {"Allow to launch a new counter-attack missile with 500% damage", "at the expense of 50% hit rate and higher building cost"}, 10000, 50, {fast_nuke});
 
     TechNode *iron_curtain = new TechNode("Iron Curtain", {"All your cities will not get damage in next 50 turns"}, 2000, 10, {hydrogen_bomb, evacuated_industry});
-    // TODO: add more techs
 
     nodes.push_back(enhanced_radar_I);
     nodes.push_back(enhanced_radar_II);
@@ -797,7 +790,6 @@ void Game::move_cursor(Position dcursor)
  */
 void Game::pass_turn(void)
 {
-    // TODO: add keyboard shortcuts to select city
     missile_manager.remove_missiles(); // Remove exploded missiles
     missile_manager.update_missiles(); // Update missile positions
 
@@ -937,7 +929,6 @@ bool Game::is_selected_missile(void)
 {
     for (auto &missile : missile_manager.get_attack_missiles())
     {
-        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1))
         {
             return true; // Missile is selected
@@ -954,7 +945,6 @@ bool Game::is_selected_city(void)
 {
     for (auto &city : cities)
     {
-        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1))
         {
             return true; // City is selected
@@ -976,7 +966,6 @@ Missile &Game::select_missile(void)
     }
     for (auto &missile : missile_manager.get_attack_missiles())
     {
-        // TODO: replace 1 with macro MISSILE_SELECT_RANGE
         if (is_in_range(cursor, missile->get_position(), 1)) // Check if cursor is in range of missile
         {
             return *missile; // Return selected missile
@@ -999,7 +988,6 @@ City &Game::select_city(void)
 
     for (auto &city : cities)
     {
-        // TODO: replace 1 with macro CITY_SELECT_RANGE
         if (is_in_range(cursor, city.position, 1)) // Check if cursor is in range of city
         {
             return city; // Return selected city
@@ -1209,7 +1197,7 @@ void Game::build_cruise(void)
         return;
     }
     deposit -= en_enhanced_cruise_I ? 100 : 200;
-    city.countdown = CRUISE_BUILD_TIME; // Start the build countdown
+    city.countdown = 5; // Start the build countdown
 }
 
 /**

@@ -472,7 +472,6 @@ bool SaveDumper::save_game(std::string index)
 
     if (!is_slot_empty(index))
     {
-        // TODO: replace system call with C++ API
         // remove the existing folder
         std::string command = "rm -rf " + sub_folderpath;
         if (system(command.c_str()) != 0)
@@ -484,7 +483,6 @@ bool SaveDumper::save_game(std::string index)
     {
         throw std::runtime_error("Cannot create save folder");
     }
-    /*TODO: add hint to notify user slot is occupied*/
 
     save_general(sub_folderpath);
     save_attack_missiles(sub_folderpath);
