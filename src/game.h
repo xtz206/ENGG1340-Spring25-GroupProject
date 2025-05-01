@@ -309,7 +309,7 @@ public:
     void check_iron_curtain(void);
     void self_defense(void);
 
-    // TODO: score-related functions
+    // NOTE: score-related functions
     int get_score(void) const { return score; };
     int get_casualty(void) const { return casualty; };
     bool check_game_over(void);
