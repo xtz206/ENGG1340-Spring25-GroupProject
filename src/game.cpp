@@ -102,20 +102,21 @@ void Missile::move(void)
  */
 void Missile::move_step(void)
 {
-    switch (get_direction()) // Determine direction and move accordingly
+    // Determine direction and move accordingly
+    switch (get_direction())
     {
     case MissileDirection::N:
-        position.y--; // Move North
+        position.y--;
         return;
     case MissileDirection::NE:
         position.y--;
-        position.x++; // Move East
+        position.x++;
         return;
     case MissileDirection::E:
         position.x++;
         return;
     case MissileDirection::SE:
-        position.y++; // Move South
+        position.y++;
         position.x++;
         return;
     case MissileDirection::S:
@@ -123,7 +124,7 @@ void Missile::move_step(void)
         return;
     case MissileDirection::SW:
         position.y++;
-        position.x--; // Move West
+        position.x--;
         return;
     case MissileDirection::W:
         position.x--;
