@@ -1,2 +1,0 @@
-id,y,x,target_id,damage,speed
-13,9,61,8,100,2

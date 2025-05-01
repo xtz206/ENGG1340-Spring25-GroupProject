@@ -6,8 +6,23 @@
 #include "game.h"
 #include "menu.h"
 #include "render.h"
-#include "loader.h"
 #include "saver.h"
+#include "utils.h"
+
+enum class Stage
+{
+    TITLE_MENU,
+    START_MENU,
+    LEVEL_MENU,
+    TUTORIAL_MENU,
+    GAME,
+    TECH_MENU,
+    PAUSE_MENU,
+    SAVE_MENU,
+    LOAD_MENU,
+    END_MENU,
+    QUIT
+};
 
 void init(void)
 {
@@ -18,6 +33,12 @@ void init(void)
     start_color();
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
+
+    init_pair(1, COLOR_BLACK, COLOR_CYAN);
+    init_pair(2, COLOR_WHITE, COLOR_RED);
+    init_pair(3, COLOR_WHITE, COLOR_YELLOW);
+    init_pair(4, COLOR_WHITE, COLOR_GREEN);
+    
 }
 
 int main(void)
@@ -27,56 +48,65 @@ int main(void)
         init();
 
         short key;
-        Loader loader = Loader();
-        // TODO: store menu title and buttons in separate file instead of hardcoding
-        // TODO: button name localization
-        //       replace the strings with a vector<string> or map<string, string> or macro
-        BasicMenu start_menu = BasicMenu("MISSILE COMMANDER", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
-        BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
-        BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
-        BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
-        BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN"});
-        // DEBUG: the 'DEBUG' button is just for testing, remove later
-        BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
-        Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        OperationMenu operation_menu = OperationMenu(game);
-        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
-        TutorialMenu tutorial_menu = TutorialMenu({{
-                                                       "===== Controls =====",
-                                                       "W/A/S/D  - Move Cursor",
-                                                       "Tab      - Switch Cities",
-                                                       "Enter    - Pass Turn",
-                                                       "F        - Repair City",
-                                                       "L        - Launch Missile",
-                                                       "R        - Research Tech",
-                                                       "ESC      - Pause/Open Menu",
-                                                   },
-                                                   {"===== Objectives =====",
-                                                    "Protect cities from missiles!",
-                                                    "Use research to unlock defenses."}});
+        Stage stage = Stage::TITLE_MENU;
 
-        BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
-        BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);
-        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu);
-        BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu);
-        BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu);
-        BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu);
-        BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu);
-        GameRenderer game_renderer = GameRenderer(game, operation_menu);
-        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
-
+        Game game = Game();
         SaveDumper save_dumper = SaveDumper(game);
         SaveLoader save_loader = SaveLoader(game);
+        AssetLoader asset_loader = AssetLoader(game);
+        asset_loader.load_general();
 
-        start_menu.activate();
-        start_menu_renderer.init();
+        TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
+        BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
+        BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
+        BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
+        SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
+        LoadMenu load_menu = LoadMenu("LOAD GAME", save_loader);
+        BasicMenu end_menu = BasicMenu("GAME END", {"RETURN TO MENU", "QUIT"});
+        OperationMenu operation_menu = OperationMenu(game);
+        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
+        TutorialMenu tutorial_menu = TutorialMenu();
+
+        TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 120));
+        BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
+        BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
+        BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
+        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 40), Size(5, 40));
+        SaveMenuRenderer save_menu_renderer = SaveMenuRenderer(save_menu, Size(10, 30));
+        SaveMenuRenderer load_menu_renderer = SaveMenuRenderer(load_menu, Size(10, 30));
+        EndMenuRenderer end_menu_renderer = EndMenuRenderer(game, end_menu, Size(10, 30), Size(5, 30));
+        GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
+        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
 
         while (true)
         {
-            if (start_menu.is_activated())
+            if (stage == Stage::TITLE_MENU)
+            {
+                title_menu_renderer.init();
+                while (stage == Stage::TITLE_MENU)
+                {
+                    key = getch();
+
+                    switch (key)
+                    {
+                    case '\033':
+                        stage = Stage::QUIT;
+                        break;
+                    case ERR:
+                        break;
+                    default:
+                        stage = Stage::START_MENU;
+                        break;
+                    }
+                    title_menu_renderer.draw();
+                    title_menu_renderer.render();
+                    usleep(10000);
+                }
+            }
+            else if (stage == Stage::START_MENU)
             {
                 start_menu_renderer.init();
-                while (start_menu.is_activated())
+                while (stage == Stage::START_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -95,27 +125,24 @@ int main(void)
                     case '\n':
                         if (start_menu.get_item() == "START THE GAME")
                         {
-                            start_menu.deactivate();
-                            level_menu.activate();
+                            stage = Stage::LEVEL_MENU;
                         }
                         else if (start_menu.get_item() == "LOAD GAME")
                         {
-                            start_menu.deactivate();
-                            load_menu.activate();
+                            stage = Stage::LOAD_MENU;
                         }
                         else if (start_menu.get_item() == "TUTORIAL")
                         {
-                            start_menu.deactivate();
-                            tutorial_menu.activate();
+                            stage = Stage::TUTORIAL_MENU;
                         }
                         else if (start_menu.get_item() == "QUIT")
                         {
-                            start_menu.deactivate();
+                            stage = Stage::QUIT;
                         }
                         break;
 
                     case '\033':
-                        start_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     start_menu_renderer.draw();
@@ -123,10 +150,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-            else if (level_menu.is_activated())
+            else if (stage == Stage::LEVEL_MENU)
             {
                 level_menu_renderer.init();
-                while (level_menu.is_activated())
+                while (stage == Stage::LEVEL_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -145,26 +172,26 @@ int main(void)
                     case '\n':
                         if (level_menu.get_item() == "EASY")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(1);
-                            level_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         else if (level_menu.get_item() == "NORMAL")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(2);
-                            level_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         else if (level_menu.get_item() == "HARD")
                         {
+                            asset_loader.reset();
                             game.set_difficulty(3);
-                            level_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         break;
 
                     case '\033':
-                        level_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     level_menu_renderer.draw();
@@ -172,10 +199,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-            else if (tutorial_menu.is_activated())
+            else if (stage == Stage::TUTORIAL_MENU)
             {
                 tutorial_menu_renderer.init();
-                while (tutorial_menu.is_activated())
+                while (stage == Stage::TUTORIAL_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -198,18 +225,24 @@ int main(void)
                     case '\n':
                         if (tutorial_menu.get_item() == "RETURN TO MENU")
                         {
-                            tutorial_menu.deactivate();
-                            start_menu.activate();
+                            stage = Stage::START_MENU;
+                        }
+                        else if (tutorial_menu.get_item() == "NEXT PAGE")
+                        {
+                            tutorial_menu.next_page();
+                        }
+                        else if (tutorial_menu.get_item() == "PREV PAGE")
+                        {
+                            tutorial_menu.prev_page();
                         }
                         break;
 
                     case 'p':
-                        tutorial_menu.deactivate();
-                        pause_menu.activate();
+                        stage = Stage::START_MENU;
                         break;
 
                     case '\033':
-                        tutorial_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     tutorial_menu_renderer.draw();
@@ -217,11 +250,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-
-            else if (game.is_activated())
+            else if (stage == Stage::GAME)
             {
                 game_renderer.init();
-                while (game.is_activated())
+                while (stage == Stage::GAME)
                 {
                     key = getch();
                     switch (key)
@@ -249,8 +281,7 @@ int main(void)
                     case '\n':
                         if (operation_menu.get_item() == "RESEARCH")
                         {
-                            game.deactivate();
-                            tech_menu.activate();
+                            stage = Stage::TECH_MENU;
                         }
                         else if (operation_menu.get_item() == "FIX")
                         {
@@ -329,14 +360,12 @@ int main(void)
                         game.pass_turn();
                         break;
                     case 'p':
-                        game.deactivate();
-                        pause_menu.activate();
+                        stage = Stage::PAUSE_MENU;
                         break;
 
                     // NOTE: keyboard shortcuts for common operations
                     case 'r':
-                        game.deactivate();
-                        tech_menu.activate();
+                        stage = Stage::TECH_MENU;
                         break;
                     case 'f':
                         game.fix_city();
@@ -349,13 +378,12 @@ int main(void)
                         break;
 
                     case '\033':
-                        game.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
-                    if (game.is_game_over())
+                    if (game.check_game_over())
                     {
-                        game.deactivate();
-                        end_menu.activate();
+                        stage = Stage::END_MENU;
                         break;
                     }
                     operation_menu.update_items();
@@ -364,10 +392,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-            else if (pause_menu.is_activated())
+            else if (stage == Stage::PAUSE_MENU)
             {
                 pause_menu_renderer.init();
-                while (pause_menu.is_activated())
+                while (stage == Stage::PAUSE_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -386,33 +414,28 @@ int main(void)
                     case '\n':
                         if (pause_menu.get_item() == "RESUME")
                         {
-                            pause_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         else if (pause_menu.get_item() == "RETURN TO MENU")
                         {
-                            pause_menu.deactivate();
-                            game.deactivate();
-                            start_menu.activate();
+                            stage = Stage::START_MENU;
                         }
                         else if (pause_menu.get_item() == "SAVE GAME")
                         {
-                            pause_menu.deactivate();
-                            save_menu.activate();
+                            stage = Stage::SAVE_MENU;
                         }
                         else if (pause_menu.get_item() == "QUIT")
                         {
-                            pause_menu.deactivate();
+                            stage = Stage::QUIT;
                         }
                         break;
 
                     case 'p':
-                        pause_menu.deactivate();
-                        game.activate();
+                        stage = Stage::GAME;
                         break;
 
                     case '\033':
-                        pause_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     pause_menu_renderer.draw();
@@ -420,10 +443,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-            else if (tech_menu.is_activated())
+            else if (stage == Stage::TECH_MENU)
             {
                 tech_menu_renderer.init();
-                while (tech_menu.is_activated())
+                while (stage == Stage::TECH_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -440,10 +463,9 @@ int main(void)
                         break;
 
                     case '\n':
-                        if (tech_menu.get_item() == "Return to Game")
+                        if (tech_menu.get_item() == "RETURN TO GAME")
                         {
-                            tech_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         else if (tech_menu.check_tech_node())
                         {
@@ -453,12 +475,11 @@ int main(void)
                         break;
 
                     case 'r':
-                        tech_menu.deactivate();
-                        game.activate();
+                        stage = Stage::GAME;
                         break;
 
                     case '\033':
-                        tech_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     tech_menu_renderer.draw();
@@ -466,10 +487,10 @@ int main(void)
                     usleep(10000);
                 }
             }
-            else if (save_menu.is_activated())
+            else if (stage == Stage::SAVE_MENU)
             {
                 save_menu_renderer.init();
-                while (save_menu.is_activated())
+                while (stage == Stage::SAVE_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -486,54 +507,41 @@ int main(void)
                         break;
 
                     case '\n':
-                        // TODO: overwrite warning prompt
-                        if (save_menu.get_item() == "SLOT 1")
+                        if (save_menu.get_item() == "SLOT 1 EMPTY" || save_menu.get_item() == "SLOT 1  FULL")
                         {
-                            if (!save_dumper.save_game("1"))
-                            {
-                                save_dumper.save_game("1", true);
-                            }
-                            save_menu.deactivate();
-                            pause_menu.activate();
+                            save_dumper.save_game("1");
+                            stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 2")
+                        else if (save_menu.get_item() == "SLOT 2 EMPTY" || save_menu.get_item() == "SLOT 2  FULL")
                         {
-                            if (!save_dumper.save_game("2"))
-                            {
-                                save_dumper.save_game("2", true);
-                            }
-                            save_menu.deactivate();
-                            pause_menu.activate();
+                            save_dumper.save_game("2");
+                            stage = Stage::PAUSE_MENU;
                         }
-                        else if (save_menu.get_item() == "SLOT 3")
+                        else if (save_menu.get_item() == "SLOT 3 EMPTY" || save_menu.get_item() == "SLOT 3  FULL")
                         {
-                            if (!save_dumper.save_game("3"))
-                            {
-                                save_dumper.save_game("3", true);
-                            }
-                            save_menu.deactivate();
-                            pause_menu.activate();
+                            save_dumper.save_game("3");
+                            stage = Stage::PAUSE_MENU;
                         }
                         else if (save_menu.get_item() == "RETURN TO MENU")
                         {
-                            save_menu.deactivate();
-                            pause_menu.activate();
+                            stage = Stage::PAUSE_MENU;
                         }
                         break;
 
                     case '\033':
-                        save_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
+                    save_menu.update_items();
                     save_menu_renderer.draw();
                     save_menu_renderer.render();
                     usleep(10000);
                 }
             }
-            else if (load_menu.is_activated())
+            else if (stage == Stage::LOAD_MENU)
             {
                 load_menu_renderer.init();
-                while (load_menu.is_activated())
+                while (stage == Stage::LOAD_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -550,45 +558,44 @@ int main(void)
                         break;
 
                     case '\n':
-                        // TODO: empty save slot warning prompt
-                        if (load_menu.get_item() == "SLOT 1")
+                        if (load_menu.get_item() == "SLOT 1  FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("1");
-                            load_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
-                        else if (load_menu.get_item() == "SLOT 2")
+                        else if (load_menu.get_item() == "SLOT 2 FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("2");
-                            load_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
-                        else if (load_menu.get_item() == "SLOT 3")
+                        else if (load_menu.get_item() == "SLOT 3 FULL")
                         {
+                            asset_loader.reset();
                             save_loader.load_game("3");
-                            load_menu.deactivate();
-                            game.activate();
+                            stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "RETURN TO MENU")
                         {
-                            load_menu.deactivate();
-                            start_menu.activate();
+                            stage = Stage::START_MENU;
                         }
                         break;
 
                     case '\033':
-                        load_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
+                    load_menu.update_items();
                     load_menu_renderer.draw();
                     load_menu_renderer.render();
                     usleep(10000);
                 }
             }
-            else if (end_menu.is_activated())
+            else if (stage == Stage::END_MENU)
             {
                 end_menu_renderer.init();
-                while (end_menu.is_activated())
+                while (stage == Stage::END_MENU)
                 {
                     key = getch();
                     switch (key)
@@ -607,17 +614,16 @@ int main(void)
                     case '\n':
                         if (end_menu.get_item() == "RETURN TO MENU")
                         {
-                            end_menu.deactivate();
-                            start_menu.activate();
+                            stage = Stage::START_MENU;
                         }
                         else if (end_menu.get_item() == "QUIT")
                         {
-                            end_menu.deactivate();
+                            stage = Stage::QUIT;
                         }
                         break;
 
                     case '\033':
-                        end_menu.deactivate();
+                        stage = Stage::QUIT;
                         break;
                     }
                     end_menu_renderer.draw();

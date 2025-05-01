@@ -5,7 +5,7 @@
 #include "menu.h"
 
 Menu::Menu(const std::string &t, const std::vector<std::string> &it)
-    : activated(false), title(t), items(it), cursor(0)
+    : title(t), items(it), cursor(0)
 {
 }
 
@@ -33,6 +33,47 @@ void ScrollMenu::move_cursor(int dcursor)
         offset += dcursor;
     }
     cursor += dcursor;
+}
+
+TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
+    : Menu("", t)
+{
+    items.push_back("");
+    items.push_back("");
+    items.push_back("");
+    items.push_back(d);
+}
+
+SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
+    : BasicMenu(t, {}), save_dumper(sd),
+      all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
+                 "SLOT 1  FULL", "SLOT 2  FULL", "SLOT 3  FULL"})
+{
+    items.push_back(all_items.at(0));
+}
+
+void SaveMenu::update_items(void)
+{
+    items.erase(items.begin() + 1, items.end());
+    items.push_back(all_items.at(save_dumper.is_slot_empty("1") ? 1 : 4));
+    items.push_back(all_items.at(save_dumper.is_slot_empty("2") ? 2 : 5));
+    items.push_back(all_items.at(save_dumper.is_slot_empty("3") ? 3 : 6));
+}
+
+LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
+    : BasicMenu(t, {}), save_loader(sl),
+      all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
+                 "SLOT 1  FULL", "SLOT 2  FULL", "SLOT 3  FULL"})
+{
+    items.push_back(all_items.at(0));
+}
+
+void LoadMenu::update_items(void)
+{
+    items.erase(items.begin() + 1, items.end());
+    items.push_back(all_items.at(save_loader.is_slot_empty("1") ? 1 : 4));
+    items.push_back(all_items.at(save_loader.is_slot_empty("2") ? 2 : 5));
+    items.push_back(all_items.at(save_loader.is_slot_empty("3") ? 3 : 6));
 }
 
 OperationMenu::OperationMenu(Game &g)
@@ -118,29 +159,28 @@ std::vector<std::string> TechMenu::get_item_description()
     return description;
 }
 
-TutorialMenu::TutorialMenu(const std::vector<std::vector<std::string>> &content)
-    : BasicMenu("TUTORIAL", {"Next Page", "Previous Page", "Return"}), pages(content)
+TutorialMenu::TutorialMenu(void)
+    : BasicMenu("TUTORIAL", {"NEXT PAGE", "PREV PAGE", "RETURN TO MENU"}), page_index(0),
+      pages({{"W/A/S/D          Move Cursor", "Q             Prev Operation", "E             Next Operation",
+              "SPACE              Next Turn", "ENTER       Select Operation", "ESC                Quit Game",
+              "P                 Pause Game", "R            Technology Menu", "F                   Fix City",
+              "B               Build Cruise", "L              Launch Cruise"}})
 {
 }
 
 void TutorialMenu::next_page(void)
 {
-    if (current_page < pages.size() - 1)
-        current_page++;
+    if (page_index < pages.size() - 1)
+        page_index++;
 }
 
 void TutorialMenu::prev_page(void)
 {
-    if (current_page > 0)
-        current_page--;
-}
-
-const std::vector<std::string> &TutorialMenu::get_content() const
-{
-    return pages[current_page];
+    if (page_index > 0)
+        page_index--;
 }
 
 std::string TutorialMenu::get_page_info() const
 {
-    return std::to_string(current_page + 1) + "/" + std::to_string(pages.size());
+    return std::to_string(page_index + 1) + "/" + std::to_string(pages.size());
 }

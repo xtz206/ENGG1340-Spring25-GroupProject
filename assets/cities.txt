@@ -1,6 +1,7 @@
 name,y,x,hitpoint
-Shanghai,9,61,100
-Suzhou,8,52,100
-Hangzhou,15,47,100 
-Nanjing,3,32,100
-Hefei,5,14,100
+Tokyo,8,58,100
+Yokohama,11,53,100
+Yosuka,15,51,100
+Chiba,9,65,100
+Odawara,16,34,100
+Shizuoka,21,13

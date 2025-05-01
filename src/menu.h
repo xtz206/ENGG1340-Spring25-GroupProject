@@ -9,7 +9,6 @@
 class Menu
 {
 protected:
-    bool activated;
     std::string title;
     std::vector<std::string> items;
     int cursor;
@@ -18,9 +17,6 @@ public:
     Menu(const std::string &t, const std::vector<std::string> &b);
     int get_cursor(void) const { return cursor; };
     virtual void move_cursor(int dcursor);
-    bool is_activated(void) { return activated; };
-    void activate(void) { activated = true; };
-    void deactivate(void) { activated = false; };
 
     const std::string &get_title(void) const { return title; };
     const std::vector<std::string> &get_items(void) const { return items; };
@@ -30,7 +26,6 @@ public:
 
 class BasicMenu : public Menu
 {
-
 public:
     BasicMenu(const std::string &t, const std::vector<std::string> &it) : Menu(t, it) {};
 };
@@ -46,6 +41,35 @@ public:
     virtual void move_cursor(int dcursor) override;
     int get_offset(void) const { return offset; };
     int get_limit(void) const { return limit; };
+};
+
+class TitleMenu : public Menu
+
+{
+public:
+    TitleMenu(const std::vector<std::string> &t, const std::string &d);
+};
+
+class SaveMenu : public BasicMenu
+{
+private:
+    SaveDumper &save_dumper;
+    std::vector<std::string> all_items;
+
+public:
+    SaveMenu(const std::string &t, SaveDumper &sd);
+    void update_items(void);
+};
+
+class LoadMenu : public BasicMenu
+{
+private:
+    SaveLoader save_loader;
+    std::vector<std::string> all_items;
+
+public:
+    LoadMenu(const std::string &t, SaveLoader &sl);
+    void update_items(void);
 };
 
 class OperationMenu : public ScrollMenu
@@ -74,13 +98,13 @@ public:
 class TutorialMenu : public BasicMenu
 {
     std::vector<std::vector<std::string>> pages;
-    int current_page = 0;
+    int page_index;
 
 public:
-    TutorialMenu(const std::vector<std::vector<std::string>> &content);
+    TutorialMenu(void);
     void prev_page(void);
     void next_page(void);
-    const std::vector<std::string> &get_content() const;
+    const std::vector<std::string> &get_page() const { return pages.at(page_index); };
     std::string get_page_info() const;
 };
 
