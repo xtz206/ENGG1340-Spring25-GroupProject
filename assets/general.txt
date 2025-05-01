@@ -1,7 +1,7 @@
-size_y:18
-size_x:98
-cursor_y:9
-cursor_x:49
+size_y:25
+size_x:100
+cursor_y:12
+cursor_x:50
 turn:1
 score:0
 casualty:0

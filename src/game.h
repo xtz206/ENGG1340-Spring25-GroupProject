@@ -74,6 +74,7 @@ public:
     Missile(int i, Position p, Position t, int d, int v, MissileType tp);
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
+    MissileType get_type(void) const { return type; };
     MissileDirection get_direction(void);
     bool get_is_exploded(void) const { return is_exploded; };
     void set_is_exploded(void) { is_exploded = true; };
@@ -283,6 +284,7 @@ public:
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
+    bool is_on_sea(Position p) const { return background.at(p.y).at(p.x) == '#'; };
     bool is_selected_missile(void);
     bool is_selected_city(void);
     Missile &select_missile(void);

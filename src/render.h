@@ -23,7 +23,8 @@ public:
     void draw_hline(Position p, int len) { mvwhline(window, p.y, p.x, ACS_HLINE, len); };
     void draw_vline(Position p, int len) { mvwvline(window, p.y, p.x, ACS_VLINE, len); };
     void draw_char(Position p, chtype ch) { mvwaddch(window, p.y, p.x, ch); };
-    void print_move(Position p, const std::string &s, attr_t attr = A_NORMAL);
+    void print(Position p, chtype ch, attr_t attr = A_NORMAL);
+    void print(Position p, const std::string &s, attr_t attr = A_NORMAL);
     void print_left(int line, const std::string &s, attr_t attr = A_NORMAL);
     void print_center(int line, const std::string &s, attr_t attr = A_NORMAL);
     void print_right(int line, const std::string &s, attr_t attr = A_NORMAL);

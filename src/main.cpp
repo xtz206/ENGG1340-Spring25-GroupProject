@@ -32,6 +32,8 @@ void init(void)
     start_color();
     nodelay(stdscr, TRUE);
     keypad(stdscr, TRUE);
+
+    init_pair(1, COLOR_BLACK, COLOR_CYAN);
 }
 
 int main(void)

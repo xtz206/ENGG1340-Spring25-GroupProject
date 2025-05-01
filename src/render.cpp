@@ -19,14 +19,24 @@ Window::Window(Window &win, Size s, Position p) : size(s), pos(p)
     window = subwin(win.window, s.h, s.w, p.y, p.x);
 }
 
-void Window::print_move(Position p, const std::string &s, attr_t attr)
+void Window::print(Position p, chtype ch, attr_t attr)
 {
     if (p.y >= size.h || p.x >= size.w)
     {
         return;
     }
     wattron(window, attr);
-    // TODO: length check
+    mvwaddch(window, p.y, p.x, ch);
+    wattroff(window, attr);
+}
+
+void Window::print(Position p, const std::string &s, attr_t attr)
+{
+    if (p.y >= size.h || p.x >= size.w)
+    {
+        return;
+    }
+    wattron(window, attr);
     mvwprintw(window, p.y, p.x, "%s", s.c_str());
     wattroff(window, attr);
 }
@@ -342,21 +352,13 @@ void GameRenderer::init(void)
     }
     box_window.draw_char(Position(fields.at(0) + fields.at(1) + fields.at(2) + 3, map_size.w + info_size.w + 2), ACS_RTEE);
 
-    box_window.print_move(Position(0, 2), "Map");
-    box_window.print_move(Position(0, map_size.w + 3), "General");
-    box_window.print_move(Position(fields.at(0) + 1, map_size.w + 3), "City & Missile");
-    box_window.print_move(Position(fields.at(0) + fields.at(1) + 2, map_size.w + 3), "Technology & Research");
-    box_window.print_move(Position(fields.at(0) + fields.at(1) + fields.at(2) + 3, map_size.w + 3), "Super Weapon");
-    box_window.print_move(Position(map_size.h + 1, 2), "Operation");
-    box_window.print_move(Position(map_size.h + 1, operation_size.w + 3), "Feedback");
-
-    // TODO: remove commented codes
-
-    // // mvwprintw(box_window, 0, (TOTAL_COLS - 2 - 2) / 2, "Missile Command");
-    // mvwprintw(box_window, 0, 2 + MAP_COLS + 2, "General");
-    // mvwprintw(box_window, INFO_LINES + 1, 2 + MAP_COLS + 2, "City & Missile");
-    // mvwprintw(box_window, INFO_LINES * 2 + 2, 2 + MAP_COLS + 2, "Technology & Research");
-    // mvwprintw(box_window, INFO_LINES * 3 + 3, 2 + MAP_COLS + 2, "Super Weapon");
+    box_window.print(Position(0, 2), "Map");
+    box_window.print(Position(0, map_size.w + 3), "General");
+    box_window.print(Position(fields.at(0) + 1, map_size.w + 3), "City & Missile");
+    box_window.print(Position(fields.at(0) + fields.at(1) + 2, map_size.w + 3), "Technology & Research");
+    box_window.print(Position(fields.at(0) + fields.at(1) + fields.at(2) + 3, map_size.w + 3), "Super Weapon");
+    box_window.print(Position(map_size.h + 1, 2), "Operation");
+    box_window.print(Position(map_size.h + 1, operation_size.w + 3), "Feedback");
 }
 
 void GameRenderer::render(void)
@@ -368,6 +370,7 @@ void GameRenderer::render(void)
     super_weapon_info_window.refresh();
     operation_window.refresh();
     feedback_window.refresh();
+    // refresh();
 }
 
 void GameRenderer::draw(void)
@@ -381,10 +384,26 @@ void GameRenderer::draw(void)
     feedback_window.erase();
 
     // NOTE: draw map window
-    for (int index = 0; index < game.get_background().size(); index++)
+    for (int line = 0; line < game.get_size().h; line++)
     {
-        map_window.print_left(index, game.get_background().at(index));
+        for (int col = 0; col < game.get_size().w; col++)
+        {
+            char ch = game.get_background().at(line).at(col);
+            switch (ch)
+            {
+            case ' ':
+                map_window.print(Position(line, col), " ");
+                break;
+            case '@':
+                map_window.print(Position(line, col), "@");
+                break;
+            case '#':
+                map_window.print(Position(line, col), " ", COLOR_PAIR(1));
+                break;
+            }
+        }
     }
+
     for (auto missile : game.get_missiles())
     {
         if (!game.is_in_map(missile->get_position()))
@@ -402,38 +421,36 @@ void GameRenderer::draw(void)
             direction = "O";
             break;
         case MissileDirection::N:
-            direction = "↑";
+            direction = "\u21d1";
             break;
         case MissileDirection::NE:
-            direction = "↗";
+            direction = "\u21d7";
             break;
         case MissileDirection::E:
-            direction = "→";
+            direction = "\u21d2";
             break;
         case MissileDirection::SE:
-            direction = "↘";
+            direction = "\u21d8";
             break;
         case MissileDirection::S:
-            direction = "↓";
+            direction = "\u21d3";
             break;
         case MissileDirection::SW:
-            direction = "↙";
+            direction = "\u21d9";
             break;
         case MissileDirection::W:
-            direction = "←";
+            direction = "\u21d0";
             break;
         case MissileDirection::NW:
-            direction = "↖";
-            break;
-        case MissileDirection::U:
-            direction = "x";
+            direction = "\u21d6";
             break;
         default:
             break;
         }
-        map_window.print_move(missile->get_position(), direction);
+
+        map_window.print(missile->get_position(), direction, COLOR_PAIR(game.is_on_sea(missile->get_position())));
     }
-    map_window.draw_char(game.get_cursor(), 'X');
+    map_window.print(game.get_cursor(), "*", COLOR_PAIR(game.is_on_sea(game.get_cursor())));
 
     // NOTE: draw info windows
     std::vector<std::string> info;
@@ -480,4 +497,7 @@ void GameRenderer::draw(void)
     {
         feedback_window.print_left(index, game.get_feedback_info().at(index));
     }
+
+    // mvwprintw(stdscr, 0, 0, "                                                  "); // clear the screen
+    // mvwprintw(stdscr, 0, 0, "Cursor: %d, %d", game.get_cursor().y, game.get_cursor().x);
 }
