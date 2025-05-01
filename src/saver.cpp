@@ -8,12 +8,20 @@
 #include "saver.h"
 #include "game.h"
 
+// TODO: update this docstring
+/**
+ * @brief Loads map dimensions from configuration file.
+ * Reads general.txt to extract height/width values using colon-separated format.
+ * Implements file validation and format error handling through exception mechanisms.
+ *
+ */
 void AssetLoader::load_general(void)
 {
+    // Attempt to open primary configuration file
     std::ifstream file("general.txt");
     if (!file.is_open())
     {
-        throw std::runtime_error("Cannot open general.txt");
+        throw std::runtime_error("Cannot open general.txt"); // Critical file missing
     }
     std::string line;
     std::string word;
@@ -167,6 +175,13 @@ void AssetLoader::load_general(void)
     }
 }
 
+// TODO: update this docstring
+/**
+ * @brief Loads battlefield background pattern from text file.
+ * Reads background.txt line-by-line, validates line count matches declared map height from
+ * general.txt. Maintains original spatial formatting of background patterns.
+ *
+ */
 void AssetLoader::load_background(void)
 {
     std::ifstream file("background.txt");
@@ -182,6 +197,13 @@ void AssetLoader::load_background(void)
     file.close();
 }
 
+// TODO: update this docstring
+/**
+ * @brief Loads city data from configuration file.
+ * Reads cities.txt to extract city attributes using comma-separated format. Implements
+ * file validation and format error handling through exception mechanisms.
+ *
+ */
 void AssetLoader::load_cities(void)
 {
     std::ifstream file("cities.txt");
@@ -214,6 +236,7 @@ void AssetLoader::load_cities(void)
     file.close();
 }
 
+// TODO: write docstring for this function
 std::vector<std::string> AssetLoader::load_title(void)
 {
     std::ifstream file("title.txt");
@@ -230,6 +253,7 @@ std::vector<std::string> AssetLoader::load_title(void)
     return title;
 }
 
+// TODO: write docstring for this function
 void AssetLoader::reset(void)
 {
     load_general();
