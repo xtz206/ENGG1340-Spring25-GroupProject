@@ -149,12 +149,12 @@ void TitleMenuRenderer::init(void)
 {
     erase();
 
-    title_window.erase();
-
-    for (size_t index = 0; index < menu.get_items().size(); index++)
+    for (size_t index = 0; index < menu.get_items().size() - 1; index++)
     {
-        title_window.print_center(index, menu.get_item(index));
+        title_window.print_left(index, menu.get_item(index));
     }
+
+    title_window.print_center(size.h - 1, menu.get_item(menu.get_items().size() - 1), A_REVERSE);
 }
 
 void TitleMenuRenderer::render(void)

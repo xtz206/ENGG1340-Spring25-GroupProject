@@ -67,7 +67,7 @@ int main(void)
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
 
-        TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 100));
+        TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 120));
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
