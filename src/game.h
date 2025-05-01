@@ -228,7 +228,7 @@ private:
 
     std::vector<City> cities;
     std::vector<std::string> background;
-    std::vector<std::string> feedbacks;
+    VAttrString feedbacks;
     MissileManager missile_manager;
     TechTree tech_tree;
 
@@ -263,18 +263,18 @@ public:
     const Size &get_size(void) const { return size; };
     const Position &get_cursor(void) const { return cursor; };
     const std::vector<std::string> &get_background(void) const { return background; };
-    const std::vector<std::string> &get_feedbacks(void) const { return feedbacks; };
+    const VAttrString &get_feedbacks(void) const { return feedbacks; };
     MissileManager &get_missile_manager(void) { return missile_manager; };
     TechTree &get_tech_tree(void) { return tech_tree; };
     int get_turn(void) const { return turn; };
     std::vector<Missile *> get_missiles(void) { return missile_manager.get_missiles(); };
-    std::vector<std::string> get_general_info(void);
-    std::vector<std::string> get_selected_info(void);
-    std::vector<std::string> get_tech_info(void) const;
-    std::vector<std::string> get_super_weapon_info(void) const;
-    std::vector<std::string> get_feedback_info(void) const;
-    std::vector<std::string> get_end_info(void) const;
-    void insert_feedback(const std::string &feedback);
+    VAttrString get_general_info(void);
+    VAttrString get_selected_info(void);
+    VAttrString get_tech_info(void) const;
+    VAttrString get_super_weapon_info(void) const;
+    VAttrString get_feedback_info(void) const;
+    VAttrString get_end_info(void) const;
+    void insert_feedback(const AttrString &feedback);
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
     int get_enemy_hp(void) const { return enemy_hitpoint; };

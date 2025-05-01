@@ -30,14 +30,14 @@ void Window::print(Position p, chtype ch, attr_t attr)
     wattroff(window, attr);
 }
 
-void Window::print(Position p, const std::string &s, attr_t attr)
+void Window::print(Position p, const char *s, attr_t attr)
 {
     if (p.y >= size.h || p.x >= size.w)
     {
         return;
     }
     wattron(window, attr);
-    mvwprintw(window, p.y, p.x, "%s", s.c_str());
+    mvwprintw(window, p.y, p.x, "%s", s);
     wattroff(window, attr);
 }
 
@@ -154,7 +154,7 @@ void SaveMenuRenderer::draw(void)
         }
     }
 
-    item_window.print_center(size.h - 2, "SAVE ON FULL WILL OVERWRITE");
+    item_window.print_center(size.h - 2, "SAVE ON FULL WILL OVERWRITE", COLOR_PAIR(4));
 }
 
 EndMenuRenderer::EndMenuRenderer(Game &g, Menu &m, Size ds, Size is)
@@ -175,7 +175,7 @@ void EndMenuRenderer::init(void)
     box_window.draw_char(Size(desc_size.h + 1, 0), ACS_LTEE);
     box_window.draw_char(Size(desc_size.h + 1, item_size.w + 1), ACS_RTEE);
 
-    std::vector<std::string> info = game.get_end_info();
+    VAttrString info = game.get_end_info();
     for (size_t index = 0; index < info.size(); index++)
     {
         desc_window.print_center(index, info.at(index));
@@ -453,7 +453,7 @@ void GameRenderer::draw(void)
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(game.is_on_sea(game.get_cursor())));
 
     // NOTE: draw info windows
-    std::vector<std::string> info;
+    VAttrString info;
     info = game.get_general_info();
     for (size_t index = 0; index < info.size(); index++)
     {

@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <vector>
+#include <ncurses.h>
 class Position
 {
     // NOTE: The Position is (y, x) instead of (x, y)
@@ -30,4 +32,12 @@ public:
 };
 typedef Position Size;
 
+struct AttrString
+{
+    std::string str;
+    attr_t attr;
+    AttrString(const char *s, attr_t a = A_NORMAL) : str(s), attr(a) {};
+    AttrString(const std::string &s, attr_t a = A_NORMAL) : str(s), attr(a) {};
+};
+typedef std::vector<AttrString> VAttrString;
 #endif

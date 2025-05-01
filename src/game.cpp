@@ -569,9 +569,9 @@ void Game::set_difficulty(int lv)
     }
 }
 
-std::vector<std::string> Game::get_general_info(void)
+VAttrString Game::get_general_info(void)
 {
-    std::vector<std::string> info;
+    VAttrString info;
     info.push_back("Turn: " + std::to_string(turn));
     info.push_back("Deposit: " + std::to_string(deposit));
     info.push_back("Productivity: " + std::to_string(get_productivity()));
@@ -601,9 +601,9 @@ std::vector<std::string> Game::get_general_info(void)
     return info;
 }
 
-std::vector<std::string> Game::get_selected_info(void)
+VAttrString Game::get_selected_info(void)
 {
-    std::vector<std::string> info;
+    VAttrString info;
     if (is_selected_missile())
     {
         AttackMissile &missile = dynamic_cast<AttackMissile &>(select_missile());
@@ -652,9 +652,9 @@ std::vector<std::string> Game::get_selected_info(void)
     return info;
 }
 
-std::vector<std::string> Game::get_tech_info(void) const
+VAttrString Game::get_tech_info(void) const
 {
-    std::vector<std::string> info;
+    VAttrString info;
     if (tech_tree.researching != nullptr)
     {
         info.push_back("Researching: " + tech_tree.researching->name);
@@ -672,9 +672,9 @@ std::vector<std::string> Game::get_tech_info(void) const
     return info;
 }
 
-std::vector<std::string> Game::get_super_weapon_info(void) const
+VAttrString Game::get_super_weapon_info(void) const
 {
-    std::vector<std::string> info;
+    VAttrString info;
     if (standard_bomb_counter > 0)
     {
         info.push_back("Standard Bomb Build Requires: " + std::to_string(standard_bomb_counter));
@@ -736,9 +736,9 @@ std::vector<std::string> Game::get_super_weapon_info(void) const
     return info;
 }
 
-std::vector<std::string> Game::get_feedback_info(void) const
+VAttrString Game::get_feedback_info(void) const
 {
-    std::vector<std::string> info;
+    VAttrString info;
     if (feedbacks.empty())
     {
         return info;
@@ -754,9 +754,9 @@ std::vector<std::string> Game::get_feedback_info(void) const
     return info;
 }
 
-std::vector<std::string> Game::get_end_info(void) const
+VAttrString Game::get_end_info(void) const
 {
-    std::vector<std::string> info;
+    VAttrString info;
     if (enemy_hitpoint > 0)
     {
         info.push_back(" YOU LOSE ");
@@ -773,7 +773,7 @@ std::vector<std::string> Game::get_end_info(void) const
     return info;
 }
 
-void Game::insert_feedback(const std::string &feedback)
+void Game::insert_feedback(const AttrString &feedback)
 {
     feedbacks.push_back(feedback);
     if (feedbacks.size() > 15)
