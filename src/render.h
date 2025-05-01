@@ -57,6 +57,28 @@ public:
     void draw(void);
 };
 
+class EndMenuRenderer : public Renderer
+{
+private:
+    Game &game;
+    BasicMenu &menu;
+
+    Size desc_size;
+    Size item_size;
+    Position pos;
+
+    Window box_window;
+    Window desc_window;
+    Window item_window;
+
+public:
+    EndMenuRenderer(Game &g, BasicMenu &m, Size ds, Size is);
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
 class TutorialMenuRenderer : public Renderer
 {
 private:

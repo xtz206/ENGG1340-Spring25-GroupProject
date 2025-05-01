@@ -762,6 +762,25 @@ std::vector<std::string> Game::get_feedback_info(void) const
     return info;
 }
 
+std::vector<std::string> Game::get_end_info(void) const
+{
+    std::vector<std::string> info;
+    if (enemy_hitpoint > 0)
+    {
+        info.push_back(" YOU LOSE ");
+    }
+    else
+    {
+        info.push_back(" YOU  WIN ");
+    }
+
+    info.push_back("Score:    " + std::to_string(score));
+    info.push_back("Casualty:  " + std::to_string(casualty) + "K");
+    info.push_back("Turn:        " + std::to_string(turn));
+    
+    return info;
+}
+
 void Game::insert_feedback(const std::string &feedback)
 {
     feedbacks.push_back(feedback);
@@ -903,12 +922,22 @@ bool Game::is_in_range(Position p1, Position p2, int range) const
     return true;
 }
 
-bool Game::is_game_over(void) const
+bool Game::check_game_over(void)
 {
+    // TODO: fine tune score params
     if (enemy_hitpoint <= 0)
     {
+        for (const auto &city : cities)
+        {
+            if (city.hitpoint > 0)
+            {
+                score += 500;
+            }
+        }
+        score += (100 - turn / 10);
         return true;
     }
+
     for (const auto &city : cities)
     {
         if (city.hitpoint > 0)
@@ -916,6 +945,8 @@ bool Game::is_game_over(void) const
             return false;
         }
     }
+
+    score -= 1000;
     return true;
 }
 

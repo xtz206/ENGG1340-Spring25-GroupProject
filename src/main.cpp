@@ -57,7 +57,7 @@ int main(void)
         SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
         LoadMenu load_menu = LoadMenu("LOAD GAME", save_loader);
         // DEBUG: the 'DEBUG' button is just for testing, remove later
-        BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
+        BasicMenu end_menu = BasicMenu("GAME END", {"RETURN TO MENU", "QUIT"});
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
         TutorialMenu tutorial_menu = TutorialMenu();
@@ -68,7 +68,7 @@ int main(void)
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
         BasicMenuRenderer save_menu_renderer = BasicMenuRenderer(save_menu, Size(10, 30));
         BasicMenuRenderer load_menu_renderer = BasicMenuRenderer(load_menu, Size(10, 30));
-        BasicMenuRenderer end_menu_renderer = BasicMenuRenderer(end_menu, Size(10, 30));
+        EndMenuRenderer end_menu_renderer = EndMenuRenderer(game, end_menu, Size(10, 30), Size(5, 30));
         GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
 
@@ -350,7 +350,7 @@ int main(void)
                         stage = Stage::QUIT;
                         break;
                     }
-                    if (game.is_game_over())
+                    if (game.check_game_over())
                     {
                         stage = Stage::END_MENU;
                         break;

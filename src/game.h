@@ -271,6 +271,7 @@ public:
     std::vector<std::string> get_tech_info(void) const;
     std::vector<std::string> get_super_weapon_info(void) const;
     std::vector<std::string> get_feedback_info(void) const;
+    std::vector<std::string> get_end_info(void) const;
     void insert_feedback(const std::string &feedback);
     int get_deposit(void) const { return deposit; };
     int get_productivity(void) const;
@@ -282,7 +283,6 @@ public:
     void pass_turn(void);
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
-    bool is_game_over(void) const;
     bool is_selected_missile(void);
     bool is_selected_city(void);
     Missile &select_missile(void);
@@ -311,6 +311,7 @@ public:
     // TODO: score-related functions
     int get_score(void) const { return score; };
     int get_casualty(void) const { return casualty; };
+    bool check_game_over(void);
 };
 
 #endif

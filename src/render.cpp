@@ -129,6 +129,53 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
+EndMenuRenderer::EndMenuRenderer(Game &g, BasicMenu &m, Size ds, Size is)
+    : menu(m), game(g), desc_size(ds), item_size(is), pos((ALL_SIZE - Size(is.h + ds.h + 2, is.w + 2)) / 2),
+      box_window(Window(stdscr, Size(is.h + ds.h + 3, is.w + 2), pos)),
+      desc_window(Window(box_window, desc_size, pos + Size(1, 1))),
+      item_window(Window(box_window, item_size, pos + Size(ds.h + 2, 1)))
+{
+}
+
+void EndMenuRenderer::init(void)
+{
+    erase();
+
+    box_window.draw_margin();
+    box_window.print_center(0, menu.get_title());
+    box_window.draw_hline(Size(desc_size.h + 1, 1), item_size.w);
+    box_window.draw_char(Size(desc_size.h + 1, 0), ACS_LTEE);
+    box_window.draw_char(Size(desc_size.h + 1, item_size.w + 1), ACS_RTEE);
+
+    std::vector<std::string> info = game.get_end_info();
+    for (size_t index = 0; index < info.size(); index++)
+    {
+        desc_window.print_center(index, info.at(index));
+    }
+}
+
+void EndMenuRenderer::render(void)
+{
+    item_window.refresh();
+}
+
+void EndMenuRenderer::draw(void)
+{
+    item_window.erase();
+
+    for (size_t index = 0; index < menu.get_items().size(); index++)
+    {
+        if (index == menu.get_cursor())
+        {
+            item_window.print_center(index, menu.get_item(index), A_REVERSE);
+        }
+        else
+        {
+            item_window.print_center(index, menu.get_item(index));
+        }
+    }
+}
+
 TutorialMenuRenderer::TutorialMenuRenderer(TutorialMenu &m, Size ps, Size is)
     : menu(m), page_size(ps), item_size(is), pos((ALL_SIZE - Size(ps.h + is.h + 3, ps.w + 2)) / 2),
       box_window(stdscr, Size(ps.h + is.h + 3, ps.w + 2), pos),
