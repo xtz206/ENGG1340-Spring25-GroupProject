@@ -895,7 +895,7 @@ bool Game::check_game_over(void)
             }
         }
         score += (5000 - turn * 2); // time bonus
-        score -= casualty * 10;     // casualty penalty
+        score -= casualty * 3;     // casualty penalty
         return true;                // game win
     }
 
@@ -908,7 +908,7 @@ bool Game::check_game_over(void)
     }
 
     score += turn * 2;      // endurance bonus
-    score -= casualty * 10; // casualty penalty
+    score -= casualty * 3; // casualty penalty
     return true;            // game lose
 }
 
@@ -1119,20 +1119,20 @@ void Game::hit_city(City &city, int damage)
 {
     if (iron_curtain_counter >= 0)
     {
-        insert_feedback("Iron Curtain Activated, " + city.name + " Not Damaged");
+        insert_feedback("Iron Curtain Activated, " + city.name + " Not Damaged", COLOR_PAIR(4));
         return;
     }
     damage = en_self_defense_sys ? damage / 2 : damage;
     if (damage > city.hitpoint && city.hitpoint > 0)
     {
-        insert_feedback(AttrString(city.name + " Destroyed by Attack Missile!", COLOR_PAIR(2)));
+        insert_feedback(city.name + " Destroyed by Attack Missile!", COLOR_PAIR(2));
         city.hitpoint = 0;
         score -= 50;
         casualty += (200 + generate_random(-50, 50));
     }
     else
     {
-        insert_feedback(AttrString(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)), COLOR_PAIR(2)));
+        insert_feedback(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)), COLOR_PAIR(2));
         city.hitpoint -= damage;
         score -= 20;
         casualty += (damage / 10 * (10 + generate_random(-3, 3)));
@@ -1146,16 +1146,16 @@ void Game::fix_city(void)
 {
     if (!is_selected_city())
     {
-        insert_feedback("Please select a city before fixing");
+        insert_feedback("Please select a city before fixing", COLOR_PAIR(3));
         return;
     }
     City &city = select_city();
     if (deposit < 5000)
     {
-        insert_feedback("Deposit not enough (5000) to fix city");
+        insert_feedback("Deposit not enough (5000) to fix city", COLOR_PAIR(3));
         return;
     }
-    insert_feedback("City Fixed, HP +500");
+    insert_feedback("City Fixed, HP +500", COLOR_PAIR(4));
     city.hitpoint += 500;
 }
 
@@ -1167,26 +1167,26 @@ void Game::build_cruise(void)
 {
     if (!is_selected_city())
     {
-        insert_feedback("Please select a city before building cruise");
+        insert_feedback("Please select a city before building cruise", COLOR_PAIR(3));
         return;
     }
     City &city = select_city();
     if (city.countdown > 0) // Check if already building cruise
     {
-        insert_feedback("Cruise in building");
+        insert_feedback("Cruise in building", COLOR_PAIR(3));
         return;
     }
     if (deposit < 200 && !en_enhanced_radar_I)
     {
-        insert_feedback("Deposit not enough(200) to build cruise");
+        insert_feedback("Deposit not enough(200) to build cruise", COLOR_PAIR(3));
         return;
     }
     if (deposit < 100) // Check if deposit is sufficient
     {
-        insert_feedback("Deposit not enough(100) to build cruise");
+        insert_feedback("Deposit not enough(100) to build cruise", COLOR_PAIR(3));
         return;
     }
-    insert_feedback(city.name + " Cruise Missile Started Building");
+    insert_feedback(city.name + " Cruise Missile Started Building", COLOR_PAIR(4));
     deposit -= en_enhanced_cruise_I ? 100 : 200;
     city.countdown = 5; // Start the build countdown
 }
@@ -1199,21 +1199,21 @@ void Game::launch_cruise(void)
 {
     if (!is_selected_city())
     {
-        insert_feedback("Please select a city before launching cruise");
+        insert_feedback("Please select a city before launching cruise", COLOR_PAIR(3));
         return;
     }
     City &city = select_city();
     if (city.cruise_storage <= 0) // Check if cruise storage is empty
     {
-        insert_feedback("No cruise missile in storage, please build first");
+        insert_feedback("No cruise missile in storage, please build first", COLOR_PAIR(3));
         return;
     }
     if (!missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 4 : 3)) // Try to create cruise missile
     {
-        insert_feedback("No attack missile in range");
+        insert_feedback("No targeted attack missile in range", COLOR_PAIR(3));
         return;
     }
-    insert_feedback("Cruise Missile Launched");
+    insert_feedback("Cruise Missile Launched", COLOR_PAIR(4));
     city.cruise_storage--;
 }
 
@@ -1224,21 +1224,21 @@ void Game::build_standard_bomb(void)
 {
     if (standard_bomb_counter == 0) // Check if standard bomb is already built
     {
-        insert_feedback("Standard Bomb Already Built");
+        insert_feedback("Standard Bomb Already Built", COLOR_PAIR(3));
         return;
     }
     if (standard_bomb_counter > 0) // Check if standard bomb is already building
     {
-        insert_feedback("Standard Bomb Already Building");
+        insert_feedback("Standard Bomb Already Building", COLOR_PAIR(3));
         return;
     }
     if (deposit < 3000) // Check if deposit is sufficient
     {
-        insert_feedback("Deposit not enough(3000) to build standard bomb");
+        insert_feedback("Deposit not enough(3000) to build standard bomb", COLOR_PAIR(3));
         return;
     }
 
-    insert_feedback("Standard Bomb Building Started");
+    insert_feedback("Standard Bomb Building Started", COLOR_PAIR(4));
     deposit -= 2000;
     standard_bomb_counter = (en_fast_nuke ? 5 : 10); // Start the build counter
 }
@@ -1250,16 +1250,16 @@ void Game::launch_standard_bomb(void)
 {
     if (standard_bomb_counter == -1) // Check if standard bomb is not built
     {
-        insert_feedback("Standard Bomb Not Built");
+        insert_feedback("Standard Bomb Not Built", COLOR_PAIR(3));
         return;
     }
     if (standard_bomb_counter > 0) // Check if standard bomb is not ready
     {
-        insert_feedback("Standard Bomb Not Ready");
+        insert_feedback("Standard Bomb Not Ready", COLOR_PAIR(3));
         return;
     }
 
-    insert_feedback("Standard Bomb Hit, Enemy Hitpoint Reduced by 50");
+    insert_feedback("Standard Bomb Hit, Enemy HP -200", COLOR_PAIR(4));
     standard_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
     enemy_hitpoint -= 200;
     score += 20;
@@ -1273,26 +1273,26 @@ void Game::build_dirty_bomb(void)
 {
     if (!en_dirty_bomb) // Check if dirty bomb is not researched
     {
-        insert_feedback("Dirty Bomb Not Researched");
+        insert_feedback("Dirty Bomb Not Researched", COLOR_PAIR(3));
         return;
     }
     if (dirty_bomb_counter == 0) // Check if dirty bomb is already built
     {
-        insert_feedback("Dirty Bomb Already Built");
+        insert_feedback("Dirty Bomb Already Built", COLOR_PAIR(3));
         return;
     }
     if (dirty_bomb_counter > 0) // Check if dirty bomb is already building
     {
-        insert_feedback("Dirty Bomb Already Building");
+        insert_feedback("Dirty Bomb Already Building", COLOR_PAIR(3));
         return;
     }
     if (deposit < 2000) // Check if deposit is sufficient
     {
-        insert_feedback("Deposit not enough(2000) to build dirty bomb");
+        insert_feedback("Deposit not enough(2000) to build dirty bomb", COLOR_PAIR(3));
         return;
     }
 
-    insert_feedback("Dirty Bomb Building Started");
+    insert_feedback("Dirty Bomb Building Started", COLOR_PAIR(4));
     deposit -= 1000;
     dirty_bomb_counter = 10; // Start the build counter
 }
@@ -1306,51 +1306,51 @@ void Game::launch_dirty_bomb(void)
 {
     if (dirty_bomb_counter == -1) // Check if dirty bomb is not built
     {
-        insert_feedback("Dirty Bomb Not Built");
+        insert_feedback("Dirty Bomb Not Built", COLOR_PAIR(3));
         return;
     }
     if (dirty_bomb_counter > 0) // Check if dirty bomb is not ready
     {
-        insert_feedback("Dirty Bomb Not Ready");
+        insert_feedback("Dirty Bomb Not Ready", COLOR_PAIR(3));
         return;
     }
     dirty_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
 
     if (generate_random(0, 3) == 0) // Check if bomb misses
     {
-        insert_feedback("Dirty Bomb Missed");
+        insert_feedback("Dirty Bomb Missed", COLOR_PAIR(3));
         return;
     }
-    insert_feedback("Dirty Bomb Hit, Enemy Hitpoint Reduced by 50");
+    insert_feedback("Dirty Bomb Hit, Enemy HP -100", COLOR_PAIR(4));
     enemy_hitpoint -= 100;
     score += 20;
 }
 
 /**
  * @brief Initiates hydrogen bomb production with multi-phase validation.
- * Requires completed research, available construction slot, and 5000 deposit. Activates
+ * Requires completed research, available construction slot, and 6000 deposit. Activates
  * 20-turn build timer upon successful validation.
  */
 void Game::build_hydrogen_bomb(void)
 {
     if (!en_hydrogen_bomb) // Check if hydrogen bomb is not researched
     {
-        insert_feedback("Hydrogen Bomb Not Researched");
+        insert_feedback("Hydrogen Bomb Not Researched", COLOR_PAIR(3));
         return;
     }
     if (hydrogen_bomb_counter == 0) // Check if hydrogen bomb is already ready
     {
-        insert_feedback("Hydrogen Bomb Already Ready");
+        insert_feedback("Hydrogen Bomb Already Ready", COLOR_PAIR(3));
         return;
     }
     if (hydrogen_bomb_counter > 0) // Check if hydrogen bomb is already building
     {
-        insert_feedback("Hydrogen Bomb Already Building");
+        insert_feedback("Hydrogen Bomb Already Building", COLOR_PAIR(3));
         return;
     }
     if (deposit < 6000) // Check if deposit is sufficient
     {
-        insert_feedback("Deposit not enough(6000) to build hydrogen bomb");
+        insert_feedback("Deposit not enough(6000) to build hydrogen bomb", COLOR_PAIR(3));
         return;
     }
     deposit -= 5000;
@@ -1359,29 +1359,29 @@ void Game::build_hydrogen_bomb(void)
 
 /**
  * @brief Executes hydrogen bomb deployment sequence.
- * Confirms build readiness, calculates 50% hit probability, applies 500 damage on hit.
+ * Confirms build readiness, calculates 50% hit probability, applies 800 damage on hit.
  * Resets bomb state to unavailable post-deployment regardless of outcome.
  */
 void Game::launch_hydrogen_bomb(void)
 {
     if (hydrogen_bomb_counter == -1) // Check if hydrogen bomb is not built
     {
-        insert_feedback("Hydrogen Bomb Not Built");
+        insert_feedback("Hydrogen Bomb Not Built", COLOR_PAIR(3));
         return;
     }
     if (hydrogen_bomb_counter > 0) // Check if hydrogen bomb is not ready
     {
-        insert_feedback("Hydrogen Bomb Not Ready");
+        insert_feedback("Hydrogen Bomb Not Ready", COLOR_PAIR(3));
         return;
     }
     hydrogen_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
 
     if (generate_random(0, 1) == 0) // Check if bomb misses
     {
-        insert_feedback("Hydrogen Bomb Missed");
+        insert_feedback("Hydrogen Bomb Missed", COLOR_PAIR(3));
         return;
     }
-    insert_feedback("Hydrogen Bomb Hit, Enemy Hitpoint Reduced by 500");
+    insert_feedback("Hydrogen Bomb Hit, Enemy HP -800", COLOR_PAIR(4));
     enemy_hitpoint -= 800;
     score += 50;
 }
@@ -1395,20 +1395,20 @@ void Game::activate_iron_curtain(void)
 {
     if (!en_iron_curtain) // Check if iron curtain is not researched
     {
-        insert_feedback("Iron Curtain Not Researched");
+        insert_feedback("Iron Curtain Not Researched", COLOR_PAIR(3));
         return;
     }
     if (iron_curtain_counter >= 0) // Check if iron curtain is already activated
     {
-        insert_feedback("Iron Curtain Already Activated");
+        insert_feedback("Iron Curtain Already Activated", COLOR_PAIR(3));
         return;
     }
     if (deposit < 10000) // Check if deposit is sufficient
     {
-        insert_feedback("Deposit not enough(10000) to activate iron curtain");
+        insert_feedback("Deposit not enough(10000) to activate iron curtain", COLOR_PAIR(3));
         return;
     }
-    insert_feedback("Iron Curtain Activated");
+    insert_feedback("Iron Curtain Activated", COLOR_PAIR(4));
     deposit -= 10000;
     iron_curtain_counter = 30; // Reset the counter to 30 turns
 }
@@ -1425,7 +1425,7 @@ void Game::check_iron_curtain(void)
         iron_curtain_counter--;
         if (iron_curtain_counter <= 0) // Check if iron curtain time is up
         {
-            insert_feedback("Iron Curtain Deactivated");
+            insert_feedback("Iron Curtain Deactivated", COLOR_PAIR(3));
             iron_curtain_counter = -1; // Deactivate iron curtain
         }
     }
@@ -1448,7 +1448,7 @@ void Game::self_defense(void)
         {
             if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 4 : 3)) // Try to create cruise missile
             {
-                insert_feedback("Self Defense System Activated, Cruise Missile Launched");
+                insert_feedback("Self Defense System Activated, Cruise Missile Launched", COLOR_PAIR(4));
             }
         }
     }
