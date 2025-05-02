@@ -1,3 +1,7 @@
+/* render.cpp */
+/* Implementation of rendering system for terminal-based game interface using ncurses */
+
+// ------------------------ Header Includes ------------------------
 #include <string>
 #include <vector>
 #include <sstream>
@@ -258,7 +262,7 @@ void BasicMenuRenderer::init(void)
  */
 void BasicMenuRenderer::render(void)
 {
-    item_window.refresh();
+    item_window.refresh(); // Update previous content
 }
 
 /**
@@ -579,6 +583,7 @@ void TechMenuRenderer::init(void)
     box_window.draw_char(Size(item_size.h + 1, item_size.w + 1), ACS_RTEE);
 }
 
+/// @brief Refresh tech menu display
 void TechMenuRenderer::render(void)
 {
     item_window.refresh();
@@ -757,8 +762,10 @@ void GameRenderer::render(void)
  * current game state, providing a seamless user interface.
  */
 
+/// @brief Update all game interface elements
 void GameRenderer::draw(void)
-{
+{   
+    // Clear all subwindows
     map_window.erase();
     general_info_window.erase();
     selected_info_window.erase();
@@ -788,6 +795,7 @@ void GameRenderer::draw(void)
         }
     }
 
+    // Active missiles
     for (auto missile : game.get_missiles())
     {
         if (!game.is_in_map(missile->get_position()))
@@ -801,28 +809,28 @@ void GameRenderer::draw(void)
         std::string direction;
         switch (missile->get_direction())
         {
-        case MissileDirection::A:
+        case MissileDirection::A://hit the object
             direction = "O";
             break;
-        case MissileDirection::N:
+        case MissileDirection::N: // North
             direction = "↑ ";
             break;
-        case MissileDirection::NE:
+        case MissileDirection::NE:// Northeast
             direction = "↗ ";
             break;
-        case MissileDirection::E:
+        case MissileDirection::E://East
             direction = "→ ";
             break;
-        case MissileDirection::SE:
+        case MissileDirection::SE://Southeast
             direction = "↘ ";
             break;
-        case MissileDirection::S:
+        case MissileDirection::S://South
             direction = "↓ ";
             break;
-        case MissileDirection::SW:
+        case MissileDirection::SW://Southwest
             direction = "↙ ";
             break;
-        case MissileDirection::W:
+        case MissileDirection::W://West
             direction = "← ";
             break;
         case MissileDirection::NW:
