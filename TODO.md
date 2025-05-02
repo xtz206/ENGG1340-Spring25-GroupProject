@@ -79,6 +79,21 @@
 
 ## Documentation
 
+### Completed
+
+- [ ] README.md
+- [ ] Video
+- [x] game.cpp
+- [x] game.h
+- [ ] main.cpp
+- [ ] menu.cpp
+- [ ] menu.h
+- [ ] render.cpp
+- [ ] render.h
+- [ ] saver.cpp
+- [ ] saver.h
+- [x] utils.h
+
 ### README.md
 
 - [ ] Team member identification
@@ -94,17 +109,6 @@
 - [ ] Random
 - [ ] FileIO
 
-### game.cpp
-
-- [ ] File Header
-- [x] Function Header
-- [x] Inline comments
-
-### game.h
-
-- [ ] File Header
-- [ ] Class Header
-
 ### main.cpp
 
 - [ ] File Header
@@ -114,8 +118,8 @@
 ### menu.cpp
 
 - [ ] File Header
-- [ ] Function Header
-- [ ] Inline comments
+- [x] Function Header
+- [x] Inline comments
 
 ### menu.h
 
@@ -143,8 +147,3 @@
 
 - [ ] File Header
 - [ ] Class Header
-
-### utils.h
-
-- [x] File Header
-- [x] Class Header
