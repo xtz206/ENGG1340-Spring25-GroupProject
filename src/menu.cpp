@@ -1,3 +1,38 @@
+/**
+ * @file menu.cpp
+ * @brief Implementation of various menu classes for a game system.
+ *
+ * This file contains the implementation of different menu types used in the game,
+ * including basic menus, scrollable menus, and specialized menus for saving, loading,
+ * operations, technology, and tutorials. Each menu type provides specific functionality
+ * to interact with the game state and user input.
+ *
+ * Classes:
+ * - Menu: Base class for all menu types, providing basic navigation functionality.
+ * - ScrollMenu: Extends Menu to support scrollable item lists.
+ * - TitleMenu: Displays a title and description.
+ * - SaveMenu: Handles save operations and displays save slot statuses.
+ * - LoadMenu: Handles load operations and displays load slot statuses.
+ * - OperationMenu: Provides options for various game operations, dynamically updated
+ *   based on research progress.
+ * - TechMenu: Displays a scrollable technology tree and detailed descriptions of
+ *   selected technologies.
+ * - TutorialMenu: Provides a multi-page tutorial interface with game instructions and tips.
+ *
+ * Functions:
+ * - move_cursor: Adjusts the cursor position within menu bounds.
+ * - update_items: Updates menu items dynamically based on game state.
+ * - get_item_description: Retrieves detailed descriptions for selected items.
+ * - next_page: Advances to the next page in a multi-page menu.
+ * - prev_page: Returns to the previous page in a multi-page menu.
+ * - get_page_info: Retrieves the current page index and total page count.
+ *
+ * Dependencies:
+ * - menu.h: Header file defining the menu classes and their interfaces.
+ * - TechTree, TechNode, SaveDumper, SaveLoader, Game: External classes used for
+ *   managing game state and operations.
+ */
+
 #include <string>
 #include <vector>
 #include <algorithm>
