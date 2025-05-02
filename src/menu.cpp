@@ -244,34 +244,41 @@ TutorialMenu::TutorialMenu(void)
       pages({})
 {
     std::vector<std::string> basic_keyboard_control_page = {
-        "======== BASIC KEYBOARD CONTROLS =======",
-        "W/A/S/D                      Move Cursor",
-        "Q                         Prev Operation",
-        "E                         Next Operation",
-        "SPACE                          Next Turn",
-        "ENTER                   Select Operation",
-        "ESC                            Quit Game",
-        "P                             Pause Game"};
+        "============= BASIC KEYBOARD CONTROLS ============",
+        "W/A/S/D                                Move Cursor",
+        "Q                                   Prev Operation",
+        "E                                   Next Operation",
+        "SPACE                                    Next Turn",
+        "ENTER                             Select Operation",
+        "ESC                                      Quit Game",
+        "P                                       Pause Game"};
     std::vector<std::string> shortcut_keyboard_control_page = {
-        "===== SHORTCUT KEYBOARD CONTROLS =======",
-        "R                          Research Menu",
-        "F                               Fix City",
-        "B                           Build Cruise",
-        "L                          Launch Cruise",
-        "1-9                         Select City"};
+        "=========== SHORTCUT KEYBOARD CONTROLS ===========",
+        "R                                    Research Menu",
+        "F                                         Fix City",
+        "B                                     Build Cruise",
+        "L                                    Launch Cruise",
+        "1-9                                   Select City"};
     std::vector<std::string> game_target_page = {
-        "============= GAME TARGET ==============",
-        "manage your deposit and resources,      ",
-        "choose researching technologies wisely, ",
-        "intercept the enemy's attack missiles,  ",
-        "defend your cities from enemy attacks,  ",
-        "use super weapons to defeat the enemy!  "};
+        "=================== GAME TARGET ==================",
+        "manage your deposit and resources wisely          ",
+        "think carefully before investing in technology    ",
+        "",
+        "build cruise missiles to intercept enemy's attack ",
+        "protect your city and  the people living there    ",
+        "",
+        "research and build the super weapons              ",
+        "use them wisely to defeat the enemy!              "};
     std::vector<std::string> tip_page = {
-        "================= TIPS =================",
-        "use the first 40 turns to build missiles",
-        "fix city is expensive, use it wisely    ",
-        "the technology menu is scrollable, you  ",
-        "can find more when scrolls down the menu"};
+        "====================== TIPS ======================",
+        "use the first 40 turns to build missiles          ",
+        "the enemy will attack every 40 turns              ",
+        "build cruises when enemy approaches is too late   ",
+        "",
+        "fix city is quite expensive, use it wisely        ",
+        "",
+        "the technology menu is scrollable, you can find   ",
+        "more powerful techs when you scroll down menu     "};
 
     pages.push_back(basic_keyboard_control_page);
     pages.push_back(shortcut_keyboard_control_page);

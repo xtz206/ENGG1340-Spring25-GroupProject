@@ -58,7 +58,7 @@ int main(void)
 
         TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
         BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
-        BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
+        BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"RETURN TO MENU", "EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         TutorialMenu tutorial_menu = TutorialMenu();
         SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
@@ -71,7 +71,7 @@ int main(void)
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
         BasicMenuRenderer pause_menu_renderer = BasicMenuRenderer(pause_menu, Size(10, 30));
-        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 40), Size(5, 40));
+        TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu, Size(15, 50), Size(5, 50));
         SaveMenuRenderer save_menu_renderer = SaveMenuRenderer(save_menu, Size(10, 30));
         SaveMenuRenderer load_menu_renderer = SaveMenuRenderer(load_menu, Size(10, 30));
         EndMenuRenderer end_menu_renderer = EndMenuRenderer(game, end_menu, Size(10, 30), Size(5, 30));
@@ -195,6 +195,10 @@ int main(void)
                             asset_loader.reset();
                             game.set_difficulty(3);
                             stage = Stage::GAME;
+                        }
+                        else if (level_menu.get_item() == "RETURN TO MENU")
+                        {
+                            stage = Stage::START_MENU;
                         }
                         break;
 
