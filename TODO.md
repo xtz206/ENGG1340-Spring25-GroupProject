@@ -97,10 +97,10 @@
 ### README.md
 
 - [x] Team member identification
-- [ ] Game description
-- [ ] Feature Implemented(Random/DataStructure/DMM/FileIO/MultiFile/DifficultyLevel)
-- [ ] List of Libraries (features)
-- [ ] Compilation and Execution Instructions
+- [x] Game description
+- [x] Feature Implemented(Random/DataStructure/DMM/FileIO/MultiFile/DifficultyLevel)
+- [x] List of Libraries (features)
+- [x] Compilation and Execution Instructions
 
 ### Video
 
