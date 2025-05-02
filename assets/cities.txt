@@ -1,7 +1,7 @@
 name,y,x,hitpoint
-Tokyo,8,58,100
-Yokohama,11,53,100
-Yosuka,15,51,100
-Chiba,9,65,100
-Odawara,16,34,100
-Shizuoka,21,13
+Tokyo,8,58,1000
+Yokohama,11,53,800
+Yosuka,15,51,600
+Chiba,9,65,600
+Odawara,16,34,600
+Shizuoka,21,13,800

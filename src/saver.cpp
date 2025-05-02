@@ -228,9 +228,9 @@ void AssetLoader::load_cities(void)
             words.push_back(word);
         }
 
-        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
-        std::string name = words[0];
-        int hitpoint = std::stoi(words[3]);
+        Position position = Position(std::stoi(words.at(1)), std::stoi(words.at(2)));
+        std::string name = words.at(0);
+        int hitpoint = std::stoi(words.at(3));
         game.cities.push_back(City(position, name, hitpoint));
     }
     file.close();

@@ -435,8 +435,8 @@ void MissileManager::set_difficulty(int lv)
     switch (lv)
     {
     case 3:
-        speed_list = {1, 1, 1, 2, 2};
-        damage_list = {100, 100, 100, 150, 200};
+        speed_list = {1, 2, 2, 3, 3};
+        damage_list = {150, 150, 200, 200, 300};
         break;
     case 2:
         speed_list = {1, 1, 2, 2, 3};
@@ -445,8 +445,9 @@ void MissileManager::set_difficulty(int lv)
 
     case 1:
     default:
-        speed_list = {1, 2, 2, 3, 3};
-        damage_list = {150, 150, 200, 200, 300};
+
+        speed_list = {1, 1, 1, 2, 2};
+        damage_list = {100, 100, 100, 150, 200};
         break;
     }
 }
