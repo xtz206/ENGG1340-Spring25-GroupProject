@@ -1018,7 +1018,7 @@ void Game::check_research(void)
 {
     if (tech_tree.check_research()) // Check if research is complete
     {
-        insert_feedback(tech_tree.prev_researching->name + " Research Finished");
+        insert_feedback(tech_tree.prev_researching->name + " Research Finished", COLOR_PAIR(4));
         finish_research(tech_tree.prev_researching);
     }
     tech_tree.update_available(deposit);
@@ -1188,6 +1188,7 @@ void Game::build_cruise(void)
         insert_feedback("Deposit not enough(100) to build cruise");
         return;
     }
+    insert_feedback(city.name + " Cruise Missile Started Building");
     deposit -= en_enhanced_cruise_I ? 100 : 200;
     city.countdown = 5; // Start the build countdown
 }
