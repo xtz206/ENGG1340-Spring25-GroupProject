@@ -75,7 +75,7 @@ int main(void)
         SaveMenuRenderer load_menu_renderer = SaveMenuRenderer(load_menu, Size(10, 30));
         EndMenuRenderer end_menu_renderer = EndMenuRenderer(game, end_menu, Size(10, 30), Size(5, 30));
         GameRenderer game_renderer = GameRenderer(game, operation_menu, Size(10, 30), {6, 6, 4, 4});
-        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 40), Size(10, 40));
+        TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu, Size(10, 60), Size(10, 60));
 
         while (true)
         {
