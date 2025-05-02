@@ -394,6 +394,14 @@ int MissileManager::generate_random(int min, int max)
     return dist(mt);                                // Generate a random number
 }
 
+/**
+ * @brief Generates a random number based on the interval given, with a bias towards a specific value.
+ *
+ * @param min The minimum value for the random number. (inclusive)
+ * @param max The maximum value for the random number. (inclusive)
+ * @param biased The biased value to return if the random number is equal to max + 1.
+ * @return int: A random number.
+ */
 int MissileManager::generate_random_biased(int min, int max, int biased)
 {
     int ret = generate_random(min, max + 1);
@@ -404,6 +412,12 @@ int MissileManager::generate_random_biased(int min, int max, int biased)
     return ret;
 }
 
+/**
+ * @brief Generates a random number based on the weights given.
+ *
+ * @param weights A vector of weights for each possible outcome.
+ * @return int: A random number from 0 to weights.size(),  based on the weights.
+ */
 int MissileManager::generate_random_weighted(const std::vector<int> &weights)
 {
     std::random_device rd;
@@ -895,7 +909,7 @@ bool Game::check_game_over(void)
             }
         }
         score += (5000 - turn * 2); // time bonus
-        score -= casualty * 3;     // casualty penalty
+        score -= casualty * 3;      // casualty penalty
         return true;                // game win
     }
 
@@ -907,9 +921,9 @@ bool Game::check_game_over(void)
         }
     }
 
-    score += turn * 2;      // endurance bonus
+    score += turn * 2;     // endurance bonus
     score -= casualty * 3; // casualty penalty
-    return true;            // game lose
+    return true;           // game lose
 }
 
 /**
