@@ -25,7 +25,7 @@ class SaveDumper
 {
 private:
     Game &game;
-    std::string folderpath = "../save/";
+    std::string folderpath = "save/";
 
 public:
     SaveDumper(Game &g) : game(g) {}
@@ -45,7 +45,7 @@ private:
     std::string folderpath;
 
 public:
-    SaveLoader(Game &g) : game(g), folderpath("../save/") {};
+    SaveLoader(Game &g) : game(g), folderpath("save/") {};
     bool is_slot_empty(std::string index);
     bool load_game(const std::string &index);
     void load_cities();

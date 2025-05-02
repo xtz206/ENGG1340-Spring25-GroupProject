@@ -59,6 +59,6 @@ all: clean $(BIN_DIR)/$(PROG) assets
 clean:
 	rm -f $(BIN_DIR)/*.o
 	rm -f $(PROG)
-	rm -f $(DIST_DIR)/*
+	rm -rf $(DIST_DIR)/*
 
 .PHONY: assets, release, debug, all, clean
