@@ -236,8 +236,10 @@ private:
     std::array<int, 5> damage_list = {0};
     // NOTE: controls how missile num in a wave increases by turn
     std::array<int, 3> inc_turn = {50, 30, 20};
-    int generate_random(int turn, int hitpoint);
-    int get_process_level(int turn, int hitpoint);
+
+    int generate_random(int min, int max);
+    int generate_random_biased(int min, int max, int biased);
+    int generate_random_weighted(const std::vector<int> &weights);
 
 public:
     MissileManager(std::vector<City> &cts);
@@ -390,6 +392,8 @@ private:
     bool en_hydrogen_bomb = false;
     bool en_self_defense_sys = false;
     bool en_iron_curtain = false;
+
+    int generate_random(int min, int max);
 
 public:
     Game(void) : missile_manager(cities) {};

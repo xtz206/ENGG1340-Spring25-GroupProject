@@ -37,7 +37,6 @@
 #include <sstream>
 #include <iomanip>
 #include <stdexcept>
-#include <ctime>
 #include "game.h"
 #include "saver.h"
 
@@ -381,47 +380,36 @@ void MissileManager::remove_missiles(void)
 }
 
 /**
- * @brief Gets the process level based on the turn and hitpoint.
+ * @brief Generates a random number based on the interval given.
  *
- * @param turn The current turn number.
- * @param hitpoint The current hitpoint value.
- * @return int: The process level.
- */
-int MissileManager::get_process_level(int turn, int hitpoint)
-{
-    int HP_factor = hitpoint / 200; // Calculate the HP factor
-    int turn_factor = turn / 100;   // Calculate the turn factor
-    if (turn_factor > 4)            // Limit the turn factor
-    {
-        turn_factor = 4;
-    }
-    if (HP_factor > 4) // Limit the HP factor
-    {
-        HP_factor = 4;
-    }
-    return (HP_factor + turn_factor) / 2; // Calculate the process level
-}
-
-/**
- * @brief Generates a random number based on the turn and hitpoint.
- *
- * @param turn The current turn number.
- * @param hitpoint The current hitpoint value.
+ * @param min The minimum value for the random number. (inclusive)
+ * @param max The maximum value for the random number. (inclusive)
  * @return int: A random number.
  */
-int MissileManager::generate_random(int turn, int hitpoint)
+int MissileManager::generate_random(int min, int max)
 {
-    int randFactor = get_process_level(turn, hitpoint);      // Get the random factor
-    std::vector<double> weights = {1.0, 1.0, 1.0, 1.0, 1.0}; // Initialize weights
-    weights[0] += (randFactor == 0) ? 1.0 : 0.0;
-    weights[1] += (randFactor == 1) ? 1.0 : 0.0;
-    weights[2] += (randFactor == 2) ? 1.0 : 0.0;
-    weights[3] += (randFactor == 3) ? 1.0 : 0.0;
-    weights[4] += (randFactor == 4) ? 1.0 : 0.0;
+    std::random_device rd;
+    std::mt19937 mt(rd());                          // Create a Mersenne Twister engine
+    std::uniform_int_distribution<> dist(min, max); // Create a uniform distribution
+    return dist(mt);                                // Generate a random number
+}
+
+int MissileManager::generate_random_biased(int min, int max, int biased)
+{
+    int ret = generate_random(min, max + 1);
+    if (ret == max + 1)
+    {
+        return biased;
+    }
+    return ret;
+}
+
+int MissileManager::generate_random_weighted(const std::vector<int> &weights)
+{
     std::random_device rd;
     std::mt19937 mt(rd());                                             // Create a Mersenne Twister engine
     std::discrete_distribution<> dist(weights.begin(), weights.end()); // Create a discrete distribution
-    return dist(mt);                                                   // Generate a random number
+    return dist(mt);
 }
 
 /**
@@ -453,109 +441,53 @@ void MissileManager::set_difficulty(int lv)
 }
 
 /**
- * @brief Checks the weight of a city based on its hitpoint.
- *
- * @param c The city to check.
- * @return true If the city is valid, false otherwise.
- */
-bool MissileManager::city_weight_check(City &c)
-{
-    srand(static_cast<unsigned int>(time(nullptr))); // Seed the random number generator
-    int rand_factor = rand();                        // Generate a random factor
-    if (c.hitpoint <= 0)                             // Check if the city is destroyed
-    {
-        return false; // City is not valid
-    }
-    if (c.hitpoint > 1000) // Check if the city has high hitpoints
-    {
-        return true; // City is valid
-    }
-    if (c.hitpoint > 700) // Check if the city has medium-high hitpoints
-    {
-        if (rand_factor % 8 == 0)
-        {
-            return false;
-        }
-        return true;
-    }
-    if (c.hitpoint > 400) // Check if the city has medium hitpoints
-    {
-        if (rand_factor % 4 == 0)
-        {
-            return false;
-        }
-        return true;
-    }
-    if (c.hitpoint > 200) // Check if the city has low-medium hitpoints
-    {
-        if (rand_factor % 3 == 0)
-        {
-            return false;
-        }
-        return true;
-    }
-    else // City has low hitpoints
-    {
-        if (rand_factor % 2 == 0)
-        {
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
-
-/**
  * @brief Creates a wave of attack missiles.
  *
- * @param turn The current turn number.
- * @param hitpoint The current hitpoint value.
- * @param difficulty_level The difficulty level of the game.
+ * @param turn the current turn number.
+ * @param hitpoint the current enemy hitpoint.
+ * @param difficulty_level the difficulty level of the game.
  */
 void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_level)
 {
-    std::random_device rng;                                 // Create a random device
-    int num = turn / inc_turn.at(difficulty_level - 1) + 5; // Calculate the number of missiles
-    for (int i = 0; i < num; i++)                           // Iterate to create missiles
+
+    int count = turn / inc_turn.at(difficulty_level - 1) + 5; // Calculate the number of missiles
+    int hitpoint_factor = std::min(4, hitpoint / 200);        // Calculate the hitpoint factor
+    int turn_factor = std::min(4, turn / 100);                // Calculate the turn factor
+    // Iterate through all cities and get their hitpoints
+    std::vector<int> city_hitpoints;
+    for (auto &city : cities)
     {
-        // randomly generate speed and damage
-        int speed = speed_list.at(generate_random(turn, hitpoint));
-        int damage = damage_list.at(generate_random(turn, hitpoint));
+        city_hitpoints.push_back(city.hitpoint); // Get the hitpoints of each city
+    }
 
-        // randomly select a city
-        std::uniform_int_distribution<> targetDist(0, cities.size() - 1); // Create a uniform distribution
-        int target_index = targetDist(rng);                               // Generate a random index
-        while (!city_weight_check(cities.at(target_index)))               // Check if the city is valid
-        {
-            target_index = targetDist(rng); // Generate a new random index
-        }
-        // randomly generate a pos with in {(y,x) | 0 < y <= size.h, 0 < x <= size.w}
-        std::uniform_int_distribution<> xDist(0, size.w + 1);
-        std::uniform_int_distribution<> yDist(0, size.h + 1);
-        std::uniform_int_distribution<> edgeDist(0, 3);
+    for (int index = 0; index < count; index++)
+    {
+        int speed = speed_list.at(generate_random_biased(0, 4, (hitpoint_factor + turn_factor) / 2));
+        int damage = damage_list.at(generate_random_biased(0, 4, (hitpoint_factor + turn_factor) / 2));
+        City &city = cities.at(generate_random_weighted(city_hitpoints)); // Select a city based on its hitpoints
 
-        int edge = edgeDist(rng); // Generate a random edge
-        Position start;           // Declare start position
-        switch (edge)             // Determine start position based on edge
+        // START POSITION
+        Position position = {generate_random(0, size.h), generate_random(0, size.w)};
+        int edge = generate_random(0, 3); // Randomly select an edge
+        switch (edge)                     // Determine start position based on edge
         {
         case 0:
-            start = Position(yDist(rng), 0); // Left edge
+            position = Position(generate_random(0, size.h), 0); // Left edge
             break;
         case 1:
-            start = Position(yDist(rng), size.w + 1); // Right edge
+            position = Position(generate_random(0, size.h), size.w + 1); // Right edge
             break;
         case 2:
-            start = Position(0, xDist(rng)); // Top edge
+            position = Position(0, generate_random(0, size.w)); // Top edge
             break;
         case 3:
-            start = Position(size.h + 1, xDist(rng)); // Bottom edge
+            position = Position(size.h + 1, generate_random(0, size.w)); // Bottom edge
             break;
         default:
-            start = Position(0, 0); // Default position
+            position = Position(0, 0); // Default position
             break;
         }
-
-        create_attack_missile(start, cities.at(target_index), damage, speed); // Create and add the attack missile
+        create_attack_missile(position, city, damage, speed); // Create and add the attack missile
     }
 }
 
@@ -740,6 +672,14 @@ void TechTree::update_available(int deposit)
             }
         }
     }
+}
+
+int Game::generate_random(int min, int max)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());                             // Create a Mersenne Twister engine
+    std::uniform_int_distribution<int> dist(min, max); // Create a uniform distributions
+    return dist(mt);                                   // Generate a random number
 }
 
 /**
@@ -1378,9 +1318,7 @@ void Game::launch_dirty_bomb(void)
     }
     dirty_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
 
-    srand(static_cast<unsigned int>(time(nullptr))); // Seed random number generator
-    int rand_factor = rand() % 4;                    // Generate random factor
-    if (rand_factor == 0)                            // Check if bomb misses
+    if (generate_random(0, 3) == 0) // Check if bomb misses
     {
         insert_feedback("Dirty Bomb Missed");
         return;
@@ -1440,9 +1378,7 @@ void Game::launch_hydrogen_bomb(void)
     }
     hydrogen_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
 
-    srand(static_cast<unsigned int>(time(nullptr))); // Seed random number generator
-    int rand_factor = rand() % 2;                    // Generate random factor
-    if (rand_factor == 0)                            // Check if bomb misses
+    if (generate_random(0, 1) == 0) // Check if bomb misses
     {
         insert_feedback("Hydrogen Bomb Missed");
         return;
