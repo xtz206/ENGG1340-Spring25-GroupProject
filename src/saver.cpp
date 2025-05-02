@@ -277,23 +277,25 @@ std::vector<std::string> AssetLoader::load_title(void)
  * @return std::vector<std::vector<std::string>>
  *         A 2D vector where each inner vector represents a video frame
  *         and contains strings corresponding to the lines of the frame.
- *
- * @note The function currently iterates over a hardcoded number of frames (191).
- *       If a frame file does not exist or cannot be opened, it is skipped.
- *       Consider replacing the hardcoded number with a constant or a variable
- *       for better flexibility.
+ * @throws std::runtime_error If the video directory cannot be accessed.
  */
 std::vector<std::vector<std::string>> AssetLoader::load_video(void)
 {
     std::vector<std::vector<std::string>> frames;
     std::ifstream file;
-    // TODO: replace the hardcoded number with a constant or a variable
-    for (size_t index = 0; index < 191; index++)
+
+    struct stat info;
+    if (stat("video/", &info) != 0 || !(info.st_mode & S_IFDIR))
+    {
+        throw std::runtime_error("Cannot access video directory");
+    }
+
+    for (size_t index = 0;; index++)
     {
         file.open("video/frame" + std::to_string(index) + ".txt");
         if (!file.is_open())
         {
-            continue; // Skip if the file doesn't exist
+            break; // Stop when a file in the sequence is missing
         }
         std::vector<std::string> frame;
         for (std::string line; std::getline(file, line);)
