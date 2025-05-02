@@ -1,3 +1,7 @@
+/** 
+ * @file saver.cpp
+ * @brief Implementation of game state saving/loading functionality
+ */
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <ctime>
@@ -8,22 +12,43 @@
 #include "saver.h"
 #include "game.h"
 
+// ===================== SaveDumper Implementation ===================== //
+
+/**
+ * @brief Save general game data
+ * @param filepath Save directory path
+ * @details Writes core game state to general.txt including:
+ * - Difficulty level
+ * - Current turn number
+ * - Player's deposit
+ * - Cursor coordinates
+ * - Bomb inventory counts
+ * - Enemy HP
+ * - Iron Curtain status
+ * - Tech upgrades status
+ * - Missile manager ID
+ */
 void SaveDumper::save_game_general(std::string filepath)
-{
+{   
     std::string filename = filepath + "general.txt";
     std::ofstream general_log(filename);
     if (general_log.is_open())
-    {
+    {   // Write basic game state
         general_log << "level:" << game.difficulty_level << "\n";
         general_log << "turn:" << game.get_turn() << "\n";
         general_log << "deposit:" << game.get_deposit() << "\n";
+        // Write cursor position
         general_log << "cursor_y:" << game.cursor.y << "\n";
         general_log << "cursor_x:" << game.cursor.x << "\n";
+        // Write weapon inventory
         general_log << "standard_bomb_counter:" << game.standard_bomb_counter << "\n";
         general_log << "dirty_bomb_counter:" << game.dirty_bomb_counter<< "\n";
         general_log << "hydrogen_bomb_counter:" << game.hydrogen_bomb_counter<< "\n";
+         // Write enemy status
         general_log << "enemy_hitpoint:" << game.enemy_hitpoint << "\n";
+        // Write defense system status
         general_log << "iron_curtain_activated:" << game.iron_curtain_activated << "\n";
+        // Write tech upgrades
         general_log << "enhanced_radar_I:" << game.en_enhanced_radar_I << "\n";
         general_log << "enhanced_radar_II:" << game.en_enhanced_radar_II << "\n";
         general_log << "enhanced_radar_III:" << game.en_enhanced_radar_III << "\n";
@@ -38,18 +63,32 @@ void SaveDumper::save_game_general(std::string filepath)
         general_log << "hydrogen_bomb:" << game.en_hydrogen_bomb << "\n";
         general_log << "self_defense_sys:" << game.en_self_defense_sys << "\n";
         general_log << "iron_curtain:" << game.en_iron_curtain << "\n";
+        // Write missile manager ID
         general_log << "missile_manager_id" << game.missile_manager.id << "\n";
     }
     general_log.close();
 }
 
+/**
+ * @brief Save attack missile data
+ * @param filepath Save directory path
+ * @details Generates atkmissiles.txt with:
+ * - Missile ID
+ * - Current position
+ * - Target coordinates
+ * - Damage value
+ * - Movement speed
+ * - Target lock status
+ */
 void SaveDumper::save_attack_missile(std::string filepath)
 {
     std::string filename = filepath + "atkmissiles.txt";
     std::ofstream atkmissile_log(filename);
     if (atkmissile_log.is_open())
-    {
+    {   // CSV header
         atkmissile_log << "id,y,x,target_y,target_x,damage,speed,is_aimed\n";
+
+        // Iterate through all attack missiles
         for (auto &missile : game.missile_manager.get_attack_missiles())
         {
             AttackMissile *attack_missile = dynamic_cast<AttackMissile *>(missile);
@@ -59,6 +98,16 @@ void SaveDumper::save_attack_missile(std::string filepath)
     atkmissile_log.close();
 }
 
+/**
+ * @brief Save cruise missile data
+ * @param filepath Save directory path
+ * @details Generates cruise.txt with:
+ * - Missile ID
+ * - Current position
+ * - Target coordinates
+ * - Damage value
+ * - Movement speed
+ */
 void SaveDumper::save_cruise(std::string filepath)
 {
     std::string filename = filepath + "cruise.txt";
@@ -76,6 +125,18 @@ void SaveDumper::save_cruise(std::string filepath)
     cruise_log.close();
 }
 
+/**
+ * @brief Save city data
+ * @param filepath Save directory path
+ * @details Generates cities.txt with:
+ * - City name
+ * - Coordinates
+ * - Hitpoints
+ * - Base productivity
+ * - Current productivity
+ * - Cruise storage
+ * - Countdown timer
+ */
 void SaveDumper::save_city(std::string filepath)
 {
     std::string filename = filepath + "cities.txt";
@@ -93,6 +154,16 @@ void SaveDumper::save_city(std::string filepath)
     city_log.close();
 }
 
+/**
+ * @brief Save technology tree data
+ * @param filepath Save directory path
+ * @details Generates tech_tree.txt with:
+ * - Researched technologies
+ * - Available technologies
+ * - Currently researching technology
+ * - Previous technology being researched
+ * - Remaining time for current research
+ */
 void SaveDumper::save_tech_tree(std::string filepath)
 {
     std::string filename = filepath + "tech_tree.txt";
@@ -164,6 +235,18 @@ void SaveDumper::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
+/**
+ * @brief Save game state to a specified folder
+ * @param index Save slot index
+ * @param if_cover Flag to overwrite existing save
+ * @return true if save was successful, false otherwise
+ * @details Creates a new folder for the save and generates files for:
+ * - General game state
+ * - Attack missiles
+ * - Cruise missiles
+ * - Cities
+ * - Technology tree
+ */
 bool SaveDumper::save_game(std::string index, bool if_cover)
 {
     // check if the save folder exists, if not, create it
@@ -218,6 +301,17 @@ bool SaveDumper::save_game(std::string index, bool if_cover)
     return true;
 }
 
+// ===================== SaveLoader Implementation ===================== //
+/**
+ * @brief Execute full game loading process
+ * @param index Save slot index to load
+ * @return Loading success status
+ * @details Loading sequence:
+ * 1. Check save directory existence
+ * 2. Reset game state
+ * 3. Load components in order: 
+ *    General -> Cities -> Missiles -> Tech Tree
+ */
 void SaveLoader::load_cities()
 {
     std::string filename = folderpath + "cities.txt";
@@ -260,6 +354,17 @@ void SaveLoader::load_cities()
     game.cities = cities;
 }
 
+/**
+ * @brief Load game state from a specified save slot
+ * @param index Save slot index
+ * @return true if loading was successful, false otherwise
+ * @details Loads game state from the specified folder:
+ * - General game state
+ * - Attack missiles
+ * - Cruise missiles
+ * - Cities
+ * - Technology tree
+ */
 void SaveLoader::load_general()
 {
     std::string filename = folderpath + "general.txt";
@@ -410,6 +515,16 @@ void SaveLoader::load_general()
     }
 }
 
+/**
+ * @brief Load attack missile data
+ * @details Loads atkmissiles.txt with:
+ * - Missile ID
+ * - Current position
+ * - Target coordinates
+ * - Damage value
+ * - Movement speed
+ * - Target lock status
+ */
 void SaveLoader::load_attack_missile()
 {
     std::string filename = folderpath + "atkmissiles.txt";
@@ -464,6 +579,15 @@ void SaveLoader::load_attack_missile()
     }
 }
 
+/**
+ * @brief Load cruise missile data
+ * @details Loads cruise.txt with:
+ * - Missile ID
+ * - Current position
+ * - Target coordinates
+ * - Damage value
+ * - Movement speed
+ */
 void SaveLoader::load_cruise()
 {
     std::string filename = folderpath + "cruise.txt";
@@ -513,6 +637,15 @@ void SaveLoader::load_cruise()
     }
 }
 
+/**
+ * @brief Load technology tree data
+ * @details Loads tech_tree.txt with:
+ * - Researched technologies
+ * - Available technologies
+ * - Currently researching technology
+ * - Previous technology being researched
+ * - Remaining time for current research
+ */
 void SaveLoader::load_tech_tree()
 {
     std::string filename = folderpath + "tech_tree.txt";
@@ -621,6 +754,17 @@ void SaveLoader::load_tech_tree()
     }
 }
 
+/**
+ * @brief Load game state from a specified save slot
+ * @param index Save slot index
+ * @return true if loading was successful, false otherwise
+ * @details Loads game state from the specified folder:
+ * - General game state
+ * - Attack missiles
+ * - Cruise missiles
+ * - Cities
+ * - Technology tree
+*/
 bool SaveLoader::load_game(const std::string& index)
 {
     folderpath = "../save/game_" + index + "/";
