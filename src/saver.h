@@ -21,6 +21,17 @@ public:
     void reset(void);
 };
 
+class GeneralChecker
+{
+private:
+    std::string folderpath = "./";
+
+public:
+    GeneralChecker() {};
+    bool is_first_run(void);
+    void save_first_run(void);
+};
+
 class SaveDumper
 {
 private:

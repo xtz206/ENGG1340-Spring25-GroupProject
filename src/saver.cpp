@@ -236,6 +236,28 @@ void AssetLoader::load_cities(void)
     file.close();
 }
 
+bool GeneralChecker::is_first_run(void)
+{
+    std::string filepath = folderpath + "lastrun";
+    struct stat info;
+    if (stat(filepath.c_str(), &info) == 0 && (info.st_mode & S_IFREG))
+    {
+        // lastrun file exists, so this is not the first run
+        return false;
+    }
+    // lastrun file does not exist, so this is the first run
+    return true;
+}
+
+void GeneralChecker::save_first_run(void)
+{
+    std::string command = "touch " + folderpath + "lastrun";
+    if (system(command.c_str()) != 0)
+    {
+        throw std::runtime_error("Failed to create lastrun file");
+    }
+}
+
 // TODO: write docstring for this function
 std::vector<std::string> AssetLoader::load_title(void)
 {

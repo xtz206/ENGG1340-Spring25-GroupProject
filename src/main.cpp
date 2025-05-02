@@ -53,18 +53,19 @@ int main(void)
         SaveDumper save_dumper = SaveDumper(game);
         SaveLoader save_loader = SaveLoader(game);
         AssetLoader asset_loader = AssetLoader(game);
+        GeneralChecker general_checker = GeneralChecker();
         asset_loader.load_general();
 
         TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
         BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
+        TutorialMenu tutorial_menu = TutorialMenu();
         SaveMenu save_menu = SaveMenu("SAVE GAME", save_dumper);
         LoadMenu load_menu = LoadMenu("LOAD GAME", save_loader);
         BasicMenu end_menu = BasicMenu("GAME END", {"RETURN TO MENU", "QUIT"});
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
-        TutorialMenu tutorial_menu = TutorialMenu();
 
         TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 120));
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
@@ -124,7 +125,15 @@ int main(void)
                     case '\n':
                         if (start_menu.get_item() == "START THE GAME")
                         {
-                            stage = Stage::LEVEL_MENU;
+                            if (general_checker.is_first_run())
+                            {
+                                stage = Stage::TUTORIAL_MENU;
+                                general_checker.save_first_run();
+                            }
+                            else
+                            {
+                                stage = Stage::LEVEL_MENU;
+                            }
                         }
                         else if (start_menu.get_item() == "LOAD GAME")
                         {
