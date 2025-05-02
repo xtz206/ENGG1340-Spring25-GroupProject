@@ -1,7 +1,33 @@
-/* render.cpp */
-/* Implementation of rendering system for terminal-based game interface using ncurses */
+/**
+ * @file render.cpp
+ * @brief This file contains the implementation of rendering functionalities for the game interface.
+ * 
+ * The file defines various classes and methods to manage and render different components of the game,
+ * including windows, menus, and game states. It uses the ncurses library for terminal-based UI rendering.
+ * 
+ * Classes:
+ * - Window: Represents a window in the terminal and provides methods to print text and manage attributes.
+ * - Renderer: Provides debugging functionalities for rendering.
+ * - BasicMenuRenderer: Handles rendering of basic menus with items and titles.
+ * - TitleMenuRenderer: Manages rendering of title menus with left-aligned and centered items.
+ * - SaveMenuRenderer: Renders the save menu interface with warnings.
+ * - EndMenuRenderer: Displays the end menu with game results and statistics.
+ * - TutorialMenuRenderer: Renders a tutorial menu with pages and items.
+ * - TechMenuRenderer: Handles rendering of technology menus with descriptions.
+ * - GameRenderer: Manages and renders the entire game interface, including map, information, and operations.
+ * 
+ * Dependencies:
+ * - ncurses library for terminal-based UI rendering.
+ * - Various game-related classes such as Game, Menu, and Position.
+ * 
+ * Key Features:
+ * - Flexible window management with subwindows.
+ * - Support for printing text with attributes (e.g., bold, color).
+ * - Rendering of menus with alignment options (left, center, right).
+ * - Dynamic rendering of game states, including map, statistics, and feedback.
+ * - Integration with game logic for displaying real-time updates.
+ */
 
-// ------------------------ Header Includes ------------------------
 #include <string>
 #include <vector>
 #include <sstream>

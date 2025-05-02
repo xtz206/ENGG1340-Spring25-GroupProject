@@ -62,6 +62,7 @@ void init(void)
     init_pair(3, COLOR_WHITE, COLOR_YELLOW);
     init_pair(4, COLOR_WHITE, COLOR_GREEN);
 }
+
 // TODO: update this docstring to compatible with Doxygen
 /*The main function serves as the entry point of the program.
 It initializes game resources (such as menus, renderers, game objects, etc.),
@@ -94,6 +95,7 @@ Input handling via short key variable (WIP in shown snippet)
 Debug infrastructure with temporary "DEBUG" menu option
 Localization-ready design (planned string replacement via vectors/maps)
 */
+
 int main(void)
 {
     try

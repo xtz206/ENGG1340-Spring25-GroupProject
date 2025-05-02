@@ -1,3 +1,41 @@
+/**
+ * @file saver.cpp
+ * @brief This file contains the implementation of asset loading, saving, and game state management functionalities.
+ *
+ * The file provides methods to load and save various game assets and states, including general game settings,
+ * background, cities, missiles, and the technology tree. It also includes functionality to check and handle
+ * the first run of the program and manage save slots.
+ *
+ * Classes:
+ * - AssetLoader: Handles loading of game assets such as general settings, background, cities, and title.
+ * - GeneralChecker: Provides methods to check and save the first run state of the program.
+ * - SaveDumper: Handles saving the game state to a specified folder, including general settings, cities, missiles, and the technology tree.
+ * - SaveLoader: Handles loading the game state from a specified folder, including general settings, cities, missiles, and the technology tree.
+ *
+ * Functions:
+ * - AssetLoader::load_general: Loads general game configuration from a file and initializes game settings.
+ * - AssetLoader::load_background: Loads the background data from a file and stores it in the game's background container.
+ * - AssetLoader::load_cities: Loads city data from a file and populates the game's city list.
+ * - AssetLoader::load_title: Loads the content of the "title.txt" file into a vector of strings.
+ * - AssetLoader::reset: Resets the game state by reloading assets and clearing game data.
+ * - GeneralChecker::is_first_run: Checks if this is the first run of the program.
+ * - GeneralChecker::save_first_run: Creates a file named "lastrun" to indicate the first run.
+ * - SaveDumper::is_slot_empty: Checks if the save slot is empty.
+ * - SaveDumper::save_game: Saves the game state to a specified folder.
+ * - SaveDumper::save_cities: Saves cities' states to a CSV file.
+ * - SaveDumper::save_general: Saves general game state to a file.
+ * - SaveDumper::save_attack_missiles: Saves attack missiles' states to a CSV file.
+ * - SaveDumper::save_cruise_missiles: Saves cruise missiles' states to a CSV file.
+ * - SaveDumper::save_tech_tree: Saves the technology tree state to a CSV file.
+ * - SaveLoader::is_slot_empty: Checks if the save slot is empty.
+ * - SaveLoader::load_game: Loads the game state from a specified folder.
+ * - SaveLoader::load_cities: Loads the cities state from a specified folder.
+ * - SaveLoader::load_general: Loads the general game state from a specified folder.
+ * - SaveLoader::load_attack_missiles: Loads the attack missiles state from a specified folder.
+ * - SaveLoader::load_cruise_missiles: Loads the cruise missiles state from a specified folder.
+ * - SaveLoader::load_tech_tree: Loads the technology tree state from a specified folder.
+ */
+
 #include <string>
 #include <vector>
 #include <sstream>
