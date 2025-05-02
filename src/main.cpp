@@ -9,6 +9,28 @@
 #include "loader.h"
 #include "saver.h"
 
+/*The init function initializes terminal interface settings. 
+It configures locale settings, enables screen management libraries (such as initscr and start_color), disables echo input, 
+hides the cursor, and sets non-blocking input and keyboard support.
+*/
+/*initscr is a function from the ncurses library that initializes the screen and sets up the program's default window. 
+It returns a pointer to the main window (of type WINDOW*), 
+preparing the environment for subsequent ncurses screen operations.
+*/
+/*noecho is a function returning type int. In contexts like ncurses-based libraries, it disables terminal echo functionality, 
+preventing input characters from being displayed during user input.
+*/
+/*curs_set is a function that controls terminal cursor visibility. 
+It accepts an integer parameter and returns the previous cursor state, commonly used to manipulate terminal display behavior.
+*/
+//start_color is a function returning type int. It typically initializes terminal color capabilities.
+/*The nodelay function sets the input mode for a specified window (WINDOW*). 
+A boolean parameter controls whether input is non-blocking: true enables non-blocking mode, false enables blocking mode.
+*/
+/*The keypad function enables or disables function key support for a specified window (WINDOW*). 
+The second boolean parameter determines the state: true enables function key support, false disables it.
+*/
+
 void init(void)
 {
     setlocale(LC_CTYPE, "");
@@ -20,6 +42,37 @@ void init(void)
     keypad(stdscr, TRUE);
 }
 
+/*The main function serves as the entry point of the program. 
+It initializes game resources (such as menus, renderers, game objects, etc.), 
+and processes user input through loops to control menu navigation, game logic, and state transitions, 
+thereby implementing the complete game flow.
+*/
+/*
+Implements a core framework for a strategic defense game "Missile Commander," 
+featuring menu navigation, game state management, and resource handling. 
+(1)System Initialization
+Uses init() for global setup (likely graphics/resources)
+Implements exception handling via try block (though missing catch in shown snippet)
+(2)Resource Management
+Loader class handles asset loading (map sizes, cities, backgrounds)
+SaveDumper/SaveLoader manage game state persistence
+(3)Menu Architecture
+Modular BasicMenu system for different contexts:
+Start menu (game launch/load/tutorial/quit)
+Difficulty selection (easy/normal/hard)
+Pause menu (resume/save/quit)
+Specialized menus (tech tree, tutorial, save slots)
+Dedicated renderers (BasicMenuRenderer, TutorialMenuRenderer) for visual presentation
+(4)Game Core
+Game object constructed with loaded resources
+Operational menus (OperationMenu, TechMenu) for in-game actions
+Separation of logic (game state) and presentation (renderers)
+(5)Key Features
+Multiple interactive layers: Main game, tech research, tutorials
+Input handling via short key variable (WIP in shown snippet)
+Debug infrastructure with temporary "DEBUG" menu option
+Localization-ready design (planned string replacement via vectors/maps)
+*/
 int main(void)
 {
     try
@@ -37,6 +90,10 @@ int main(void)
         BasicMenu save_menu = BasicMenu("SAVE GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN TO MENU"});
         BasicMenu load_menu = BasicMenu("LOAD GAME", {"SLOT 1", "SLOT 2", "SLOT 3", "RETURN"});
         // DEBUG: the 'DEBUG' button is just for testing, remove later
+        // This is the menu page for the game.
+        //It introduces basic buttons for the game,enabling users to get familiar with basic steps like
+        // starting the game, loading a game, and quitting the game.
+        // also basic actions including switch,repair,launching missile and research.
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
         OperationMenu operation_menu = OperationMenu(game);
@@ -71,6 +128,66 @@ int main(void)
         start_menu.activate();
         start_menu_renderer.init();
 
+        /*A. Menu System
+Start Menu: Initial screen with options to start game, load game, view tutorial, or quit
+Level Menu: Difficulty selection (Easy/Normal/Hard)
+Tutorial Menu: Multi-page instructions with navigation
+Pause Menu: In-game options (Resume/Return to Menu/Save/Quit)
+Tech Menu: Technology research interface
+Save/Load Menus: Slot-based save system
+End Menu: Post-game options
+
+B. Game State
+Handles core gameplay through Game class methods:
+Cursor movement (WASD keys)
+City operations (1-0 keys for quick city selection)
+Missile/bomb management
+Turn progression (Space key)
+Research system
+Iron Curtain activation
+Game over checks
+
+3. Input Handling
+Uses getch() for keyboard input
+Common Controls:
+WASD/QE for navigation
+Enter for selection
+ESC (ASCII 27) for back/cancel
+P for pause
+Number keys 1-0 for quick city selection
+Special keys for gameplay actions (Space, R, F, B, L)
+
+4. State Transitions
+Uses activate()/deactivate() methods to switch between states
+Maintains strict hierarchy:
+Start → Level → Game ↔ Pause ↔ Tech ↔ Save/Load
+Start → Tutorial
+Game → End
+5. Rendering System
+Each menu has its own renderer (*_renderer)
+
+Implements double buffering pattern:
+cpp
+draw();    // Prepare frame
+render();  // Display frame
+Uses usleep(10000) for 10ms frame pacing
+
+6. Key Technical Features
+Game Serialization: save_dumper and save_loader handle save files
+Difficulty System: set_difficulty() modifies enemy stats
+Research System: Tech tree integration with gameplay effects
+Super Weapons: Multiple bomb types with build/launch phases
+Defensive Systems: City repair and Iron Curtain mechanics
+
+7. Error Handling
+Wrapped in try-catch block for exceptions
+Proper terminal cleanup with endwin()
+
+8. Notable Patterns
+Chain of Responsibility: Input handling propagates through active state
+Observer Pattern: Menu renderers observe menu states
+Command Pattern: Key presses map to game actions
+        */
         while (true)
         {
             if (start_menu.is_activated())
