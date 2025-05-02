@@ -9,12 +9,18 @@
 #include "game.h"
 
 
+
 /**
- * @brief Loads map dimensions from configuration file.
- * Reads general.txt to extract height/width values using colon-separated format.
- * Implements file validation and format error handling through exception mechanisms.
+ * @brief Loads general game configuration from a file and initializes game settings.
  * 
+ * This function reads the "general.txt" file, parses its contents, and updates
+ * various game parameters such as size, cursor position, turn, score, counters,
+ * and enabled features. Each line in the file is expected to follow the format:
+ * "key:value". If the file cannot be opened, a runtime exception is thrown.
+ * 
+ * @throws std::runtime_error If the "general.txt" file cannot be opened.
  */
+
 void AssetLoader::load_general(void)
 {
     // Attempt to open primary configuration file
@@ -176,11 +182,14 @@ void AssetLoader::load_general(void)
 }
 
 /**
- * @brief Loads battlefield background pattern from text file.
- * Reads background.txt line-by-line, validates line count matches declared map height from
- * general.txt. Maintains original spatial formatting of background patterns.
- *
+ * @brief Loads the background data from a file and stores it in the game's background container.
+ * 
+ * This function reads the contents of "background.txt" line by line and populates the 
+ * `game.background` vector with the data. If the file cannot be opened, it throws a runtime error.
+ * 
+ * @throws std::runtime_error If the file "background.txt" cannot be opened.
  */
+
 void AssetLoader::load_background(void)
 {
     std::ifstream file("background.txt");
@@ -196,11 +205,16 @@ void AssetLoader::load_background(void)
     file.close();
 }
 
+
 /**
- * @brief Loads city data from configuration file.
- * Reads cities.txt to extract city attributes using comma-separated format. Implements
- * file validation and format error handling through exception mechanisms.
- *
+ * @brief Loads city data from a file and populates the game's city list.
+ * 
+ * This function reads city information from a file named "cities.txt".
+ * Each line in the file represents a city with its attributes separated by commas.
+ * The attributes include the city's name, position (x, y), and hitpoints.
+ * The function clears the existing city list in the game before loading new data.
+ * 
+ * @throws std::runtime_error If the file "cities.txt" cannot be opened.
  */
 void AssetLoader::load_cities(void)
 {
@@ -235,11 +249,15 @@ void AssetLoader::load_cities(void)
 }
 
 
+
 /**
- * @brief Loads title data from configuration file.
- * Reads title.txt to extract title lines. Implements file validation and format error
- * handling through exception mechanisms.
- *
+ * @brief Loads the content of the "title.txt" file into a vector of strings.
+ * 
+ * This function reads each line from the "title.txt" file and stores it in a 
+ * vector of strings. If the file cannot be opened, it throws a runtime error.
+ * 
+ * @return std::vector<std::string> A vector containing each line of the file as a string.
+ * @throws std::runtime_error If the "title.txt" file cannot be opened.
  */
 std::vector<std::string> AssetLoader::load_title(void)
 {
@@ -258,11 +276,15 @@ std::vector<std::string> AssetLoader::load_title(void)
 }
 
 /**
- * @brief Resets game state to initial conditions.
- * Reinitializes game attributes, including map dimensions, cursor position, turn count,
- * missile manager, and technology tree. Clears feedback messages and missile list.
- *
+ * @brief Resets the game state by reloading assets and clearing game data.
+ * 
+ * This function performs the following actions:
+ * - Reloads general assets, background, and city data.
+ * - Resets the missile manager's cities and clears all existing missiles.
+ * - Resets the technology tree, including research progress and available technologies.
+ * - Clears all feedback messages.
  */
+
 void AssetLoader::reset(void)
 {
     load_general();
