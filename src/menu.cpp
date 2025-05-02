@@ -5,7 +5,7 @@
 #include "menu.h"
 
 /**
- * @brief Initializes menu system with title and options.
+ * @brief Initializes menu system with title and items.
  * Sets initial activation state and cursor position. Base class for all menu types.
  * @param t Title text displayed at menu top
  * @param it Collection of selectable menu entries
@@ -54,7 +54,12 @@ void ScrollMenu::move_cursor(int dcursor)
     cursor += dcursor;
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Constructs a TitleMenu object with a title and a description.
+ *
+ * @param t A vector of strings representing the title items.
+ * @param d A string representing the description to be added to the menu.
+ */
 TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
     : Menu("", t)
 {
@@ -64,7 +69,12 @@ TitleMenu::TitleMenu(const std::vector<std::string> &t, const std::string &d)
     items.push_back(d);
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Constructs a SaveMenu object with a title and a reference to a SaveDumper object.
+ *
+ * @param t The title of the menu.
+ * @param sd A reference to a SaveDumper object used for handling save operations.
+ */
 SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
     : BasicMenu(t, {}), save_dumper(sd),
       all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
@@ -73,7 +83,10 @@ SaveMenu::SaveMenu(const std::string &t, SaveDumper &sd)
     items.push_back(all_items.at(0));
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Updates the items in the SaveMenu based on the save status of each slot.
+ * Removes all items except the first one and adds the status of each save slot.
+ */
 void SaveMenu::update_items(void)
 {
     items.erase(items.begin() + 1, items.end());
@@ -82,7 +95,12 @@ void SaveMenu::update_items(void)
     items.push_back(all_items.at(save_dumper.is_slot_empty("3") ? 3 : 6));
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Constructs a LoadMenu object with a title and a reference to a SaveLoader object.
+ *
+ * @param t The title of the menu.
+ * @param sl A reference to a SaveLoader object used for loading game saves.
+ */
 LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
     : BasicMenu(t, {}), save_loader(sl),
       all_items({"RETURN TO MENU", "SLOT 1 EMPTY", "SLOT 2 EMPTY", "SLOT 3 EMPTY",
@@ -91,7 +109,10 @@ LoadMenu::LoadMenu(const std::string &t, SaveLoader &sl)
     items.push_back(all_items.at(0));
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Updates the items in the LoadMenu based on the save status of each slot.
+ * Removes all items except the first one and adds the status of each load slot.
+ */
 void LoadMenu::update_items(void)
 {
     items.erase(items.begin() + 1, items.end());
@@ -100,7 +121,11 @@ void LoadMenu::update_items(void)
     items.push_back(all_items.at(save_loader.is_slot_empty("3") ? 3 : 6));
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Constructs an OperationMenu object with a reference to the game instance.
+ *
+ * @param g Reference to the Game instance
+ */
 OperationMenu::OperationMenu(Game &g)
     : ScrollMenu("Operation", {}, 9), game(g), // Initialize scroll parameters
       all_items({"RESEARCH", "FIX", "BUILD CRUISE", "LAUNCH CRUISE", "BUILD STANDARD BOMB", "LAUNCH STANDARD BOMB",
@@ -144,7 +169,7 @@ void OperationMenu::update_items(void)
  * @brief Creates technology research interface.
  * Prepends system message to technology list. Inherits scroll behavior for
  * lengthy research trees.
- * @param t Reference to technology progression system
+ * @param t Reference to technology tree
  * @param msg Informational message displayed at list top
  */
 TechMenu::TechMenu(TechTree &t, const std::string &msg)
@@ -155,8 +180,8 @@ TechMenu::TechMenu(TechTree &t, const std::string &msg)
 
 /**
  * @brief Generates detailed technology specifications.
- * Compiles research status, costs, prerequisites, and descriptions for selected
- * technology node. Handles special case for header message selection.
+ * Display research status, costs, prerequisites, and descriptions for selected tech node.
+ * Handles special case for header message selection.
  * @return std::vector<std::string> Formatted lines for display
  */
 std::vector<std::string> TechMenu::get_item_description()
@@ -206,7 +231,14 @@ std::vector<std::string> TechMenu::get_item_description()
     return description;
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Constructs a TutorialMenu object.
+ *
+ * Initializes the tutorial menu with a title "TUTORIAL" and a set of menu options:
+ * "NEXT PAGE", "PREV PAGE", and "RETURN TO MENU". It also sets the initial page index
+ * to 0 and populates the tutorial pages with instructions for various game controls.
+ *
+ */
 TutorialMenu::TutorialMenu(void)
     : BasicMenu("TUTORIAL", {"NEXT PAGE", "PREV PAGE", "RETURN TO MENU"}), page_index(0),
       pages({{"W/A/S/D          Move Cursor", "Q             Prev Operation", "E             Next Operation",
@@ -216,21 +248,27 @@ TutorialMenu::TutorialMenu(void)
 {
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Advances to the next page in the tutorial menu if there are more pages available.
+ */
 void TutorialMenu::next_page(void)
 {
     if (page_index < pages.size() - 1)
         page_index++;
 }
-
-// TODO: write docstring for this function
+/**
+ * @brief Returns to the previous page in the tutorial menu if there are previous pages available.
+ */
 void TutorialMenu::prev_page(void)
 {
     if (page_index > 0)
         page_index--;
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Retrieves the current page information.
+ * @return std::string Formatted string indicating current page and total pages
+ */
 std::string TutorialMenu::get_page_info() const
 {
     return std::to_string(page_index + 1) + "/" + std::to_string(pages.size());

@@ -392,7 +392,12 @@ int MissileManager::generate_random(int turn, int hitpoint)
     return dist(mt);                                                   // Generate a random number
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Sets the difficulty level for the missile manager by adjusting the speed and damage of missiles.
+ *
+ * @param lv Difficulty level (1-3).
+ *
+ */
 void MissileManager::set_difficulty(int lv)
 {
     switch (lv)
@@ -705,8 +710,8 @@ void TechTree::update_available(int deposit)
 }
 
 /**
- * @brief Configures game difficulty parameters. Adjusts enemy HP, missile parameters and starting
- *        resources based on level (1-3).
+ * @brief Sets the difficulty level for the game by adjusting the initial deposit and enemy hitpoint.
+ *
  * @param lv Difficulty level (1-3).
  */
 void Game::set_difficulty(int lv)
