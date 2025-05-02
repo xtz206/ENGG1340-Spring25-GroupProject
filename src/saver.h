@@ -41,29 +41,29 @@ private:
 
 public:
     SaveDumper(Game &g) : game(g) {}
-    bool is_slot_empty(std::string index);
-    bool save_game(std::string index);
-    void save_cities(std::string filepath);
-    void save_general(std::string filepath);
-    void save_attack_missiles(std::string filepath);
-    void save_cruise_missiles(std::string filepath);
-    void save_tech_tree(std::string filepath);
+    bool is_slot_empty(const std::string& savename);
+    bool save_game(const std::string& savename);
+    void save_cities(const std::string& savepath);
+    void save_general(const std::string& savepath);
+    void save_attack_missiles(const std::string& savepath);
+    void save_cruise_missiles(const std::string& savepath);
+    void save_tech_tree(const std::string& savepath);
 };
 
 class SaveLoader
 {
 private:
     Game &game;
-    std::string folderpath;
+    std::string folderpath = "save/";
 
 public:
-    SaveLoader(Game &g) : game(g), folderpath("save/") {};
-    bool is_slot_empty(std::string index);
-    bool load_game(const std::string &index);
-    void load_cities();
-    void load_general();
-    void load_attack_missiles();
-    void load_cruise_missiles();
-    void load_tech_tree();
+    SaveLoader(Game &g) : game(g) {};
+    bool is_slot_empty(const std::string& savename);
+    bool load_game(const std::string &savename);
+    void load_cities(const std::string &savepath);
+    void load_general(const std::string &savepath);
+    void load_attack_missiles(const std::string &savepath);
+    void load_cruise_missiles(const std::string &savepath);
+    void load_tech_tree(const std::string &savepath);
 };
 #endif
