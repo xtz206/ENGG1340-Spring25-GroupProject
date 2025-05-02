@@ -241,11 +241,42 @@ std::vector<std::string> TechMenu::get_item_description()
  */
 TutorialMenu::TutorialMenu(void)
     : BasicMenu("TUTORIAL", {"NEXT PAGE", "PREV PAGE", "RETURN TO MENU"}), page_index(0),
-      pages({{"W/A/S/D          Move Cursor", "Q             Prev Operation", "E             Next Operation",
-              "SPACE              Next Turn", "ENTER       Select Operation", "ESC                Quit Game",
-              "P                 Pause Game", "R            Technology Menu", "F                   Fix City",
-              "B               Build Cruise", "L              Launch Cruise"}})
+      pages({})
 {
+    std::vector<std::string> basic_keyboard_control_page = {
+        "======== BASIC KEYBOARD CONTROLS =======",
+        "W/A/S/D                      Move Cursor",
+        "Q                         Prev Operation",
+        "E                         Next Operation",
+        "SPACE                          Next Turn",
+        "ENTER                   Select Operation",
+        "ESC                            Quit Game",
+        "P                             Pause Game"};
+    std::vector<std::string> shortcut_keyboard_control_page = {
+        "===== SHORTCUT KEYBOARD CONTROLS =======",
+        "R                          Research Menu",
+        "F                               Fix City",
+        "B                           Build Cruise",
+        "L                          Launch Cruise",
+        "1-9                         Select City"};
+    std::vector<std::string> game_target_page = {
+        "============= GAME TARGET ==============",
+        "manage your deposit and resources,      ",
+        "choose researching technologies wisely, ",
+        "intercept the enemy's attack missiles,  ",
+        "defend your cities from enemy attacks,  ",
+        "use super weapons to defeat the enemy!  "};
+    std::vector<std::string> tip_page = {
+        "================= TIPS =================",
+        "use the first 40 turns to build missiles",
+        "fix city is expensive, use it wisely    ",
+        "the technology menu is scrollable, you  ",
+        "can find more when scrolls down the menu"};
+
+    pages.push_back(basic_keyboard_control_page);
+    pages.push_back(shortcut_keyboard_control_page);
+    pages.push_back(game_target_page);
+    pages.push_back(tip_page);
 }
 
 /**
