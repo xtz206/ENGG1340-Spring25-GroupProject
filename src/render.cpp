@@ -598,8 +598,8 @@ void GameRenderer::draw(void)
         selected_info_window.print_right(0, city.name, A_NORMAL);
         selected_info_window.print_right(1, std::to_string(city.hitpoint), A_NORMAL);
         selected_info_window.print_right(2, std::to_string(city.productivity), A_NORMAL);
-        selected_info_window.print_right(2, std::to_string(city.countdown), A_NORMAL);
-        selected_info_window.print_right(2, std::to_string(city.cruise_storage), A_NORMAL);
+        selected_info_window.print_right(3, std::to_string(city.countdown), A_NORMAL);
+        selected_info_window.print_right(4, std::to_string(city.cruise_storage), A_NORMAL);
 
         if (game.en_enhanced_radar_II)
         {

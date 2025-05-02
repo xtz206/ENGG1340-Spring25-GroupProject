@@ -1216,7 +1216,7 @@ void Game::fix_city(void)
         insert_feedback("Deposit not enough (5000) to fix city");
         return;
     }
-    insert_feedback("City Fixed, HP +100");
+    insert_feedback("City Fixed, HP +500");
     city.hitpoint += 500;
 }
 
