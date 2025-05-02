@@ -318,7 +318,7 @@ bool MissileManager::create_cruise_missile(City &c, int d, int v)
             target_missile = attack_missile;
         }
     }
-    if (target_missile == nullptr || target_distance > 10) // Check if no target or too far
+    if (target_missile == nullptr || target_distance > 15) // Check if no target or too far
     {
         return false; // No cruise missile created
     }
@@ -501,8 +501,8 @@ void MissileManager::create_attack_wave(int turn, int hitpoint, int difficulty_l
 City::City(Position p, const std::string &n, int hp)
     : position(p), name(n), hitpoint(hp), countdown(0), cruise_storage(0)
 {
-    base_productivity = 50;
-    productivity = base_productivity + hitpoint / 10;
+    base_productivity = 10;
+    productivity = base_productivity + hitpoint / 20;
 }
 
 /**
@@ -804,7 +804,7 @@ void Game::pass_turn(void)
     {
         if (city.hitpoint > 0) // Check if the city is not destroyed
         {
-            city.productivity = city.base_productivity * (en_urgent_production ? 3 : 1) + city.hitpoint / 10; // Update city productivity
+            city.productivity = city.base_productivity * (en_urgent_production ? 3 : 1) + city.hitpoint / 20; // Update city productivity
         }
         else if (en_evacuated_industry) // Check if evacuated industry is enabled
         {
@@ -824,7 +824,7 @@ void Game::pass_turn(void)
             city.countdown--;
             if (city.countdown == 0) // Check if the countdown is complete
             {
-                insert_feedback(city.name + " Cruise Missile Built");
+                insert_feedback(city.name + " Cruise Missile Built", COLOR_PAIR(4));
                 city.cruise_storage += (en_enhanced_cruise_III ? 2 : 1);
             }
         }
@@ -886,30 +886,31 @@ bool Game::is_in_range(Position p1, Position p2, int range) const
  */
 bool Game::check_game_over(void)
 {
-    // TODO: fine tune score params
     if (enemy_hitpoint <= 0) // Check if the enemy has been defeated
     {
         for (const auto &city : cities)
         {
             if (city.hitpoint > 0)
             {
-                score += 500;
+                score += city.hitpoint / 10; // city hitpoint bonus
             }
         }
-        score += (100 - turn / 10);
-        return true; // Game win
+        score += (5000 - turn * 2); // time bonus
+        score -= casualty * 10;     // casualty penalty
+        return true;                // game win
     }
 
     for (const auto &city : cities)
     {
-        if (city.hitpoint > 0) // Check if any city is still alive
+        if (city.hitpoint > 0) // check if any city is still alive
         {
-            return false; // Game continues
+            return false; // game continues
         }
     }
 
-    score -= 1000;
-    return true; // Game lose
+    score += turn * 2;      // endurance bonus
+    score -= casualty * 10; // casualty penalty
+    return true;            // game lose
 }
 
 /**
@@ -1036,72 +1037,72 @@ void Game::finish_research(TechNode *node)
     }
     if (node->name == "Enhanced Radar I") // Check if node is Enhanced Radar I
     {
-        score += 10;
+        score += 100;
         en_enhanced_radar_I = true;
     }
     else if (node->name == "Enhanced Radar II") // Similar as above
     {
-        score += 20;
+        score += 200;
         en_enhanced_radar_II = true;
     }
     else if (node->name == "Enhanced Radar III")
     {
-        score += 30;
+        score += 300;
         en_enhanced_radar_III = true;
     }
     else if (node->name == "Enhanced Cruise I")
     {
-        score += 10;
+        score += 100;
         en_enhanced_cruise_I = true;
     }
     else if (node->name == "Enhanced Cruise II")
     {
-        score += 20;
+        score += 200;
         en_enhanced_cruise_II = true;
     }
     else if (node->name == "Enhanced Cruise III")
     {
-        score += 30;
+        score += 300;
         en_enhanced_cruise_III = true;
     }
     else if (node->name == "Self Defense System")
     {
-        score += 50;
+        score += 500;
         en_self_defense_sys = true;
     }
     else if (node->name == "Fortress City")
     {
-        score += 10;
+        score += 100;
         en_fortress_city = true;
     }
     else if (node->name == "Urgent Production")
     {
-        score += 20;
+        score += 200;
         en_urgent_production = true;
     }
     else if (node->name == "Evacuated Industry")
     {
-        score += 30;
+        score += 300;
         en_evacuated_industry = true;
     }
     else if (node->name == "Dirty Bomb")
     {
-        score += 10;
+        score += 100;
         en_dirty_bomb = true;
     }
     else if (node->name == "Fast Nuke")
     {
-        score += 20;
+        score += 200;
         en_fast_nuke = true;
     }
     else if (node->name == "Hydrogen Bomb")
     {
-        score += 30;
+        score += 300;
         en_hydrogen_bomb = true;
     }
     else if (node->name == "Iron Curtain")
     {
-        score += 50;
+        score += 500;
         en_iron_curtain = true;
     }
     else // Unknown tech node
@@ -1129,14 +1130,14 @@ void Game::hit_city(City &city, int damage)
         insert_feedback(AttrString(city.name + " Destroyed by Attack Missile!", COLOR_PAIR(2)));
         city.hitpoint = 0;
         score -= 50;
-        casualty += 100;
+        casualty += (200 + generate_random(-50, 50));
     }
     else
     {
         insert_feedback(AttrString(city.name + " Hit by Attack Missile, HP -" + std::to_string(damage / (en_fortress_city ? 2 : 1)), COLOR_PAIR(2)));
         city.hitpoint -= damage;
         score -= 20;
-        casualty += 30;
+        casualty += (damage / 10 * (10 + generate_random(-3, 3)));
     }
 }
 
