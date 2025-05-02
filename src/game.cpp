@@ -11,11 +11,25 @@
 #define DEFEND_RADIUS 10
 #define CRUISE_BUILD_TIME 5
 
+/*The Missile class represents a missile object, 
+which includes attributes such as its identifier, position, target, type, explosion status, damage value, and speed. 
+It provides methods for obtaining the missile's position, target, direction, and explosion status, 
+as well as functions for moving and moving step-by-step. 
+This class is an abstract class with a pure virtual function get_target and collaborates with several friend classes, 
+such as Game and GameRenderer, to achieve more complex functionalities.
+*/
 Missile::Missile(int i, Position p, Position t, int d, int v, MissileType tp)
     : id(i), position(p), target(t), is_exploded(false), damage(d), speed(v), type(tp)
 {
 }
 
+/*MissileDirection is an enumeration class representing the directional states of a missile. 
+This enum provides standardized directional identifiers for missile trajectory calculations and behavioral logic.
+It determines the missile's flight direction by comparing the current position (position) and the target position (target) 
+in terms of their coordinates (x, y). 
+The function returns the missile's travel direction (e.g., east, west, north, south, northeast, etc.), 
+or whether it has reached the target (A).
+*/
 MissileDirection Missile::get_direction(void)
 {
     if (target.y == position.y)
@@ -68,6 +82,9 @@ MissileDirection Missile::get_direction(void)
     return MissileDirection::U;
 }
 
+/*A member function that moves the missile step-by-step according to its current speed by calling the move_step method. 
+Internally, it uses a loop to execute multiple movement operations based on the speed value.
+*/
 void Missile::move(void)
 {
     for (int step = 0; step < speed; step++)
@@ -76,6 +93,12 @@ void Missile::move(void)
     }
 }
 
+/*A virtual function that updates the missile's position (position) 
+or triggers its explosion state (set_is_exploded) based on its current direction (MissileDirection). 
+It handles all possible directions via a switch statement, 
+including eight cardinal directions (N, NE, E, SE, S, SW, W, NW) 
+and a special state A (indicating missile explosion).
+*/
 void Missile::move_step(void)
 {
     switch (get_direction())
@@ -118,22 +141,38 @@ void Missile::move_step(void)
     }
 }
 
+/*AttackMissile is a subclass of Missile that represents an offensive missile. 
+It collaborates with several friend classes (such as Game, GameRenderer, etc.) and holds a reference to its target city. 
+This class overrides the target acquisition and movement logic to implement specialized attack behavior.
+*/
 AttackMissile::AttackMissile(int i, Position p, City &c, int d, int v)
     : Missile(i, p, c.get_position(), d, v, MissileType::ATTACK), city(c)
 {
 }
 
+/*An overridden virtual function from the base class, 
+implementing the movement logic for attack missiles. 
+In its definition, it calls the base class Missile::move_step method, 
+inheriting and potentially extending the base movement behavior.
+*/
 void AttackMissile::move_step(void)
 {
     Missile::move_step();
 }
 
+/*CruiseMissile is a derived class of Missile, designed to simulate cruise missile behavior. 
+It encapsulates target identification and maintains a reference to the base missile object for enhanced functionality.
+*/
 CruiseMissile::CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id)
     : Missile(i, p, m.get_position(), d, v, MissileType::CRUISE), missile(m)
 {
     target_id = t_id;
 }
 
+/*An overridden virtual function from the base class, updating the cruise missile's position. 
+It first retrieves the target position, calls the base class's move_step method, 
+and then determines whether to mark the missile as exploded based on its direction.
+*/
 void CruiseMissile::move_step(void)
 {
     target = missile.get_position();
@@ -145,13 +184,27 @@ void CruiseMissile::move_step(void)
     }
 }
 
+/*MissileManager is a management class that handles missile-related operations.
+From the perspective of core functions,
+It enerates both attack missiles and cruise missiles with configurable properties.
+It updates missile states and removes expired/destroyed missiles.
+It spawns coordinated missile assault waves with customizable patterns.
+In terms of system integration,
+It works with friend classes (Game, GameRenderer, etc.) for gameplay logic and rendering.
+It maintains and references a list of target cities for missile trajectory calculations.
+*/
 MissileManager::MissileManager(std::vector<City> &cts) : id(0), cities(cts) {}
+
+
 
 std::vector<Missile *> MissileManager::get_missiles(void)
 {
     return missiles;
 }
 
+/*Returns a std::vector containing pointers to all missiles of type MissileType::ATTACK.
+ It builds the result list by iterating through the missiles container and filtering eligible missiles.
+ */
 std::vector<Missile *> MissileManager::get_attack_missiles(void)
 {
     std::vector<Missile *> attack_missiles;
@@ -165,6 +218,9 @@ std::vector<Missile *> MissileManager::get_attack_missiles(void)
     return attack_missiles;
 }
 
+/*Returns a std::vector containing pointers to all cruise missiles (MissileType::CRUISE). 
+The method filters eligible missiles from the missiles container and adds them to the result vector.
+*/
 std::vector<Missile *> MissileManager::get_cruise_missiles(void)
 {
     std::vector<Missile *> cruise_missiles;
