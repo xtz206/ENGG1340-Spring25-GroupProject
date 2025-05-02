@@ -443,7 +443,7 @@ void GameRenderer::init(void)
     box_window.print(Position(fields.at(0) + 1, map_size.w + 3), "City & Missile");
     box_window.print(Position(fields.at(0) + fields.at(1) + 2, map_size.w + 3), "Technology & Research");
     box_window.print(Position(fields.at(0) + fields.at(1) + fields.at(2) + 3, map_size.w + 3), "Super Weapon");
-    box_window.print(Position(map_size.h + 1, 2), "Operation");
+    box_window.print(Position(map_size.h + 1, 2), "Operation Q/E/ENTER");
     box_window.print(Position(map_size.h + 1, operation_size.w + 3), "Feedback");
 }
 
@@ -654,16 +654,16 @@ void GameRenderer::draw(void)
     tech_info_window.print_right(2, std::to_string(game.tech_tree.available.size()), game.tech_tree.available.size() > 0 ? COLOR_PAIR(4) : COLOR_PAIR(3));
     tech_info_window.print_right(3, std::to_string(game.tech_tree.researched.size()));
 
-    tech_info_window.print_left(0, "Standard Bomb", A_NORMAL);
+    super_weapon_info_window.print_left(0, "Standard Bomb", A_NORMAL);
     if (game.standard_bomb_counter > 0)
     {
         super_weapon_info_window.print_right(0, "             ", COLOR_PAIR(3));
-        tech_info_window.print_right(0, "Remains " + std::to_string(game.standard_bomb_counter), COLOR_PAIR(3));
+        super_weapon_info_window.print_right(0, "Remains " + std::to_string(game.standard_bomb_counter), COLOR_PAIR(3));
     }
     else if (game.standard_bomb_counter == 0)
     {
         super_weapon_info_window.print_right(0, "             ", COLOR_PAIR(4));
-        super_weapon_info_window.print_left(0, "Ready", COLOR_PAIR(4));
+        super_weapon_info_window.print_right(0, "Ready", COLOR_PAIR(4));
     }
     else
     {
