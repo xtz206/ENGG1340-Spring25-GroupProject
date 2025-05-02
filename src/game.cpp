@@ -798,7 +798,6 @@ void Game::pass_turn(void)
         }
     }
 
-    // TODO: economy parameter tuning
     // NOTE: update cities production
     for (auto &city : cities)
     {
@@ -1118,7 +1117,6 @@ void Game::finish_research(TechNode *node)
  */
 void Game::hit_city(City &city, int damage)
 {
-    // TODO: score/casualty param fine tune
     if (iron_curtain_counter >= 0)
     {
         insert_feedback("Iron Curtain Activated, " + city.name + " Not Damaged");
@@ -1215,7 +1213,6 @@ void Game::launch_cruise(void)
         insert_feedback("No attack missile in range");
         return;
     }
-    // TODO: city countdown when launching cruise
     insert_feedback("Cruise Missile Launched");
     city.cruise_storage--;
 }
