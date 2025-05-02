@@ -1,3 +1,35 @@
+/**
+ * @file game.cpp
+ * @brief Implementation of the game mechanics, including missile management, city management,
+ *        technology tree, and game progression logic.
+ *
+ * This file contains the implementation of the core game logic for a missile defense game.
+ * It includes classes and methods for managing missiles, cities, the technology tree,
+ * and the overall game state. The game involves defending cities from attack missiles
+ * using cruise missiles and other technologies while managing resources and progressing
+ * through a technology tree.
+ *
+ * Classes:
+ * - Missile: Represents a generic missile with position, target, speed, and damage attributes.
+ * - AttackMissile: A subclass of Missile targeting cities.
+ * - CruiseMissile: A subclass of Missile targeting other missiles.
+ * - MissileManager: Manages all missiles in the game, including creation, movement, and removal.
+ * - City: Represents a city with position, hitpoints, productivity, and missile storage.
+ * - TechTree: Manages the research and progression of technologies.
+ * - Game: Represents the overall game state and logic, including turn progression,
+ *         resource management, and game-ending conditions.
+ *
+ * Key Features:
+ * - Missile movement and targeting logic.
+ * - City management, including productivity and defense.
+ * - Technology tree with research and upgrades.
+ * - Game progression, including turn-based mechanics and attack waves.
+ * - Resource management and difficulty scaling.
+ *
+ * Dependencies:
+ * - Requires the "game.h" and "saver.h" header files for class definitions and utility functions.
+ */
+
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -788,6 +820,19 @@ void Game::move_cursor(Position dcursor)
     }
     cursor.y += dcursor.y; // Update the Y position of the cursor
     cursor.x += dcursor.x; // Update the X position of the cursor
+}
+
+/**
+ * @brief Moves the cursor to a specific city based on its index.
+ * @param index Index of the city to move the cursor to
+ */
+void Game::move_cursor_to_city(int index)
+{
+    if (index < 0 || index >= cities.size())
+    {
+        return;
+    }
+    cursor = cities.at(index).get_position();
 }
 
 /**

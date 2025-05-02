@@ -1,3 +1,12 @@
+/**
+ * @file game.h
+ * @brief Header file for the game logic and core classes.
+ *
+ * This file contains the declarations of the main classes and enums used in the game,
+ * including cities, missiles, technology tree, and the game itself. It defines the
+ * relationships and interactions between these components.
+ */
+
 #ifndef GAME_H
 #define GAME_H
 
@@ -10,6 +19,39 @@
 
 #define inf 0x3f3f3f3f
 
+/**
+ * @class City
+ * @brief Represents a city in the game with attributes such as position, name, hitpoints, productivity, and more.
+ *
+ * The City class encapsulates the properties and behaviors of a city in the game. It includes information
+ * about the city's position, name, hitpoints, productivity, and other attributes. The class provides
+ * functionality to retrieve the city's position and is designed to interact with other classes such as
+ * Game, GameRenderer, MissileManager, SaveDumper, and SaveLoader.
+ *
+ * @private
+ * @var Position position
+ * The position of the city in the game world.
+ *
+ * @var std::string name The name of the city.
+ *
+ * @var int hitpoint The current hitpoints of the city.
+ *
+ * @var int productivity The current productivity of the city.
+ *
+ * @var int countdown A countdown timer associated with the city (purpose depends on game logic).
+ *
+ * @var int base_productivity The base productivity of the city.
+ *
+ * @var int cruise_storage The storage for cruise missiles in the city.
+ *
+ * @public
+ * @fn City(Position p, const std::string &n, int hp)
+ * Constructor to initialize a city with a position, name, and hitpoints.
+ *
+ * @fn Position get_position(void) const
+ * Retrieves the position of the city.
+ * @return The position of the city as a Position object.
+ */
 class City
 {
     friend class Game;
@@ -32,6 +74,12 @@ public:
     Position get_position(void) const { return position; };
 };
 
+/**
+ * @enum MissileType
+ * @brief Enum representing the type of missile.
+ *
+ * This enum defines the different types of missiles in the game, including attack and cruise missiles.
+ */
 enum class MissileType
 {
     ATTACK,
@@ -39,6 +87,12 @@ enum class MissileType
     UNKNOWN
 };
 
+/**
+ * @enum MissileDirection
+ * @brief Enum representing the direction of a missile.
+ *
+ * This enum defines the possible directions a missile can take during its flight.
+ */
 enum class MissileDirection
 {
     A,  // Arrived
@@ -53,6 +107,29 @@ enum class MissileDirection
     U   // Unknown
 };
 
+/**
+ * @class Missile
+ * @brief Represents a missile in the game with attributes such as position, target, type, and more.
+ *
+ * The Missile class encapsulates the properties and behaviors of a missile in the game. It includes information
+ * about the missile's position, target, type, speed, damage, and explosion status. The class provides functionality
+ * to move the missile and determine its direction.
+ *
+ * @private
+ * @var int id Unique identifier for the missile.
+ *
+ * @var Position position The current position of the missile.
+ *
+ * @var Position target The target position of the missile.
+ *
+ * @var MissileType type The type of the missile (attack or cruise).
+ *
+ * @var bool is_exploded Indicates whether the missile has exploded.
+ *
+ * @var int damage The damage value of the missile.
+ *
+ * @var int speed The speed of the missile.
+ */
 class Missile
 {
     friend class Game;
@@ -82,6 +159,15 @@ public:
     virtual void move_step(void);
 };
 
+/**
+ * @class AttackMissile
+ * @brief Represents an attack missile targeting a specific city in the game.
+ *
+ * The AttackMissile class inherits from the Missile class and is responsible
+ * for targeting and moving towards a specific city. It interacts with other
+ * game components such as Game, GameRenderer, MissileManager, SaveDumper,
+ * and SaveLoader through friendship relationships.
+ */
 class AttackMissile : public Missile
 {
     friend class Game;
@@ -100,6 +186,14 @@ public:
     virtual void move_step(void) override;
 };
 
+/**
+ * @class CruiseMissile
+ * @brief Represents a specialized type of missile that targets a specific entity and moves accordingly.
+ *
+ * The CruiseMissile class extends the functionality of the Missile class by introducing a target ID
+ * and overriding movement behavior. It is designed to interact with other components such as the
+ * Game, GameRenderer, MissileManager, and SaveDumper through friend relationships.
+ */
 class CruiseMissile : public Missile
 {
     friend class Game;
@@ -117,6 +211,14 @@ public:
     virtual void move_step(void) override;
 };
 
+/**
+ * @class MissileManager
+ * @brief Manages the creation, updating, and removal of missiles in the game.
+ *
+ * The MissileManager class is responsible for handling all missile-related operations,
+ * including generating attack and cruise missiles, updating their states, and managing
+ * their interactions with cities. It also supports difficulty settings and wave generation.
+ */
 class MissileManager
 {
     friend class Game;
@@ -138,13 +240,13 @@ private:
     int get_process_level(int turn, int hitpoint);
 
 public:
-    MissileManager(std::vector<City> &cts) : id(0), cities(cts) {};
+    MissileManager(std::vector<City> &cts);
     std::vector<Missile *> get_missiles(void);
     std::vector<Missile *> get_attack_missiles(void);
     std::vector<Missile *> get_cruise_missiles(void);
 
     void set_difficulty(int lv);
-    bool city_weight_check(City &c); // NOTE: this checks cities weight of becoming a target
+    bool city_weight_check(City &c);
     void create_attack_missile(Position p, City &c, int d, int v);
     bool create_cruise_missile(City &c, int d, int v);
     void update_missiles(void);
@@ -153,6 +255,14 @@ public:
     void create_attack_wave(int turn, int difficulty_level, int hitpoint);
 };
 
+/**
+ * @class TechNode
+ * @brief Represents a node in a technology tree, encapsulating information about a specific technology.
+ *
+ * The TechNode class is used to define individual technologies in a tech tree. Each node contains
+ * details such as its name, description, cost, time to research, and prerequisites.
+ *
+ */
 class TechNode
 {
     friend class Game;
@@ -170,10 +280,27 @@ private:
     std::vector<TechNode *> prerequisites;
 
 public:
+    /**
+     * @brief Constructor for the TechNode class.
+     *
+     * @param n Name of the technology.
+     * @param d Description of the technology.
+     * @param c Cost of the technology.
+     * @param t Time required to research the technology.
+     * @param p Prerequisites for the technology.
+     */
     TechNode(const std::string &n, const std::vector<std::string> &d, int c, int t, const std::vector<TechNode *> p)
         : name(n), description(d), cost(c), time(t), prerequisites(p) {};
 };
 
+/**
+ * @class TechTree
+ * @brief Represents a technology tree in the game, managing the research and availability of technologies.
+ *
+ * The TechTree class is responsible for handling the research process of technologies,
+ * tracking which technologies have been researched, and determining which technologies are available.
+ * It interacts with other classes such as Game, GameRenderer, TechMenu, SaveDumper, and SaveLoader.
+ */
 class TechTree
 {
     friend class Game;
@@ -208,6 +335,14 @@ private:
     bool check_available(TechNode *node, int deposit) const;
 };
 
+/**
+ * @class Game
+ * @brief Represents the main game logic, managing the state of the game, cities, missiles, and technology.
+ *
+ * The Game class encapsulates the core functionality of the game, including managing cities,
+ * missiles, technology research, and game state. It provides methods for interacting with
+ * the game world and updating its state based on player actions and game events.
+ */
 class Game
 {
     friend class GameRenderer;
@@ -234,7 +369,7 @@ private:
 
     // NOTE: super weapon flags
     //       -1 means not built yet, 0 means built,
-    //       otherwise means building (remaining time)
+    //       otherwise means building / remaining time
     int standard_bomb_counter = -1;
     int dirty_bomb_counter = -1;
     int hydrogen_bomb_counter = -1;
