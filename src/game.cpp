@@ -583,7 +583,7 @@ TechTree::TechTree(void) : researching(nullptr), prev_researching(nullptr), rema
     TechNode *enhanced_radar_III = new TechNode("Enhanced Radar III", {"Display the detailed information of selected missiles"}, 10000, 50, {enhanced_radar_II});
 
     TechNode *enhanced_cruise_I = new TechNode("Enhanced Cruise I", {"Reduce the cost of cruise by 50%"}, 2000, 10, {});
-    TechNode *enhanced_cruise_II = new TechNode("Enhanced Cruise II", {"Increase the speed of cruise by 50%"}, 5000, 30, {enhanced_cruise_I});
+    TechNode *enhanced_cruise_II = new TechNode("Enhanced Cruise II", {"Increase the speed of cruise by 33%"}, 5000, 30, {enhanced_cruise_I});
     TechNode *enhanced_cruise_III = new TechNode("Enhanced Cruise III", {"Build two cruise at the same time"}, 10000, 50, {enhanced_cruise_II});
 
     TechNode *self_defense_sys = new TechNode("Self Defense System", {"The city can defense by itself when missiles approaches, ", "if there is missile storage"}, 2000, 10, {enhanced_cruise_III, enhanced_radar_III});
@@ -1268,7 +1268,7 @@ void Game::launch_cruise(void)
         insert_feedback("No cruise missile in storage, please build first");
         return;
     }
-    if (!missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)) // Try to create cruise missile
+    if (!missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 4 : 3)) // Try to create cruise missile
     {
         insert_feedback("No attack missile in range");
         return;
@@ -1511,7 +1511,7 @@ void Game::self_defense(void)
     {
         for (auto missile : missile_manager.get_attack_missiles())
         {
-            if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 3 : 2)) // Try to create cruise missile
+            if (missile_manager.create_cruise_missile(city, 100, en_enhanced_cruise_II ? 4 : 3)) // Try to create cruise missile
             {
                 insert_feedback("Self Defense System Activated, Cruise Missile Launched");
             }
