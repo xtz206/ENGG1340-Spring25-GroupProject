@@ -273,7 +273,6 @@ bool GeneralChecker::is_first_run(void)
     return true;
 }
 
-// TODO: write docstring for this function
 /**
  * @brief Creates a file named "lastrun" in the specified folder path to indicate the first run.
  * 
