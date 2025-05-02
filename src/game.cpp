@@ -638,6 +638,14 @@ bool TechTree::check_available(TechNode *node, int deposit) const
     {
         return false; // Node is not available
     }
+    if (node == researching)
+    {
+        return false; // Node is currently being researched
+    }
+    if (is_researched(node))
+    {
+        return false; // Node is already researched
+    }
     for (auto node : node->prerequisites)
     {
         if (std::find(researched.begin(), researched.end(), node) == researched.end()) // Check if the prerequisite is not researched
@@ -655,21 +663,12 @@ bool TechTree::check_available(TechNode *node, int deposit) const
  */
 void TechTree::update_available(int deposit)
 {
+    available.clear(); // Clear the current available list
     for (auto node : nodes)
     {
-        if (std::find(available.begin(), available.end(), node) != available.end()) // Check if the node is in available
+        if (check_available(node, deposit)) // Check if the node is available
         {
-            if (!check_available(node, deposit)) // Check if the node is not available
-            {
-                available.erase(std::find(available.begin(), available.end(), node));
-            }
-        }
-        else // The node is not in available
-        {
-            if (check_available(node, deposit)) // Check if the node is available
-            {
-                available.push_back(node);
-            }
+            available.push_back(node); // Add the node to available
         }
     }
 }
