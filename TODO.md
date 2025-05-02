@@ -81,26 +81,18 @@
 
 ### Completed
 
-- [ ] README.md
+- [x] README.md
 - [ ] Video
 - [x] game.cpp
 - [x] game.h
 - [ ] main.cpp
-- [ ] menu.cpp
+- [x] menu.cpp
 - [ ] menu.h
-- [ ] render.cpp
+- [x] render.cpp
 - [ ] render.h
-- [ ] saver.cpp
+- [x] saver.cpp
 - [ ] saver.h
 - [x] utils.h
-
-### README.md
-
-- [x] Team member identification
-- [x] Game description
-- [x] Feature Implemented(Random/DataStructure/DMM/FileIO/MultiFile/DifficultyLevel)
-- [x] List of Libraries (features)
-- [x] Compilation and Execution Instructions
 
 ### Video
 
@@ -115,33 +107,15 @@
 - [ ] Function Header
 - [ ] Inline comments
 
-### menu.cpp
-
-- [ ] File Header
-- [x] Function Header
-- [x] Inline comments
-
 ### menu.h
 
 - [ ] File Header
 - [ ] Class Header
 
-### render.cpp
-
-- [ ] File Header
-- [ ] Function Header
-- [ ] Inline comments
-
 ### render.h
 
 - [ ] File Header
 - [ ] Class Header
-
-### saver.cpp
-
-- [ ] File Header
-- [ ] Function Header
-- [ ] Inline comments
 
 ### saver.h
 
