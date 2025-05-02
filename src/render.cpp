@@ -534,7 +534,7 @@ void GameRenderer::draw(void)
             break;
         }
 
-        map_window.print(missile->get_position(), direction, COLOR_PAIR(missile->get_type() == MissileType::ATTACK ? 2 : 3));
+        map_window.print(missile->get_position(), direction, COLOR_PAIR(missile->get_type() == MissileType::ATTACK ? 2 : 4));
     }
     int color_pair = (game.is_on_land(game.get_cursor()) ? 0 : (game.is_on_sea(game.get_cursor()) ? 1 : 3));
     map_window.print(game.get_cursor(), "*", COLOR_PAIR(color_pair));
@@ -634,6 +634,7 @@ void GameRenderer::draw(void)
         selected_info_window.print_left(0, "Nothing Selected Now", A_NORMAL);
     }
 
+    // NOTE: draw tech info window
     if (game.tech_tree.researching != nullptr)
     {
         tech_info_window.print_left(0, "Researching:", A_NORMAL);
@@ -654,6 +655,7 @@ void GameRenderer::draw(void)
     tech_info_window.print_right(2, std::to_string(game.tech_tree.available.size()), game.tech_tree.available.size() > 0 ? COLOR_PAIR(4) : COLOR_PAIR(3));
     tech_info_window.print_right(3, std::to_string(game.tech_tree.researched.size()));
 
+    // NOTE: draw super weapon info window
     super_weapon_info_window.print_left(0, "Standard Bomb", A_NORMAL);
     if (game.standard_bomb_counter > 0)
     {
@@ -747,13 +749,14 @@ void GameRenderer::draw(void)
     }
 
     // NOTE: draw feedback window
-
     for (int index = 0; index < game.get_feedbacks().size(); index++)
     {
         if (index >= feedback_size.h)
         {
             break;
         }
-        feedback_window.print_left(index, game.get_feedbacks().at(game.get_feedbacks().size() - index - 1));
+        const AttrString &feedback = game.get_feedbacks().at(game.get_feedbacks().size() - index - 1);
+        feedback_window.print_spaces(index, feedback.attr);
+        feedback_window.print_left(index, feedback);
     }
 }
