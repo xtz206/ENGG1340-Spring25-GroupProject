@@ -284,26 +284,57 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
-// TODO: write docstring
+/**
+ * @brief Constructs a VideoRenderer object to render a title video within a specified size and position.
+ * 
+ * @param m Reference to a TitleVideo object representing the video to be rendered.
+ * @param s Size object specifying the dimensions of the rendering area.
+ * 
+ * This constructor initializes the VideoRenderer with the given TitleVideo and size.
+ * It calculates the position of the rendering area to center it within the available space.
+ * A Window object is created to represent the rendering area on the screen.
+ */
 VideoRenderer::VideoRenderer(TitleVideo &m, Size s)
     : menu(m), size(s), pos((ALL_SIZE - s) / 2),
       video_window(Window(stdscr, s, pos))
 {
 }
 
-// TODO: write docstring
+/**
+ * @brief Initializes the video renderer by performing necessary setup operations.
+ * 
+ * This function is responsible for preparing the video renderer for use. 
+ * It clears any existing state or data to ensure a clean starting point.
+ */
 void VideoRenderer::init(void)
 {
     erase();
 }
 
-// TODO: write docstring
+/**
+ * @brief Renders the video content by refreshing the video window.
+ * 
+ * This function is responsible for updating the video display by calling
+ * the `refresh` method on the `video_window` object. It ensures that the
+ * video content is rendered properly on the screen.
+ */
 void VideoRenderer::render(void)
 {
     video_window.refresh();
 }
 
-// TODO: write docstring
+/**
+ * @brief Renders the current frame of the video onto the video window.
+ * 
+ * This function clears the video window and then retrieves the current frame
+ * from the menu object. It iterates through the lines of the frame and prints
+ * them to the video window, ensuring that the number of lines does not exceed
+ * the height of the video window.
+ * 
+ * @note The function assumes that the `menu` object provides a valid frame
+ *       and that the `video_window` object supports the `erase` and 
+ *       `print_left` methods.
+ */
 void VideoRenderer::draw(void)
 {
     video_window.erase();

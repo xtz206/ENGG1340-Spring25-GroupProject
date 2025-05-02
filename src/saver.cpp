@@ -273,15 +273,14 @@ bool GeneralChecker::is_first_run(void)
     return true;
 }
 
-// TODO: write docstring for this function
 /**
  * @brief Creates a file named "lastrun" in the specified folder path to indicate the first run.
  * 
- * This function constructs a system command to create the "lastrun" file in the directory
+ * This function constructs a system command to create a file named "lastrun" in the directory
  * specified by the `folderpath` member variable. If the file creation fails, it throws a 
  * runtime error.
  * 
- * @throws std::runtime_error If the system command to create the file fails.
+ * @throws std::runtime_error If the system command to create the "lastrun" file fails.
  */
 void GeneralChecker::save_first_run(void)
 {
@@ -318,7 +317,22 @@ std::vector<std::string> AssetLoader::load_title(void)
     return title;
 }
 
-// TODO: write docstring
+/**
+ * @brief Loads video frames from text files into a 2D vector of strings.
+ * 
+ * This function reads a series of text files representing video frames
+ * and stores their contents in a vector of frames, where each frame is
+ * represented as a vector of strings (lines of text).
+ * 
+ * @return std::vector<std::vector<std::string>> 
+ *         A 2D vector where each inner vector represents a video frame
+ *         and contains strings corresponding to the lines of the frame.
+ * 
+ * @note The function currently iterates over a hardcoded number of frames (191).
+ *       If a frame file does not exist or cannot be opened, it is skipped.
+ *       Consider replacing the hardcoded number with a constant or a variable
+ *       for better flexibility.
+ */
 std::vector<std::vector<std::string>> AssetLoader::load_video(void)
 {
     std::vector<std::vector<std::string>> frames;
