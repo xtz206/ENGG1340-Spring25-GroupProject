@@ -852,7 +852,7 @@ void Game::pass_turn(void)
     check_iron_curtain(); // Check if iron curtain is active
     self_defense();       // Activate self defense system
 
-    if (turn % 40 == 0) // Check if it's time to launch a new attack wave
+    if (turn % 20 == 0) // Check if it's time to launch a new attack wave
     {
         missile_manager.create_attack_wave(turn, enemy_hitpoint, difficulty_level);
         insert_feedback("New Attack Missile Wave Approaching", COLOR_PAIR(3));
@@ -1264,7 +1264,7 @@ void Game::launch_standard_bomb(void)
 
     insert_feedback("Standard Bomb Hit, Enemy Hitpoint Reduced by 50");
     standard_bomb_counter = -1; // Set counter to -1 to indicate bomb has been used
-    enemy_hitpoint -= 50;
+    enemy_hitpoint -= 200;
     score += 20;
 }
 
@@ -1325,7 +1325,7 @@ void Game::launch_dirty_bomb(void)
         return;
     }
     insert_feedback("Dirty Bomb Hit, Enemy Hitpoint Reduced by 50");
-    enemy_hitpoint -= 50;
+    enemy_hitpoint -= 100;
     score += 20;
 }
 
@@ -1385,7 +1385,7 @@ void Game::launch_hydrogen_bomb(void)
         return;
     }
     insert_feedback("Hydrogen Bomb Hit, Enemy Hitpoint Reduced by 500");
-    enemy_hitpoint -= 500;
+    enemy_hitpoint -= 800;
     score += 50;
 }
 
