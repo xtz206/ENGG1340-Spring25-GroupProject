@@ -12,23 +12,23 @@ $(BIN_DIR)/$(PROG): $(BIN_DIR)/main.o $(BIN_DIR)/game.o $(BIN_DIR)/menu.o $(BIN_
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
-$(BIN_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/game.h $(SRC_DIR)/render.h $(SRC_DIR)/saver.h
+$(BIN_DIR)/main.o: $(SRC_DIR)/main.cpp $(SRC_DIR)/game.h $(SRC_DIR)/menu.h $(SRC_DIR)/render.h $(SRC_DIR)/saver.h $(SRC_DIR)/utils.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BIN_DIR)/game.o: $(SRC_DIR)/game.cpp $(SRC_DIR)/game.h
+$(BIN_DIR)/game.o: $(SRC_DIR)/game.cpp $(SRC_DIR)/game.h $(SRC_DIR)/saver.h $(SRC_DIR)/utils.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BIN_DIR)/menu.o: $(SRC_DIR)/menu.cpp $(SRC_DIR)/menu.h
+$(BIN_DIR)/menu.o: $(SRC_DIR)/menu.cpp $(SRC_DIR)/menu.h $(SRC_DIR)/game.h $(SRC_DIR)/utils.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BIN_DIR)/render.o: $(SRC_DIR)/render.cpp $(SRC_DIR)/render.h $(SRC_DIR)/game.h
+$(BIN_DIR)/render.o: $(SRC_DIR)/render.cpp $(SRC_DIR)/render.h $(SRC_DIR)/game.h $(SRC_DIR)/menu.h $(SRC_DIR)/utils.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(BIN_DIR)/saver.o: $(SRC_DIR)/saver.cpp $(SRC_DIR)/saver.h $(SRC_DIR)/game.h
+$(BIN_DIR)/saver.o: $(SRC_DIR)/saver.cpp $(SRC_DIR)/saver.h $(SRC_DIR)/game.h 
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
