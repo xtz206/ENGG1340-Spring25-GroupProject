@@ -8,12 +8,12 @@
 #include "saver.h"
 #include "game.h"
 
-// TODO: update this docstring
+
 /**
  * @brief Loads map dimensions from configuration file.
  * Reads general.txt to extract height/width values using colon-separated format.
  * Implements file validation and format error handling through exception mechanisms.
- *
+ * 
  */
 void AssetLoader::load_general(void)
 {
@@ -175,7 +175,6 @@ void AssetLoader::load_general(void)
     }
 }
 
-// TODO: update this docstring
 /**
  * @brief Loads battlefield background pattern from text file.
  * Reads background.txt line-by-line, validates line count matches declared map height from
@@ -197,7 +196,6 @@ void AssetLoader::load_background(void)
     file.close();
 }
 
-// TODO: update this docstring
 /**
  * @brief Loads city data from configuration file.
  * Reads cities.txt to extract city attributes using comma-separated format. Implements
@@ -228,39 +226,21 @@ void AssetLoader::load_cities(void)
             words.push_back(word);
         }
 
-        Position position = Position(std::stoi(words.at(1)), std::stoi(words.at(2)));
-        std::string name = words.at(0);
-        int hitpoint = std::stoi(words.at(3));
+        Position position = Position(std::stoi(words[1]), std::stoi(words[2]));
+        std::string name = words[0];
+        int hitpoint = std::stoi(words[3]);
         game.cities.push_back(City(position, name, hitpoint));
     }
     file.close();
 }
 
-// TODO: write docstring for this function
-bool GeneralChecker::is_first_run(void)
-{
-    std::string filepath = folderpath + "lastrun";
-    struct stat info;
-    if (stat(filepath.c_str(), &info) == 0 && (info.st_mode & S_IFREG))
-    {
-        // lastrun file exists, so this is not the first run
-        return false;
-    }
-    // lastrun file does not exist, so this is the first run
-    return true;
-}
 
-// TODO: write docstring for this function
-void GeneralChecker::save_first_run(void)
-{
-    std::string command = "touch " + folderpath + "lastrun";
-    if (system(command.c_str()) != 0)
-    {
-        throw std::runtime_error("Failed to create lastrun file");
-    }
-}
-
-// TODO: write docstring for this function
+/**
+ * @brief Loads title data from configuration file.
+ * Reads title.txt to extract title lines. Implements file validation and format error
+ * handling through exception mechanisms.
+ *
+ */
 std::vector<std::string> AssetLoader::load_title(void)
 {
     std::ifstream file("title.txt");
@@ -277,7 +257,12 @@ std::vector<std::string> AssetLoader::load_title(void)
     return title;
 }
 
-// TODO: write docstring for this function
+/**
+ * @brief Resets game state to initial conditions.
+ * Reinitializes game attributes, including map dimensions, cursor position, turn count,
+ * missile manager, and technology tree. Clears feedback messages and missile list.
+ *
+ */
 void AssetLoader::reset(void)
 {
     load_general();
@@ -299,6 +284,12 @@ void AssetLoader::reset(void)
     game.feedbacks.clear();
 }
 
+/**
+ * @brief Save general game state to a file.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param filepath Path to the save directory.
+ */
 void SaveDumper::save_general(std::string filepath)
 {
     std::string filename = filepath + "general.txt";
@@ -343,6 +334,13 @@ void SaveDumper::save_general(std::string filepath)
     general_log.close();
 }
 
+/**
+ * @brief Saves attack missiles' states to a csv file.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param filepath Path to the save directory.
+ */
+
 void SaveDumper::save_attack_missiles(std::string filepath)
 {
     std::string filename = filepath + "attack_missiles.txt";
@@ -358,6 +356,13 @@ void SaveDumper::save_attack_missiles(std::string filepath)
     }
     attack_missile_log.close();
 }
+
+/**
+ * @brief Saves cruise missiles' states to a csv file.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param filepath Path to the save directory.
+ */
 
 void SaveDumper::save_cruise_missiles(std::string filepath)
 {
@@ -376,6 +381,13 @@ void SaveDumper::save_cruise_missiles(std::string filepath)
     cruise_missile_log.close();
 }
 
+/**
+ * @brief Saves cities' states to a csv file.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param filepath Path to the save directory.
+ */
+
 void SaveDumper::save_cities(std::string filepath)
 {
     std::string filename = filepath + "cities.txt";
@@ -392,6 +404,13 @@ void SaveDumper::save_cities(std::string filepath)
     }
     city_log.close();
 }
+
+/**
+ * @brief Saves the technology tree state to a csv file.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param filepath Path to the save directory.
+ */
 
 void SaveDumper::save_tech_tree(std::string filepath)
 {
@@ -464,6 +483,14 @@ void SaveDumper::save_tech_tree(std::string filepath)
     tech_tree_log.close();
 }
 
+/**
+ * @brief Checks if the save slot is empty.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param index Index of the save slot to check.
+ * @return true if the slot is empty, false otherwise.
+ */
+
 bool SaveDumper::is_slot_empty(std::string index)
 {
     std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
@@ -474,6 +501,16 @@ bool SaveDumper::is_slot_empty(std::string index)
     }
     return true;
 }
+
+/**
+ * @brief Saves the game state to a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * Then calls the save functions for general game state, attack missiles,
+ * cruise missiles, cities, and technology tree.
+ * @param index Index of the save slot to save.
+ * @return true if the game is saved successfully, false otherwise.
+ */
 
 bool SaveDumper::save_game(std::string index)
 {
@@ -515,6 +552,15 @@ bool SaveDumper::save_game(std::string index)
     save_tech_tree(sub_folderpath);
     return true;
 }
+
+/**
+ * @brief Loads the cities state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then reads the cities data from the file and populates the game state.
+ * If the file cannot be opened, throws a runtime error.
+ * @throws std::runtime_error if the file cannot be opened.
+ *
+ */
 
 void SaveLoader::load_cities()
 {
@@ -559,6 +605,14 @@ void SaveLoader::load_cities()
     city_log.close();
 }
 
+/**
+ * @brief Loads the general game state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then reads the general game state data from the file and populates
+ * the game state. If the file cannot be opened, throws a runtime error.
+ * @throws std::runtime_error if the file cannot be opened.
+ *
+ */
 void SaveLoader::load_general()
 {
     std::string filename = folderpath + "general.txt";
@@ -734,6 +788,15 @@ void SaveLoader::load_general()
     }
 }
 
+/**
+ * @brief Loads the attack missiles state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then reads the attack missiles data from the file and populates
+ * the game state. If the file cannot be opened, throws a runtime error.
+ * @throws std::runtime_error if the file cannot be opened.
+ * 
+ */
+
 void SaveLoader::load_attack_missiles()
 {
     std::string filename = folderpath + "attack_missiles.txt";
@@ -784,6 +847,15 @@ void SaveLoader::load_attack_missiles()
     }
 }
 
+/**
+ * @brief Loads the cruise missiles state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then reads the cruise missiles data from the file and populates
+ * the game state. If the file cannot be opened, throws a runtime error.
+ * @throws std::runtime_error if the file cannot be opened.
+ * 
+ */
+
 void SaveLoader::load_cruise_missiles()
 {
     std::string filename = folderpath + "cruise_missiles.txt";
@@ -831,6 +903,15 @@ void SaveLoader::load_cruise_missiles()
         }
     }
 }
+
+/**
+ * @brief Loads the technology tree state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then reads the technology tree data from the file and populates
+ * the game state. If the file cannot be opened, throws a runtime error.
+ * @throws std::runtime_error if the file cannot be opened.
+ * 
+ */
 
 void SaveLoader::load_tech_tree()
 {
@@ -940,6 +1021,14 @@ void SaveLoader::load_tech_tree()
     }
 }
 
+/**
+ * @brief Checks if the save slot is empty.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. If no save file exists, it creates a new save directory.
+ * @param index Index of the save slot to check.
+ * @return true if the slot is empty, false otherwise.
+ */
+
 bool SaveLoader::is_slot_empty(std::string index)
 {
     std::string sub_folderpath_by_time = folderpath + "game_" + index + "/";
@@ -950,6 +1039,15 @@ bool SaveLoader::is_slot_empty(std::string index)
     }
     return true;
 }
+
+/**
+ * @brief Loads the game state from a specified folder.
+ * Validates the existence of the save directory and checks for the presence of
+ * a save file. Then calls the load functions for general game state, attack missiles,
+ * cruise missiles, cities, and technology tree.
+ * @param index Index of the save slot to load.
+ * @return true if the game is loaded successfully, false otherwise.
+ */
 
 bool SaveLoader::load_game(const std::string &index)
 {
