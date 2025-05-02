@@ -181,6 +181,7 @@ void AssetLoader::load_general(void)
     }
 }
 
+
 /**
  * @brief Loads the background data from a file and stores it in the game's background container.
  * 
@@ -248,6 +249,48 @@ void AssetLoader::load_cities(void)
     file.close();
 }
 
+/**
+ * @brief Checks if this is the first run of the program.
+ * 
+ * This function determines whether the program is being run for the first time
+ * by checking for the existence of a specific file named "lastrun" in the 
+ * designated folder path. If the file exists and is a regular file, it indicates
+ * that the program has been run before. Otherwise, it is considered the first run.
+ * 
+ * @return true If the "lastrun" file does not exist, indicating the first run.
+ * @return false If the "lastrun" file exists, indicating it is not the first run.
+ */
+bool GeneralChecker::is_first_run(void)
+{
+    std::string filepath = folderpath + "lastrun";
+    struct stat info;
+    if (stat(filepath.c_str(), &info) == 0 && (info.st_mode & S_IFREG))
+    {
+        // lastrun file exists, so this is not the first run
+        return false;
+    }
+    // lastrun file does not exist, so this is the first run
+    return true;
+}
+
+// TODO: write docstring for this function
+/**
+ * @brief Creates a file named "lastrun" in the specified folder path to indicate the first run.
+ * 
+ * This function constructs a system command to create the "lastrun" file in the directory
+ * specified by the `folderpath` member variable. If the file creation fails, it throws a 
+ * runtime error.
+ * 
+ * @throws std::runtime_error If the system command to create the file fails.
+ */
+void GeneralChecker::save_first_run(void)
+{
+    std::string command = "touch " + folderpath + "lastrun";
+    if (system(command.c_str()) != 0)
+    {
+        throw std::runtime_error("Failed to create lastrun file");
+    }
+}
 
 
 /**
