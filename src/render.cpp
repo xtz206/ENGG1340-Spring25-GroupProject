@@ -284,6 +284,41 @@ void BasicMenuRenderer::draw(void)
     }
 }
 
+// TODO: write docstring
+VideoRenderer::VideoRenderer(TitleVideo &m, Size s)
+    : menu(m), size(s), pos((ALL_SIZE - s) / 2),
+      video_window(Window(stdscr, s, pos))
+{
+}
+
+// TODO: write docstring
+void VideoRenderer::init(void)
+{
+    erase();
+}
+
+// TODO: write docstring
+void VideoRenderer::render(void)
+{
+    video_window.refresh();
+}
+
+// TODO: write docstring
+void VideoRenderer::draw(void)
+{
+    video_window.erase();
+
+    const std::vector<std::string> &frame = menu.get_frame();
+    for (size_t index = 0; index < frame.size(); index++)
+    {
+        if (index >= size.h)
+        {
+            break;
+        }
+        video_window.print_left(index, frame.at(index));
+    }
+}
+
 /**
  * @brief Constructs a TitleMenuRenderer object to render a title menu.
  * 
@@ -292,7 +327,7 @@ void BasicMenuRenderer::draw(void)
  */
 TitleMenuRenderer::TitleMenuRenderer(TitleMenu &m, Size s)
     : menu(m), size(s), pos((ALL_SIZE - s) / 2),
-      title_window(Window(stdscr, s, pos + Size(1, 1)))
+      title_window(Window(stdscr, s, pos))
 {
 }
 

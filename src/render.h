@@ -64,6 +64,25 @@ public:
     void draw(void);
 };
 
+// TODO: write docstring
+class VideoRenderer : public Renderer
+{
+private:
+    TitleVideo &menu;
+
+    Size size;
+    Position pos;
+
+    Window video_window;
+
+public:
+    VideoRenderer(TitleVideo &m, Size s);
+
+    void init(void);
+    void render(void);
+    void draw(void);
+};
+
 class TitleMenuRenderer : public Renderer
 {
 private:

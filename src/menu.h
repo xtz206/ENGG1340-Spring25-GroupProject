@@ -50,6 +50,22 @@ public:
     TitleMenu(const std::vector<std::string> &t, const std::string &d);
 };
 
+class TitleVideo
+{
+private:
+    size_t index;
+    std::vector<std::vector<std::string>> frames;
+
+public:
+    TitleVideo(const std::vector<std::vector<std::string>> &fs) : index(0), frames(fs) {};
+    int get_index(void) const { return index; };
+    const std::vector<std::string> &get_frame(void) const { return frames.at(index); };
+    const std::vector<std::string> &get_frame(int i) const { return frames.at(i); };
+    void next_frame(void) { index = (index + 1) % frames.size(); };
+    void prev_frame(void) { index = (index - 1 + frames.size()) % frames.size(); };
+    bool is_end(void) const { return index == frames.size() - 1; };
+};
+
 class SaveMenu : public BasicMenu
 {
 private:

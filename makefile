@@ -32,28 +32,24 @@ $(BIN_DIR)/saver.o: $(SRC_DIR)/saver.cpp $(SRC_DIR)/saver.h $(SRC_DIR)/game.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-assets: $(ASSETS_DIR)/*
-	@mkdir -p $(DIST_DIR)
-	cp $(ASSETS_DIR)/* $(BIN_DIR)/
-
 release: CXXFLAGS += -O2
-release: clean $(BIN_DIR)/$(PROG) assets
+release: clean $(BIN_DIR)/$(PROG)
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
-	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	cp -r $(ASSETS_DIR)/* $(DIST_DIR)/
 	@echo "release build complete"
 
 debug: CXXFLAGS += -g
-debug: clean $(BIN_DIR)/$(PROG) assets
+debug: clean $(BIN_DIR)/$(PROG)
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
-	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	cp -r $(ASSETS_DIR)/* $(DIST_DIR)/
 	@echo "debug build complete"
 
 all: clean $(BIN_DIR)/$(PROG) assets
 	@mkdir -p $(DIST_DIR)
 	cp $(BIN_DIR)/$(PROG) $(DIST_DIR)/$(PROG)
-	cp $(ASSETS_DIR)/* $(DIST_DIR)/
+	cp -r $(ASSETS_DIR)/* $(DIST_DIR)/
 	@echo "all build complete"
 
 clean:
@@ -61,4 +57,4 @@ clean:
 	rm -f $(PROG)
 	rm -rf $(DIST_DIR)/*
 
-.PHONY: assets, release, debug, all, clean
+.PHONY: release, debug, all, clean

@@ -318,6 +318,30 @@ std::vector<std::string> AssetLoader::load_title(void)
     return title;
 }
 
+// TODO: write docstring
+std::vector<std::vector<std::string>> AssetLoader::load_video(void)
+{
+    std::vector<std::vector<std::string>> frames;
+    std::ifstream file;
+    // TODO: replace the hardcoded number with a constant or a variable
+    for (size_t index = 0; index < 191; index++)
+    {
+        file.open("video/frame" + std::to_string(index) + ".txt");
+        if (!file.is_open())
+        {
+            continue; // Skip if the file doesn't exist
+        }
+        std::vector<std::string> frame;
+        for (std::string line; std::getline(file, line);)
+        {
+            frame.push_back(line);
+        }
+        frames.push_back(frame);
+        file.close();
+    }
+    return frames;
+}
+
 /**
  * @brief Resets the game state by reloading assets and clearing game data.
  * 

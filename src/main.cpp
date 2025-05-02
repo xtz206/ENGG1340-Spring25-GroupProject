@@ -11,6 +11,7 @@
 
 enum class Stage
 {
+    TITLE_VIDEO,
     TITLE_MENU,
     START_MENU,
     LEVEL_MENU,
@@ -47,7 +48,7 @@ int main(void)
         init();
 
         short key;
-        Stage stage = Stage::TITLE_MENU;
+        Stage stage = Stage::TITLE_VIDEO;
 
         Game game = Game();
         SaveDumper save_dumper = SaveDumper(game);
@@ -56,6 +57,7 @@ int main(void)
         GeneralChecker general_checker = GeneralChecker();
         asset_loader.load_general();
 
+        TitleVideo title_video = TitleVideo(asset_loader.load_video());
         TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
         BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD  GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"RETURN TO MENU", "EASY", "NORMAL", "HARD"});
@@ -67,6 +69,7 @@ int main(void)
         OperationMenu operation_menu = OperationMenu(game);
         TechMenu tech_menu = TechMenu(game.get_tech_tree(), "RETURN TO GAME");
 
+        VideoRenderer title_video_renderer = VideoRenderer(title_video, Size(30, 120));
         TitleMenuRenderer title_menu_renderer = TitleMenuRenderer(title_menu, Size(10, 120));
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu, Size(10, 30));
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu, Size(10, 30));
@@ -80,7 +83,34 @@ int main(void)
 
         while (true)
         {
-            if (stage == Stage::TITLE_MENU)
+            if (stage == Stage::TITLE_VIDEO)
+            {
+                title_video_renderer.init();
+                while (stage == Stage::TITLE_VIDEO)
+                {
+                    key = getch();
+                    if (key == '\033')
+                    {
+                        stage = Stage::QUIT;
+                    }
+                    else if (key != ERR)
+                    {
+                        stage = Stage::TITLE_MENU;
+                    }
+                    title_video_renderer.draw();
+                    title_video_renderer.render();
+                    if (!title_video.is_end())
+                    {
+                        title_video.next_frame();
+                    }
+                    else
+                    {
+                        stage = Stage::TITLE_MENU;
+                    }
+                    usleep(25000);
+                }
+            }
+            else if (stage == Stage::TITLE_MENU)
             {
                 title_menu_renderer.init();
                 while (stage == Stage::TITLE_MENU)
