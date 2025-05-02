@@ -1,3 +1,10 @@
+/**
+ * @file main.cpp
+ * @brief Main entry point for Missile Commander game
+ * 
+ * Implements core game loop and state management with ncurses interface.
+ * Handles menu navigation, gameplay operations, and save/load functionality.
+ */
 #include <iostream>
 #include <string>
 #include <ncurses.h>
@@ -9,78 +16,63 @@
 #include "loader.h"
 #include "saver.h"
 
-/*The init function initializes terminal interface settings. 
-It configures locale settings, enables screen management libraries (such as initscr and start_color), disables echo input, 
-hides the cursor, and sets non-blocking input and keyboard support.
-*/
-/*initscr is a function from the ncurses library that initializes the screen and sets up the program's default window. 
-It returns a pointer to the main window (of type WINDOW*), 
-preparing the environment for subsequent ncurses screen operations.
-*/
-/*noecho is a function returning type int. In contexts like ncurses-based libraries, it disables terminal echo functionality, 
-preventing input characters from being displayed during user input.
-*/
-/*curs_set is a function that controls terminal cursor visibility. 
-It accepts an integer parameter and returns the previous cursor state, commonly used to manipulate terminal display behavior.
-*/
-//start_color is a function returning type int. It typically initializes terminal color capabilities.
-/*The nodelay function sets the input mode for a specified window (WINDOW*). 
-A boolean parameter controls whether input is non-blocking: true enables non-blocking mode, false enables blocking mode.
-*/
-/*The keypad function enables or disables function key support for a specified window (WINDOW*). 
-The second boolean parameter determines the state: true enables function key support, false disables it.
-*/
+/**
+ * @brief Initialize terminal interface settings
+ * @details Configures ncurses environment with:
+ * - Locale support for Unicode
+ * - Screen management initialization
+ * - Input echo/cursor visibility control
+ * - Color system initialization
+ * - Non-blocking input mode
+ * - Extended keyboard support
+ */
 
 void init(void)
 {
     setlocale(LC_CTYPE, "");
-    initscr();
-    noecho();
-    curs_set(0);
-    start_color();
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
+    initscr(); ///< Initialize ncurses screen
+    noecho(); ///< Disable automatic key echoing
+    curs_set(0); ///< Hide terminal cursor
+    start_color(); ///< Enable color system
+    nodelay(stdscr, TRUE); ///< Set non-blocking input
+    keypad(stdscr, TRUE); ///< Enable function keys
 }
 
-/*The main function serves as the entry point of the program. 
-It initializes game resources (such as menus, renderers, game objects, etc.), 
-and processes user input through loops to control menu navigation, game logic, and state transitions, 
-thereby implementing the complete game flow.
-*/
-/*
-Implements a core framework for a strategic defense game "Missile Commander," 
-featuring menu navigation, game state management, and resource handling. 
-(1)System Initialization
-Uses init() for global setup (likely graphics/resources)
-Implements exception handling via try block (though missing catch in shown snippet)
-(2)Resource Management
-Loader class handles asset loading (map sizes, cities, backgrounds)
-SaveDumper/SaveLoader manage game state persistence
-(3)Menu Architecture
-Modular BasicMenu system for different contexts:
-Start menu (game launch/load/tutorial/quit)
-Difficulty selection (easy/normal/hard)
-Pause menu (resume/save/quit)
-Specialized menus (tech tree, tutorial, save slots)
-Dedicated renderers (BasicMenuRenderer, TutorialMenuRenderer) for visual presentation
-(4)Game Core
-Game object constructed with loaded resources
-Operational menus (OperationMenu, TechMenu) for in-game actions
-Separation of logic (game state) and presentation (renderers)
-(5)Key Features
-Multiple interactive layers: Main game, tech research, tutorials
-Input handling via short key variable (WIP in shown snippet)
-Debug infrastructure with temporary "DEBUG" menu option
-Localization-ready design (planned string replacement via vectors/maps)
-*/
+/**
+ * @brief Main game execution loop
+ * @return int Program exit status
+ * 
+ * Manages complete game lifecycle including:
+ * - Resource initialization
+ * - Menu system navigation
+ * - Game state transitions
+ * - Input handling
+ * - Rendering pipeline
+ * - Save/load operations
+ * 
+ * Implements finite state machine pattern with menu-driven transitions.
+ */
 int main(void)
 {
     try
-    {
+    { // Initialize ncurses environment
         init();
 
-        short key;
-        Loader loader = Loader();
+        short key; ///< Stores keyboard input
+        Loader loader = Loader(); ///< Resource loading subsystem
+        // ----------------------------
+        // Menu System Initialization
+        // ----------------------------
+        
+        /* @brief Main menu system configuration
+         * @detail Contains all game interface menus with:
+         * - Start menu: Entry point navigation
+         * - Difficulty menu: Game mode selection
+         * - Pause menu: In-game operations
+         * - Save/load menus: Game state persistence
+         * - Tech menu: Research system interface
+         * - Tutorial menu: Game instructions
+         */
         // TODO: store menu title and buttons in separate file instead of hardcoding
         // TODO: button name localization
         //       replace the strings with a vector<string> or map<string, string> or macro
@@ -95,9 +87,25 @@ int main(void)
         // starting the game, loading a game, and quitting the game.
         // also basic actions including switch,repair,launching missile and research.
         BasicMenu end_menu = BasicMenu("GAME OVER", {"DEBUG", "RETURN TO MENU", "QUIT"});
+         // ----------------------------
+        // Core Game Initialization
+        // ----------------------------
+        
+        /* @brief Main game engine instance
+         * @param loader.load_size() Map dimensions
+         * @param loader.load_cities() City configurations
+         * @param loader.load_background() Terrain data
+         */
         Game game = Game(loader.load_size(), loader.load_cities(), loader.load_background());
-        OperationMenu operation_menu = OperationMenu(game);
-        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game");
+         // ----------------------------
+        // Specialized Menu Systems
+        // ----------------------------
+        OperationMenu operation_menu = OperationMenu(game); ///< In-game command interface
+        TechMenu tech_menu = TechMenu(game.get_tech_tree(), "Return to Game"); ///< Research system
+        
+        /* @brief Tutorial content container
+         * @detail Organized in pages with navigation controls
+         */
         TutorialMenu tutorial_menu = TutorialMenu({{
                                                        "===== Controls =====",
                                                        "W/A/S/D  - Move Cursor",
@@ -112,6 +120,18 @@ int main(void)
                                                     "Protect cities from missiles!",
                                                     "Use research to unlock defenses."}});
 
+         // ----------------------------
+        // Rendering Subsystem
+        // ----------------------------
+        
+        /* @brief Renderer components
+         * @detail Each menu/game state has dedicated renderer:
+         * - BasicMenuRenderer: Standard menu presentation
+         * - TutorialMenuRenderer: Paginated content display
+         * - GameRenderer: Complex game interface
+         * - TechMenuRenderer: Tech tree visualization
+         */
+
         BasicMenuRenderer start_menu_renderer = BasicMenuRenderer(start_menu);
         BasicMenuRenderer level_menu_renderer = BasicMenuRenderer(level_menu);
         TutorialMenuRenderer tutorial_menu_renderer = TutorialMenuRenderer(tutorial_menu);
@@ -122,72 +142,28 @@ int main(void)
         GameRenderer game_renderer = GameRenderer(game, operation_menu);
         TechMenuRenderer tech_menu_renderer = TechMenuRenderer(tech_menu);
 
-        SaveDumper save_dumper = SaveDumper(game);
-        SaveLoader save_loader = SaveLoader(game);
+        // ----------------------------
+        // Save System Components
+        // ----------------------------
+        SaveDumper save_dumper = SaveDumper(game); ///< Game state serialization
+        SaveLoader save_loader = SaveLoader(game); ///< Game state deserialization
 
+        
+        // ----------------------------
+        // Main Game Loop
+        // ----------------------------
         start_menu.activate();
         start_menu_renderer.init();
 
-        /*A. Menu System
-Start Menu: Initial screen with options to start game, load game, view tutorial, or quit
-Level Menu: Difficulty selection (Easy/Normal/Hard)
-Tutorial Menu: Multi-page instructions with navigation
-Pause Menu: In-game options (Resume/Return to Menu/Save/Quit)
-Tech Menu: Technology research interface
-Save/Load Menus: Slot-based save system
-End Menu: Post-game options
-
-B. Game State
-Handles core gameplay through Game class methods:
-Cursor movement (WASD keys)
-City operations (1-0 keys for quick city selection)
-Missile/bomb management
-Turn progression (Space key)
-Research system
-Iron Curtain activation
-Game over checks
-
-3. Input Handling
-Uses getch() for keyboard input
-Common Controls:
-WASD/QE for navigation
-Enter for selection
-ESC (ASCII 27) for back/cancel
-P for pause
-Number keys 1-0 for quick city selection
-Special keys for gameplay actions (Space, R, F, B, L)
-
-4. State Transitions
-Uses activate()/deactivate() methods to switch between states
-Maintains strict hierarchy:
-Start → Level → Game ↔ Pause ↔ Tech ↔ Save/Load
-Start → Tutorial
-Game → End
-5. Rendering System
-Each menu has its own renderer (*_renderer)
-
-Implements double buffering pattern:
-cpp
-draw();    // Prepare frame
-render();  // Display frame
-Uses usleep(10000) for 10ms frame pacing
-
-6. Key Technical Features
-Game Serialization: save_dumper and save_loader handle save files
-Difficulty System: set_difficulty() modifies enemy stats
-Research System: Tech tree integration with gameplay effects
-Super Weapons: Multiple bomb types with build/launch phases
-Defensive Systems: City repair and Iron Curtain mechanics
-
-7. Error Handling
-Wrapped in try-catch block for exceptions
-Proper terminal cleanup with endwin()
-
-8. Notable Patterns
-Chain of Responsibility: Input handling propagates through active state
-Observer Pattern: Menu renderers observe menu states
-Command Pattern: Key presses map to game actions
-        */
+        /**
+         * @brief Core state machine loop
+         * @details Processes active state and handles transitions:
+         * 1. Checks currently active menu/game state
+         * 2. Processes input for current state
+         * 3. Executes corresponding actions
+         * 4. Manages state transitions
+         * 5. Maintains 10ms frame timing
+         */
         while (true)
         {
             if (start_menu.is_activated())
@@ -196,6 +172,13 @@ Command Pattern: Key presses map to game actions
                 while (start_menu.is_activated())
                 {
                     key = getch();
+                    /* @brief Start menu input handling
+                     * @detail Processes navigation and selection:
+                     * - W/A/Q: Previous item
+                     * - S/D/E: Next item
+                     * - Enter: Confirm selection
+                     * - ESC: Exit game
+                     */
                     switch (key)
                     {
                     case 'w':
@@ -209,7 +192,7 @@ Command Pattern: Key presses map to game actions
                         start_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (start_menu.get_item() == "START THE GAME")
                         {
                             start_menu.deactivate();
@@ -231,13 +214,14 @@ Command Pattern: Key presses map to game actions
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         start_menu.deactivate();
                         break;
                     }
+                    // NOTE: render menu
                     start_menu_renderer.draw();
                     start_menu_renderer.render();
-                    usleep(10000);
+                    usleep(10000); ///< Maintain 100FPS refresh rate
                 }
             }
             else if (level_menu.is_activated())
@@ -752,8 +736,10 @@ Command Pattern: Key presses map to game actions
         exit(0);
     }
     catch (const std::exception &e)
-    {
-        endwin();
+    {// ----------------------------
+        // Cleanup and Exit
+        // ----------------------------
+        endwin();  ///< Restore terminal settings
         std::cerr << e.what() << '\n';
         exit(1);
     }
