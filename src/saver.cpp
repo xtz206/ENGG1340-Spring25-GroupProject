@@ -236,6 +236,7 @@ void AssetLoader::load_cities(void)
     file.close();
 }
 
+// TODO: write docstring for this function
 bool GeneralChecker::is_first_run(void)
 {
     std::string filepath = folderpath + "lastrun";
@@ -249,6 +250,7 @@ bool GeneralChecker::is_first_run(void)
     return true;
 }
 
+// TODO: write docstring for this function
 void GeneralChecker::save_first_run(void)
 {
     std::string command = "touch " + folderpath + "lastrun";

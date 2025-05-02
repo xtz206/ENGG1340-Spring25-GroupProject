@@ -27,7 +27,7 @@
 
 ### Economy
 
-- [ ] Fine-tune parameters (i.e. control income & cost for ops)
+- [x] Fine-tune parameters (i.e. control income & cost for ops)
 - [x] More Usages (e.g. attack enemy / research)
 
 ### Research
@@ -71,9 +71,9 @@
 
 ## Test & Bugfix
 
-- [ ] Test Control of Flow / Keyboard Shortcuts
-- [ ] Test Game Difficulty & Balance, then fine-tune parameters accordingly
-- [ ] Fix bugs in file saving/loading
+- [x] Test Control of Flow / Keyboard Shortcuts
+- [x] Test Game Difficulty & Balance, then fine-tune parameters accordingly
+- [x] Fix bugs in file saving/loading
 
 ---
 
@@ -96,7 +96,7 @@
 
 ### README.md
 
-- [ ] Team member identification
+- [x] Team member identification
 - [ ] Game description
 - [ ] Feature Implemented(Random/DataStructure/DMM/FileIO/MultiFile/DifficultyLevel)
 - [ ] List of Libraries (features)
