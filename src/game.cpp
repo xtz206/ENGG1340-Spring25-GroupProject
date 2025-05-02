@@ -855,7 +855,7 @@ void Game::pass_turn(void)
     if (turn % 40 == 0) // Check if it's time to launch a new attack wave
     {
         missile_manager.create_attack_wave(turn, enemy_hitpoint, difficulty_level);
-        insert_feedback("New Attack Missile Wave Approaching");
+        insert_feedback("New Attack Missile Wave Approaching", COLOR_PAIR(3));
     }
     turn++;
 }
