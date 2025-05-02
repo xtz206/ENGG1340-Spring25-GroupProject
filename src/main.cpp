@@ -57,7 +57,7 @@ int main(void)
         asset_loader.load_general();
 
         TitleMenu title_menu = TitleMenu(asset_loader.load_title(), "PRESS ANY KEY TO START");
-        BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD GAME", "TUTORIAL", "QUIT"});
+        BasicMenu start_menu = BasicMenu("START MENU", {"START THE GAME", "LOAD  GAME", "TUTORIAL", "QUIT"});
         BasicMenu level_menu = BasicMenu("SELECT DIFFICULTY", {"RETURN TO MENU", "EASY", "NORMAL", "HARD"});
         BasicMenu pause_menu = BasicMenu("PAUSED", {"RESUME", "RETURN TO MENU", "SAVE GAME", "QUIT"});
         TutorialMenu tutorial_menu = TutorialMenu();
@@ -135,7 +135,7 @@ int main(void)
                                 stage = Stage::LEVEL_MENU;
                             }
                         }
-                        else if (start_menu.get_item() == "LOAD GAME")
+                        else if (start_menu.get_item() == "LOAD  GAME")
                         {
                             stage = Stage::LOAD_MENU;
                         }
