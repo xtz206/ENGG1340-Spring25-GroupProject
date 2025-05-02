@@ -372,7 +372,7 @@ void SaveDumper::save_general(std::string filepath)
         general_log << "enemy_hitpoint:" << game.enemy_hitpoint << "\n";
         general_log << "score:" << game.get_score() << "\n";
         general_log << "casualty:" << game.get_casualty() << "\n";
-        general_log << "missile_manager_id" << game.missile_manager.id << "\n";
+        general_log << "missile_manager_id:" << game.missile_manager.id << "\n";
 
         // NOTE: super weapon
         general_log << "standard_bomb_counter:" << game.standard_bomb_counter << "\n";
@@ -1116,7 +1116,7 @@ bool SaveLoader::is_slot_empty(std::string index)
 
 bool SaveLoader::load_game(const std::string &index)
 {
-    folderpath = "../save/game_" + index + "/";
+    folderpath = "save/game_" + index + "/";
 
     struct stat info;
     if (stat(folderpath.c_str(), &info) != 0)
