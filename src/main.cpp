@@ -221,7 +221,7 @@ int main(void)
                             if (general_checker.is_first_run())
                             {
                                 stage = Stage::TUTORIAL_MENU;
-                                general_checker.save_first_run();
+                                general_checker.save_lastrun();
                             }
                             else
                             {
@@ -667,18 +667,21 @@ int main(void)
                         {
                             asset_loader.reset();
                             save_loader.load_game("1");
+                            general_checker.save_lastrun();
                             stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "SLOT 2 FULL")
                         {
                             asset_loader.reset();
                             save_loader.load_game("2");
+                            general_checker.save_lastrun();
                             stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "SLOT 3 FULL")
                         {
                             asset_loader.reset();
                             save_loader.load_game("3");
+                            general_checker.save_lastrun();
                             stage = Stage::GAME;
                         }
                         else if (load_menu.get_item() == "RETURN TO MENU")

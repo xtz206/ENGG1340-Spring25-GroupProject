@@ -56,7 +56,7 @@ private:
 public:
     GeneralChecker() {};
     bool is_first_run(void);
-    void save_first_run(void);
+    void save_lastrun(void);
 };
 
 /**

@@ -19,7 +19,7 @@
  * - AssetLoader::load_title: Loads the content of the "title.txt" file into a vector of strings.
  * - AssetLoader::reset: Resets the game state by reloading assets and clearing game data.
  * - GeneralChecker::is_first_run: Checks if this is the first run of the program.
- * - GeneralChecker::save_first_run: Creates a file named "lastrun" to indicate the first run.
+ * - GeneralChecker::save_lastrun: Creates a file named "lastrun" to indicate the first run.
  * - SaveDumper::is_slot_empty: Checks if the save slot is empty.
  * - SaveDumper::save_game: Saves the game state to a specified folder.
  * - SaveDumper::save_cities: Saves cities' states to a CSV file.
@@ -402,7 +402,7 @@ bool GeneralChecker::is_first_run(void)
 }
 
 /**
- * @brief Creates a file named "lastrun" in the specified folder path to indicate the first run.
+ * @brief Creates a file named "lastrun" in the specified folder path to indicate the lastrun time.
  *
  * This function constructs a system command to create a file named "lastrun" in the directory
  * specified by the `folderpath` member variable. If the file creation fails, it throws a
@@ -410,7 +410,7 @@ bool GeneralChecker::is_first_run(void)
  *
  * @throws std::runtime_error If the system command to create the "lastrun" file fails.
  */
-void GeneralChecker::save_first_run(void)
+void GeneralChecker::save_lastrun(void)
 {
     std::string command = "touch " + folderpath + "lastrun";
     if (system(command.c_str()) != 0)
