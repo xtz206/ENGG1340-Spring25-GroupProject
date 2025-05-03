@@ -306,6 +306,47 @@ std::vector<std::string> AssetLoader::load_title(void)
 }
 
 /**
+ * @brief Loads video frames from text files into a 2D vector of strings.
+ *
+ * This function reads a series of text files representing video frames
+ * and stores their contents in a vector of frames, where each frame is
+ * represented as a vector of strings (lines of text).
+ *
+ * @return std::vector<std::vector<std::string>>
+ *         A 2D vector where each inner vector represents a video frame
+ *         and contains strings corresponding to the lines of the frame.
+ * @throws std::runtime_error If the video directory cannot be accessed.
+ */
+std::vector<std::vector<std::string>> AssetLoader::load_video(void)
+{
+    std::vector<std::vector<std::string>> frames;
+    std::ifstream file;
+
+    struct stat info;
+    if (stat("video/", &info) != 0 || !(info.st_mode & S_IFDIR))
+    {
+        throw std::runtime_error("Cannot access video directory");
+    }
+
+    for (size_t index = 0;; index++)
+    {
+        file.open("video/frame" + std::to_string(index) + ".txt");
+        if (!file.is_open())
+        {
+            break; // Stop when a file in the sequence is missing
+        }
+        std::vector<std::string> frame;
+        for (std::string line; std::getline(file, line);)
+        {
+            frame.push_back(line);
+        }
+        frames.push_back(frame);
+        file.close();
+    }
+    return frames;
+}
+
+/**
  * @brief Resets the game state by reloading assets and clearing game data.
  *
  * This function performs the following actions:
