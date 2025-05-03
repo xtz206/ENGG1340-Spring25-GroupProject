@@ -346,7 +346,7 @@ void VideoRenderer::draw(void)
         {
             break;
         }
-        video_window.print_left(index, frame.at(index));
+        video_window.print_center(index, frame.at(index));
     }
 }
 
