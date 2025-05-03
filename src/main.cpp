@@ -1,3 +1,11 @@
+/**
+ * @file main.cpp
+ * @brief Main entry point for Missile Commander game
+ *
+ * Implements core game loop and state management with ncurses interface.
+ * Handles menu navigation, gameplay operations, and save/load functionality.
+ */
+
 #include <iostream>
 #include <string>
 #include <ncurses.h>
@@ -24,29 +32,16 @@ enum class Stage
     QUIT
 };
 
-// TODO: update this docstring to compatible with Doxygen
-/*The init function initializes terminal interface settings.
-It configures locale settings, enables screen management libraries (such as initscr and start_color), disables echo input,
-hides the cursor, and sets non-blocking input and keyboard support.
-*/
-/*initscr is a function from the ncurses library that initializes the screen and sets up the program's default window.
-It returns a pointer to the main window (of type WINDOW*),
-preparing the environment for subsequent ncurses screen operations.
-*/
-/*noecho is a function returning type int. In contexts like ncurses-based libraries, it disables terminal echo functionality,
-preventing input characters from being displayed during user input.
-*/
-/*curs_set is a function that controls terminal cursor visibility.
-It accepts an integer parameter and returns the previous cursor state, commonly used to manipulate terminal display behavior.
-*/
-// start_color is a function returning type int. It typically initializes terminal color capabilities.
-/*The nodelay function sets the input mode for a specified window (WINDOW*).
-A boolean parameter controls whether input is non-blocking: true enables non-blocking mode, false enables blocking mode.
-*/
-/*The keypad function enables or disables function key support for a specified window (WINDOW*).
-The second boolean parameter determines the state: true enables function key support, false disables it.
-*/
-
+/**
+ * @brief Initialize terminal interface settings
+ * @details Configures ncurses environment with:
+ * - Locale support for Unicode
+ * - Screen management initialization
+ * - Input echo/cursor visibility control
+ * - Color system initialization
+ * - Non-blocking input mode
+ * - Extended keyboard support
+ */
 void init(void)
 {
     setlocale(LC_CTYPE, "");
@@ -63,44 +58,39 @@ void init(void)
     init_pair(4, COLOR_WHITE, COLOR_GREEN);
 }
 
-// TODO: update this docstring to compatible with Doxygen
-/*The main function serves as the entry point of the program.
-It initializes game resources (such as menus, renderers, game objects, etc.),
-and processes user input through loops to control menu navigation, game logic, and state transitions,
-thereby implementing the complete game flow.
-*/
-/*
-Implements a core framework for a strategic defense game "Missile Commander,"
-featuring menu navigation, game state management, and resource handling.
-(1)System Initialization
-Uses init() for global setup (likely graphics/resources)
-Implements exception handling via try block (though missing catch in shown snippet)
-(2)Resource Management
-Loader class handles asset loading (map sizes, cities, backgrounds)
-SaveDumper/SaveLoader manage game state persistence
-(3)Menu Architecture
-Modular BasicMenu system for different contexts:
-Start menu (game launch/load/tutorial/quit)
-Difficulty selection (easy/normal/hard)
-Pause menu (resume/save/quit)
-Specialized menus (tech tree, tutorial, save slots)
-Dedicated renderers (BasicMenuRenderer, TutorialMenuRenderer) for visual presentation
-(4)Game Core
-Game object constructed with loaded resources
-Operational menus (OperationMenu, TechMenu) for in-game actions
-Separation of logic (game state) and presentation (renderers)
-(5)Key Features
-Multiple interactive layers: Main game, tech research, tutorials
-Input handling via short key variable (WIP in shown snippet)
-Debug infrastructure with temporary "DEBUG" menu option
-Localization-ready design (planned string replacement via vectors/maps)
-*/
-
+/**
+ * @brief Main game execution loop
+ * @return int Program exit status
+ *
+ * Manages complete game lifecycle including:
+ * - Resource initialization
+ * - Menu system navigation
+ * - Game state transitions
+ * - Input handling
+ * - Rendering pipeline
+ * - Save/load operations
+ *
+ * Implements finite state machine pattern with menu-driven transitions.
+ */
 int main(void)
 {
     try
-    {
+    { // Initialize ncurses environment
         init();
+
+        // ----------------------------
+        // Menu System Initialization
+        // ----------------------------
+
+        /* @brief Main menu system configuration
+         * @detail Contains all game interface menus with:
+         * - Start menu: Entry point navigation
+         * - Difficulty menu: Game mode selection
+         * - Pause menu: In-game operations
+         * - Save/load menus: Game state persistence
+         * - Tech menu: Research system interface
+         * - Tutorial menu: Game instructions
+         */
 
         short key;
         Stage stage = Stage::TITLE_MENU;
@@ -145,7 +135,7 @@ int main(void)
 
                     switch (key)
                     {
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     case ERR:
@@ -178,7 +168,7 @@ int main(void)
                         start_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (start_menu.get_item() == "START THE GAME")
                         {
                             if (general_checker.is_first_run())
@@ -205,13 +195,13 @@ int main(void)
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
                     start_menu_renderer.draw();
                     start_menu_renderer.render();
-                    usleep(10000);
+                    usleep(10000); ///< Maintain 100FPS refresh rate
                 }
             }
             else if (stage == Stage::LEVEL_MENU)
@@ -233,7 +223,7 @@ int main(void)
                         level_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (level_menu.get_item() == "EASY")
                         {
                             asset_loader.reset();
@@ -258,7 +248,7 @@ int main(void)
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -290,7 +280,7 @@ int main(void)
                         tutorial_menu.next_page();
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (tutorial_menu.get_item() == "RETURN TO MENU")
                         {
                             stage = Stage::START_MENU;
@@ -309,7 +299,7 @@ int main(void)
                         stage = Stage::START_MENU;
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -346,7 +336,7 @@ int main(void)
                         operation_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (operation_menu.get_item() == "RESEARCH")
                         {
                             stage = Stage::TECH_MENU;
@@ -424,7 +414,7 @@ int main(void)
                         game.move_cursor_to_city(9);
                         break;
 
-                    case ' ':
+                    case ' ': // Space key
                         game.pass_turn();
                         break;
                     case 'p':
@@ -445,7 +435,7 @@ int main(void)
                         game.launch_cruise();
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -479,7 +469,7 @@ int main(void)
                         pause_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (pause_menu.get_item() == "RESUME")
                         {
                             stage = Stage::GAME;
@@ -502,7 +492,7 @@ int main(void)
                         stage = Stage::GAME;
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -530,7 +520,7 @@ int main(void)
                         tech_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (tech_menu.get_item() == "RETURN TO GAME")
                         {
                             stage = Stage::GAME;
@@ -546,7 +536,7 @@ int main(void)
                         stage = Stage::GAME;
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -574,7 +564,7 @@ int main(void)
                         save_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (save_menu.get_item() == "SLOT 1 EMPTY" || save_menu.get_item() == "SLOT 1  FULL")
                         {
                             save_dumper.save_game("1");
@@ -596,7 +586,7 @@ int main(void)
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -625,7 +615,7 @@ int main(void)
                         load_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (load_menu.get_item() == "SLOT 1  FULL")
                         {
                             asset_loader.reset();
@@ -650,7 +640,7 @@ int main(void)
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -679,7 +669,7 @@ int main(void)
                         end_menu.move_cursor(1);
                         break;
 
-                    case '\n':
+                    case '\n': // Enter key
                         if (end_menu.get_item() == "RETURN TO MENU")
                         {
                             stage = Stage::START_MENU;
@@ -690,7 +680,7 @@ int main(void)
                         }
                         break;
 
-                    case '\033':
+                    case '\033': // ESC key
                         stage = Stage::QUIT;
                         break;
                     }
@@ -705,12 +695,20 @@ int main(void)
             }
         }
 
-        endwin();
+        // ----------------------------
+        // Cleanup and Exit
+        // ----------------------------
+
+        endwin(); ///< Restore terminal settings
         exit(0);
     }
     catch (const std::exception &e)
     {
-        endwin();
+        // ----------------------------
+        // Cleanup and Exit
+        // ----------------------------
+
+        endwin(); ///< Restore terminal settings
         std::cerr << e.what() << '\n';
         exit(1);
     }

@@ -1,3 +1,8 @@
+/**
+ * @file render.h
+ * @brief Declares rendering components for game UI using ncurses
+ */
+
 #ifndef RENDER_H
 #define RENDER_H
 
@@ -36,15 +41,46 @@ public:
     void print_right(int line, const AttrString &s) { print_right(line, s.str, s.attr); };
 };
 
+/**
+ * @class Renderer
+ * @brief Abstract base class for all UI renderers
+ *
+ * Defines common interface for initializing, updating and drawing
+ * ncurses-based UI components. Provides debug utilities.
+ */
 class Renderer
 {
 public:
+    /**
+     * @brief Main rendering entry point
+     * @details Updates all visual components
+     */
     virtual void render(void) = 0;
+    /**
+     * @brief Initialize renderer resources
+     * @details Creates windows and sets up initial UI state
+     */
     virtual void init(void) = 0;
+    /**
+     * @brief Commit changes to physical screen
+     * @details Performs final refresh operations on all windows
+     */
     virtual void draw(void) = 0;
+
+    /**
+     * @brief Output debug information
+     * @param str Debug message to display
+     * @param line Optional line number (0-based) in debug area
+     */
     void debug(const std::string &str, int line = 0);
 };
 
+/**
+ * @class BasicMenuRenderer
+ * @brief Renders standard menu interface
+ *
+ * Handles display of basic menu boxes and selectable items
+ */
 class BasicMenuRenderer : public Renderer
 {
 protected:
@@ -113,6 +149,12 @@ public:
     void draw(void);
 };
 
+/**
+ * @class TutorialMenuRenderer
+ * @brief Specialized renderer for tutorial content
+ *
+ * Displays tutorial text with custom formatting and navigation
+ */
 class TutorialMenuRenderer : public Renderer
 {
 private:
@@ -134,6 +176,12 @@ public:
     void draw(void);
 };
 
+/**
+ * @class TechMenuRenderer
+ * @brief Renders technology tree interface
+ *
+ * Displays tech nodes and descriptions with visual connections
+ */
 class TechMenuRenderer : public Renderer
 {
 private:
@@ -155,11 +203,21 @@ public:
     void draw(void);
 };
 
+/**
+ * @class GameRenderer
+ * @brief Main game interface renderer
+ *
+ * Manages complex layout of game view including:
+ * - Strategic map
+ * - Status panels
+ * - Operation controls
+ * - Feedback system
+ */
 class GameRenderer : public Renderer
 {
 private:
-    Game &game;
-    OperationMenu &menu;
+    Game &game;          ///< Game state reference
+    OperationMenu &menu; ///< Operation controls data
 
     Size map_size;
     Size info_size;
@@ -168,15 +226,15 @@ private:
     std::vector<int> fields;
     Position pos;
 
-    Window box_window;
-    Window map_window;
+    Window box_window; ///< Master border window
+    Window map_window; ///< Tactical map display
     Window info_window;
-    Window general_info_window;
-    Window selected_info_window;
-    Window tech_info_window;
-    Window super_weapon_info_window;
-    Window operation_window;
-    Window feedback_window;
+    Window general_info_window;      ///< Player stats/status
+    Window selected_info_window;     ///< Selected entity details
+    Window tech_info_window;         ///< Research progress
+    Window super_weapon_info_window; ///< Special weapons status
+    Window operation_window;         ///< Command interface
+    Window feedback_window;          ///< System messages/notifications
 
 public:
     GameRenderer(Game &g, OperationMenu &m, Size s, const std::vector<int> &ls);

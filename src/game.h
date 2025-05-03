@@ -61,13 +61,13 @@ class City
     friend class SaveLoader;
 
 private:
-    Position position;
-    std::string name;
-    int hitpoint;
-    int productivity;
-    int countdown;
-    int base_productivity;
-    int cruise_storage;
+    Position position; ///< Map coordinates
+    std::string name; ///< City identifier
+    int hitpoint; ///< Current health points
+    int productivity; ///< Current production capacity
+    int countdown; //< Production timer
+    int base_productivity; ///< Base production value
+    int cruise_storage; ///< Stored cruise missiles
 
 public:
     City(Position p, const std::string &n, int hp);
@@ -82,9 +82,9 @@ public:
  */
 enum class MissileType
 {
-    ATTACK,
-    CRUISE,
-    UNKNOWN
+    ATTACK, ///< Enemy missiles targeting cities
+    CRUISE, ///< Player-controlled defensive missiles
+    UNKNOWN  ///< Default/error state
 };
 
 /**
@@ -95,7 +95,7 @@ enum class MissileType
  */
 enum class MissileDirection
 {
-    A,  // Arrived
+    A,  // Arrived ///< Arrived at target
     N,  // North
     NE, // North-East
     E,  // East
@@ -139,16 +139,19 @@ class Missile
     friend class SaveLoader;
 
 protected:
-    int id;
-    Position position;
-    Position target;
-    MissileType type;
-    bool is_exploded;
-    int damage;
-    int speed;
+    int id; ///< Unique identifier
+    Position position; ///< Current coordinates
+    Position target;  ///< Destination coordinates
+    MissileType type; ///< Behavior category
+    bool is_exploded; ///< Detonation status
+    int damage; ///< Impact damage value
+    int speed; ///< Movement units per turn
 
 public:
     Missile(int i, Position p, Position t, int d, int v, MissileType tp);
+
+     /// @name Core Functionality
+    /// @{
     Position get_position(void) const { return position; };
     virtual Position get_target(void) = 0;
     MissileType get_type(void) const { return type; };
@@ -177,11 +180,13 @@ class AttackMissile : public Missile
     friend class SaveLoader;
 
 private:
-    City &city;
-    bool is_aimed = false;
+    City &city; ///< Target city reference
+    bool is_aimed = false; ///< Target lock status
 
 public:
     AttackMissile(int i, Position p, City &c, int d, int v);
+    /// @name Overrides
+    /// @{
     virtual Position get_target(void) override { return city.get_position(); };
     virtual void move_step(void) override;
 };
@@ -202,11 +207,14 @@ class CruiseMissile : public Missile
     friend class SaveDumper;
 
 private:
-    Missile &missile;
-    int target_id;
+    Missile &missile; ///< Target missile reference
+    int target_id; ///< Tracked missile ID
 
 public:
     CruiseMissile(int i, Position p, Missile &m, int d, int v, int t_id);
+
+    /// @name Overrides
+    /// @{
     virtual Position get_target(void) override { return missile.get_position(); };
     virtual void move_step(void) override;
 };
@@ -243,9 +251,15 @@ private:
 
 public:
     MissileManager(std::vector<City> &cts);
-    std::vector<Missile *> get_missiles(void);
-    std::vector<Missile *> get_attack_missiles(void);
-    std::vector<Missile *> get_cruise_missiles(void);
+    /// @name Missile Access
+    /// @{
+    std::vector<Missile *> get_missiles(void); ///< All active missiles
+    std::vector<Missile *> get_attack_missiles(void); ///< Offensive missiles
+    std::vector<Missile *> get_cruise_missiles(void); ///< Defensive missiles
+    /// @}
+    
+    /// @name Operations
+    /// @{
 
     void set_difficulty(int lv);
     bool city_weight_check(City &c);
@@ -275,11 +289,11 @@ class TechNode
     friend class SaveLoader;
 
 private:
-    std::string name;
-    std::vector<std::string> description;
-    int cost;
-    int time;
-    std::vector<TechNode *> prerequisites;
+    std::string name; ///< Technology name
+    std::vector<std::string> description; ///< Detailed description
+    int cost; ///< Research cost
+    int time;  ///< Research duration
+    std::vector<TechNode *> prerequisites; ///< Required technologies
 
 public:
     /**
@@ -313,17 +327,19 @@ class TechTree
     friend class AssetLoader;
 
 private:
-    std::vector<TechNode *> nodes;
-    std::vector<TechNode *> researched;
-    std::vector<TechNode *> available;
-    TechNode *researching;
-    TechNode *prev_researching;
-    int remaining_time;
+    std::vector<TechNode *> nodes; ///< All available technologies
+    std::vector<TechNode *> researched; ///< Completed research
+    std::vector<TechNode *> available; ///< Currently researchable
+    TechNode *researching; ///< Currently researching
+    TechNode *prev_researching; ///< Previously researched
+    int remaining_time; ///< Research progress
 
 public:
     TechTree(void);
     ~TechTree(void);
 
+    /// @name Research Operations
+    /// @{
     std::vector<std::string> get_tech_names(void) const;
 
     void start_research(TechNode *node);
@@ -334,7 +350,7 @@ public:
     void update_available(int deposit);
 
 private:
-    bool check_available(TechNode *node, int deposit) const;
+    bool check_available(TechNode *node, int deposit) const; ///< Validate prerequisites
 };
 
 /**
@@ -414,9 +430,9 @@ public:
     int get_enemy_hp(void) const { return enemy_hitpoint; };
 
     // NOTE: cursor/position-related functions
-    void move_cursor(Position dcursor);
-    void move_cursor_to_city(int index);
-    void pass_turn(void);
+    void move_cursor(Position dcursor); ///< Cursor movement
+    void move_cursor_to_city(int index); ///< City quick-select
+    void pass_turn(void);  ///< Advance game state
     bool is_in_map(Position p) const { return p.y >= 0 && p.y < size.h && p.x >= 0 && p.x < size.w; };
     bool is_in_range(Position p1, Position p2, int range) const;
     bool is_on_sea(Position p) const { return background.at(p.y).at(p.x) == '#'; };
@@ -431,17 +447,18 @@ public:
     void start_research(TechNode *node);
     void check_research(void);
     void finish_research(TechNode *node);
-    void hit_city(City &city, int damage);
-    void fix_city(void);
-    void build_cruise(void);
-    void launch_cruise(void);
-    void build_standard_bomb(void);
-    void launch_standard_bomb(void);
+    void hit_city(City &city, int damage); ///< Apply city damage
+    void fix_city(void); ///< Repair city
+    void build_cruise(void); ///< Produce defense
+    void launch_cruise(void); ///< Deploy defense
+    void build_standard_bomb(void); ///< Nuke production
+    void launch_standard_bomb(void); ///< Nuke deployment
     void build_dirty_bomb(void);
     void launch_dirty_bomb(void);
     void build_hydrogen_bomb(void);
     void launch_hydrogen_bomb(void);
-    void activate_iron_curtain(void);
+    void activate_iron_curtain(void); ///< Enable force field
+    /// @}
     void check_iron_curtain(void);
     void self_defense(void);
 
