@@ -14,11 +14,11 @@
 /**
  * @class Window
  * @brief Encapsulates ncurses window management
- * 
+ *
  * @var WINDOW *window Pointer to the ncurses window
  * @var Size size Size of the window
  * @var Position pos Position of the window on the screen
- * 
+ *
  * Provides methods for drawing characters, lines, and text within the window.
  * Also includes methods for refreshing and erasing the window.
  */
@@ -30,7 +30,6 @@ private:
     Position pos;
 
 public:
-
     Window(WINDOW *win, Size s, Position p);
     Window(Window &win, Size s, Position p);
     ~Window(void) { delwin(window); };
@@ -40,7 +39,7 @@ public:
     void refresh(void) { wrefresh(window); };
     void erase(void) { werase(window); };
     /// @}
-    
+
     /// @name margin/line drawing
     /// @{
     void draw_margin(void) { box(window, 0, 0); };
@@ -48,7 +47,7 @@ public:
     void draw_vline(Position p, int len) { mvwvline(window, p.y, p.x, ACS_VLINE, len); };
     void draw_char(Position p, chtype ch) { mvwaddch(window, p.y, p.x, ch); };
     /// @}
-    
+
     /// @name char/text printing
     /// @{
     void print(Position p, chtype ch, attr_t attr = A_NORMAL);
@@ -124,7 +123,10 @@ public:
     void draw(void);
 };
 
-// TODO: write docstring
+/**
+ * @class VideoRenderer
+ * @brief Renders video interface
+ */
 class VideoRenderer : public Renderer
 {
 private:
@@ -143,6 +145,12 @@ public:
     void draw(void);
 };
 
+/**
+ * @class TitleMenuRenderer
+ * @brief Renders title menu interface
+ *
+ * Displays game title and options for starting or loading a game
+ */
 class TitleMenuRenderer : public Renderer
 {
 private:
@@ -164,7 +172,7 @@ public:
 /**
  * @class SaveMenuRenderer
  * @brief Renders save/load game menu interface
- * 
+ *
  * Displays available save slots and their status
  * Handles user input for selecting save/load operations
  */
@@ -180,7 +188,7 @@ public:
 /**
  * @class EndMenuRenderer
  * @brief Renders end game menu interface
- * 
+ *
  * Displays game over options and player score/casualty statistics
  */
 class EndMenuRenderer : public Renderer
