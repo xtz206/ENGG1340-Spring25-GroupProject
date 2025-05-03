@@ -107,7 +107,7 @@ int main(void)
                     {
                         stage = Stage::TITLE_MENU;
                     }
-                    usleep(25000);
+                    usleep(41666);
                 }
             }
             else if (stage == Stage::TITLE_MENU)
