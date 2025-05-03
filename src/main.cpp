@@ -17,6 +17,23 @@
 #include "saver.h"
 #include "utils.h"
 
+/**
+ * @enum Stage
+ * @brief Represents different stages of the game lifecycle
+ *
+ * Enumerates various game states including:
+ * - Title menu
+ * - Start menu
+ * - Level menu
+ * - Tutorial menu
+ * - Game state
+ * - Tech menu
+ * - Pause menu
+ * - Save menu
+ * - Load menu
+ * - End menu
+ * - Quit state
+ */
 enum class Stage
 {
     TITLE_MENU,

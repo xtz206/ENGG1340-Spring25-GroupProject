@@ -40,6 +40,13 @@ public:
     void reset(void);
 };
 
+/**
+ * @class GeneralChecker
+ * @brief Checks if the game is running for the first time
+ *
+ * Provides functionality to determine if the game is being run for the first time
+ * and saves a marker file to indicate that the game has been initialized.
+ */
 class GeneralChecker
 {
 private:

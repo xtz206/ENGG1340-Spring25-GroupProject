@@ -95,6 +95,13 @@ public:
     /// @}
 };
 
+/**
+ * @class TitleMenu
+ * @brief Game title screen menu
+ *
+ * Displays game title and description.
+ * Inherits from Menu for basic functionality.
+ */
 class TitleMenu : public Menu
 
 {
@@ -102,6 +109,13 @@ public:
     TitleMenu(const std::vector<std::string> &t, const std::string &d);
 };
 
+/**
+ * @class SaveMenu
+ * @brief Game save file management menu
+ *
+ * Provides a list of available game saves for saving.
+ * Automatically updates available saves through update_items().
+ */
 class SaveMenu : public BasicMenu
 {
 private:
@@ -113,6 +127,14 @@ public:
     void update_items(void);
 };
 
+
+/**
+ * @class LoadMenu
+ * @brief Game save file selection menu
+ *
+ * Provides a list of available game saves for loading.
+ * Automatically updates available saves through update_items().
+ */
 class LoadMenu : public BasicMenu
 {
 private:
