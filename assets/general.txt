@@ -2,7 +2,7 @@ size_y:25
 size_x:100
 cursor_y:12
 cursor_x:50
-turn:1
+turn:0
 score:0
 casualty:0
 missile_manager_id:0
@@ -13,7 +13,7 @@ iron_curtain_counter:-1
 enhanced_radar_I:0
 enhanced_radar_II:0
 enhanced_radar_III:0
-enhanced_cruise_I:1
+enhanced_cruise_I:0
 enhanced_cruise_II:0
 enhanced_cruise_III:0
 fortress_city:0

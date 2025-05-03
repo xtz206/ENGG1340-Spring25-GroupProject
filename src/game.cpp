@@ -795,9 +795,8 @@ void Game::move_cursor_to_city(int index)
  */
 void Game::pass_turn(void)
 {
-    missile_manager.remove_missiles(); // Remove exploded missiles
+    // NOTE: update missiles
     missile_manager.update_missiles(); // Update missile positions
-
     for (auto missile : missile_manager.get_attack_missiles())
     {
         if (!(missile->type == MissileType::ATTACK)) // Check if the missile is an attack missile
@@ -811,8 +810,9 @@ void Game::pass_turn(void)
             hit_city(attack_missile->city, attack_missile->damage); // Hit the city with the missile
         }
     }
+    missile_manager.remove_missiles(); // Remove exploded missiles
 
-    // NOTE: update cities production
+    // NOTE: update cities productivity and missile production
     for (auto &city : cities)
     {
         if (city.hitpoint > 0) // Check if the city is not destroyed
@@ -861,15 +861,18 @@ void Game::pass_turn(void)
     tech_tree.proceed_research();
     check_research(); // Check if research is complete
 
-    // NOTE: iron curtain & self defense system
+    // NOTE: check iron curtain & self defense system
     check_iron_curtain(); // Check if iron curtain is active
     self_defense();       // Activate self defense system
 
-    if (turn % 20 == 0) // Check if it's time to launch a new attack wave
+    // NOTE: create new attack wave
+    if (turn % 20 == 0 && turn > 0) // Check if it's time to launch a new attack wave
     {
         missile_manager.create_attack_wave(turn, enemy_hitpoint, difficulty_level);
         insert_feedback("New Attack Missile Wave Approaching", COLOR_PAIR(3));
     }
+
+    // NOTE: turn increment
     turn++;
 }
 
@@ -1190,7 +1193,7 @@ void Game::build_cruise(void)
         insert_feedback("Cruise in building", COLOR_PAIR(3));
         return;
     }
-    if (deposit < 200 && !en_enhanced_radar_I)
+    if (deposit < 200 && !en_enhanced_cruise_I)
     {
         insert_feedback("Deposit not enough(200) to build cruise", COLOR_PAIR(3));
         return;

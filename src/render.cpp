@@ -972,7 +972,7 @@ void GameRenderer::draw(void)
     }
 
     // NOTE: draw selected info window
-    if (game.is_selected_missile())
+    if (game.is_selected_missile() && game.en_enhanced_radar_III)
     {
         AttackMissile &missile = dynamic_cast<AttackMissile &>(game.select_missile());
         selected_info_window.print_left(0, "Target:", A_NORMAL);
