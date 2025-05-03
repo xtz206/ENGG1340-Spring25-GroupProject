@@ -85,13 +85,13 @@
 - [ ] Video
 - [x] game.cpp
 - [x] game.h
-- [ ] main.cpp
+- [x] main.cpp
 - [x] menu.cpp
-- [ ] menu.h
+- [x] menu.h
 - [x] render.cpp
-- [ ] render.h
+- [x] render.h
 - [x] saver.cpp
-- [ ] saver.h
+- [x] saver.h
 - [x] utils.h
 
 ### Video
@@ -100,24 +100,3 @@
 - [ ] Features
 - [ ] Random
 - [ ] FileIO
-
-### main.cpp
-
-- [ ] File Header
-- [ ] Function Header
-- [ ] Inline comments
-
-### menu.h
-
-- [ ] File Header
-- [ ] Class Header
-
-### render.h
-
-- [ ] File Header
-- [ ] Class Header
-
-### saver.h
-
-- [ ] File Header
-- [ ] Class Header
