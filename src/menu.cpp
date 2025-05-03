@@ -306,8 +306,8 @@ TutorialMenu::TutorialMenu(void)
         "use them wisely to defeat the enemy!              "};
     std::vector<std::string> tip_page = {
         "====================== TIPS ======================",
-        "use the first 40 turns to build missiles          ",
-        "the enemy will attack every 40 turns              ",
+        "use the first 20 turns to build missiles          ",
+        "the enemy will attack every 20 turns              ",
         "build cruises when enemy approaches is too late   ",
         "",
         "fix city is quite expensive, use it wisely        ",
