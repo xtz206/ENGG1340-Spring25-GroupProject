@@ -1,5 +1,10 @@
 # ENGG1340 Project - Group 4
 
+> [!note]
+> **GRADE OF THIS PROJECT**
+>
+> This project has received a grade of 19.9 (out of 20).
+
 ## Group Members
 <!-- Identification of the team members. -->
 Removed for Privacy
